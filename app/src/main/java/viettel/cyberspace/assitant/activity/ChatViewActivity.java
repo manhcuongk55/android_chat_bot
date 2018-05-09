@@ -109,7 +109,6 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
         public void onServiceConnected(ComponentName componentName, IBinder binder) {
             mSpeechService = SpeechService.from(binder);
             mSpeechService.addListener(mSpeechServiceListener);
-            // mStatus.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -127,7 +126,7 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
 
         chatView = findViewById(R.id.chatView);
 
-        messageET = findViewById(R.id.messageET1);
+        messageET = findViewById(R.id.messageET);
         messageET.requestFocus();
 
         //Initialization start
@@ -155,7 +154,7 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
                 } else {
                     Message message1 = new Message();
                     message1.setBody(body);
-                    message1.setMessageType(Message.MessageType.LeftSimpleMessage);
+                    message1.setMessageType(Message.MessageType.ListQuestion);
                     message1.setTime(getTime());
                     message1.setUserName("Hodor");
                     message1.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
@@ -221,6 +220,19 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
 
     }
 
+
+    @Override
+    protected void onStop() {
+        // Stop listening to voice
+        stopVoiceRecorder();
+
+        // Stop Cloud Speech API
+        mSpeechService.removeListener(mSpeechServiceListener);
+        unbindService(mServiceConnection);
+        mSpeechService = null;
+
+        super.onStop();
+    }
 
     public String getTime() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
@@ -455,37 +467,19 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
                     if (isFinal) {
                         mVoiceRecorder.dismiss();
                     }
-                    Log.i("duypq3", "text=" + text);
-                    messageET.setText("duy");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isFinal) {
-                                    Message message = new Message();
-                                    message.setBody(text);
-                                    message.setMessageType(Message.MessageType.RightSimpleImage);
-                                    message.setTime(getTime());
-                                    message.setUserName("Groot");
-                                    message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
-                                    chatView.addMessage(message);
-
-                                    Message message2 = new Message();
-                                    message2.setBody("Anh biet rui");
-                                    message2.setMessageType(Message.MessageType.LeftSimpleMessage);
-                                    message2.setTime(getTime());
-                                    message2.setUserName("Groot");
-                                    message2.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
-                                    chatView.addMessage(message2);
-
-                                    switchbool = false;
-
-                                    // mAdapter.addResult(text);
-                                    //  mRecyclerView.smoothScrollToPosition(0);
-                                } else {
-                                    messageET.setText(text, TextView.BufferType.EDITABLE);
-                                }
+                    Log.i("duypq3", "text=" + text + "  isFinal  = " + isFinal);
+//                    messageET.setText("duy");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isFinal) {
+                                messageET.setText(text);
+                            } else {
+                                messageET.setText(text);
                             }
-                        });
+                            messageET.setSelection(text.length());
+                        }
+                    });
                 }
             };
 

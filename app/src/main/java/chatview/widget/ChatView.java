@@ -397,7 +397,7 @@ public class ChatView extends RelativeLayout {
     }
 
     public void setTextSize(float size) {
-        messageAdapter.setTextSize(size);
+//        messageAdapter.setTextSize(size);
     }
 
     private class WrapContentLinearLayoutManager extends LinearLayoutManager {

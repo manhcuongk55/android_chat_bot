@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fitsSystemWindows="true"
-    tools:context="com.viettel.cyberspace.viettel_assitant.activity.ChatViewActivity">
+    tools:context="viettel.cyberspace.assitant.activity.ChatViewActivity">
 
     <chatview.widget.ChatView
         android:id="@+id/chatView"

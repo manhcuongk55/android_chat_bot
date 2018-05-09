@@ -42,7 +42,7 @@ public class Message {
     protected Uri audioUri;
     protected int indexPosition;
 
-    public enum MessageType{
+    public enum MessageType {
         LeftSimpleMessage,
         RightSimpleImage,
         LeftSingleImage,
@@ -52,10 +52,11 @@ public class Message {
         LeftVideo,
         RightVideo,
         LeftAudio,
-        RightAudio
+        RightAudio,
+        ListQuestion
     }
 
-    public Message(){
+    public Message() {
 
     }
 

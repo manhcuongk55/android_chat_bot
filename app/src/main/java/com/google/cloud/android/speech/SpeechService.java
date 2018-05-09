@@ -92,9 +92,13 @@ public class SpeechService extends Service {
     private static final String PREF_ACCESS_TOKEN_VALUE = "access_token_value";
     private static final String PREF_ACCESS_TOKEN_EXPIRATION_TIME = "access_token_expiration_time";
 
-    /** We reuse an access token if its expiration time is longer than this. */
+    /**
+     * We reuse an access token if its expiration time is longer than this.
+     */
     private static final int ACCESS_TOKEN_EXPIRATION_TOLERANCE = 30 * 60 * 1000; // thirty minutes
-    /** We refresh the current access token before it expires. */
+    /**
+     * We refresh the current access token before it expires.
+     */
     private static final int ACCESS_TOKEN_FETCH_MARGIN = 60 * 1000; // one minute
 
     public static final List<String> SCOPE =
