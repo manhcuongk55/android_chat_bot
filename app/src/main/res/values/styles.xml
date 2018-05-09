@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2016 Google Inc. All Rights Reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,9 +50,9 @@
         <item name="windowNoTitle">true</item>
         <item name="android:textColorHint">#bababa</item>
         <!-- Label color in TRUE state and bababa color FALSE and TRUE State -->
-        <item name="colorControlNormal">#bababa</item>
-        <item name="colorControlActivated">#bababa</item>
-        <item name="colorControlHighlight">#bababa</item>
+        <item name="colorControlNormal">#28B5A8</item>
+        <item name="colorControlActivated">#28B5A8</item>
+        <item name="colorControlHighlight">#28B5A8</item>
     </style>
 
     <style name="TextLabel" parent="TextAppearance.AppCompat">

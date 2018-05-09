@@ -49,6 +49,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="viettel.cyberspace.assitant.Webview.WebviewActivity"
+            android:theme="@style/MyTheme.NoActionBar1"></activity>
+
     </application>
 
 </manifest>
