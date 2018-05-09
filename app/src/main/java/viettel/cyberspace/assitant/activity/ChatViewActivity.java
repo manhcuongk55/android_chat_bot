@@ -479,14 +479,14 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
                 @Override
                 public void onSpeechRecognized(final String text, final boolean isFinal) {
                     Log.i("duypq3", "text=" + text + "  isFinal  = " + isFinal);
-                    if (isFinal) {
-                        stopVoiceRecorder();
-                    }
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (isFinal) {
                                 setEnableVoidButton(true);
+                                micMRL.setEnabled(false);
+                                micMRL.setAlpha(0.4f);
                                 messageET.setText(text);
 
                                 if (switchbool) {
@@ -517,6 +517,19 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
                                 messageET.setSelection(messageET.getText().toString().length());
                         }
                     });
+
+                    if (isFinal) {
+                        Long s1 = System.currentTimeMillis();
+                        stopVoiceRecorder();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                micMRL.setEnabled(true);
+                                micMRL.setAlpha(1.0f);
+                            }
+                        });
+                        Log.i("duypq4", "time1=" + (System.currentTimeMillis() - s1));
+                    }
                 }
             };
 
