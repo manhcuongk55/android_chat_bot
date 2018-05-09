@@ -1,0 +1,2 @@
+include ':app', ':chatviewviettel'
+project(':chatviewviettel').projectDir = new File('chatview')
