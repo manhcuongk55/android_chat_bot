@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import com.google.cloud.android.speech.MessageDialogFragment;
 import com.google.cloud.android.speech.R;
 import com.google.cloud.android.speech.SpeechService;
 import com.google.cloud.android.speech.VoiceRecorder;
+import com.wang.avi.AVLoadingIndicatorView;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.PicassoEngine;
@@ -56,6 +58,8 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
     boolean switchbool = true;
     boolean more = false;
     List<Uri> mSelected;
+    MaterialRippleLayout micMRL;
+    AVLoadingIndicatorView avi;
 
 
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
@@ -71,7 +75,6 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
 
         @Override
         public void onVoiceStart() {
-            showStatus(true);
             if (mSpeechService != null) {
                 mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
             }
@@ -86,7 +89,6 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
 
         @Override
         public void onVoiceEnd() {
-            showStatus(false);
             if (mSpeechService != null) {
                 mSpeechService.finishRecognizing();
             }
@@ -136,7 +138,26 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
         galleryMRL = findViewById(R.id.galleryMRL1);
         mSelected = new ArrayList<>();
 
+        micMRL = findViewById(R.id.micMRL);
+        avi = findViewById(R.id.avi);
 
+        micMRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setEnableVoidButton(false);
+                // Start listening to voices
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    startVoiceRecorder();
+                } else if (ActivityCompat.shouldShowRequestPermissionRationale(ChatViewActivity.this,
+                        Manifest.permission.RECORD_AUDIO)) {
+                    showPermissionMessageDialog();
+                } else {
+                    ActivityCompat.requestPermissions(ChatViewActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                            REQUEST_RECORD_AUDIO_PERMISSION);
+                }
+            }
+        });
         //Send button click listerer
         chatView.setOnClickSendButtonListener(new ChatView.OnClickSendButtonListener() {
             @Override
@@ -222,7 +243,8 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
 
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
+        super.onPause();
         // Stop listening to voice
         stopVoiceRecorder();
 
@@ -231,8 +253,8 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
         unbindService(mServiceConnection);
         mSpeechService = null;
 
-        super.onStop();
     }
+
 
     public String getTime() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
@@ -451,56 +473,70 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
 
     }
 
-    private void showStatus(final boolean hearingVoice) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // mStatus.setTextColor(hearingVoice ? mColorHearing : mColorNotHearing);
-            }
-        });
-    }
 
     private final SpeechService.Listener mSpeechServiceListener =
             new SpeechService.Listener() {
                 @Override
                 public void onSpeechRecognized(final String text, final boolean isFinal) {
-                    if (isFinal) {
-                        mVoiceRecorder.dismiss();
-                    }
                     Log.i("duypq3", "text=" + text + "  isFinal  = " + isFinal);
-//                    messageET.setText("duy");
+                    if (isFinal) {
+                        stopVoiceRecorder();
+                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (isFinal) {
+                                setEnableVoidButton(true);
                                 messageET.setText(text);
+
+                                if (switchbool) {
+                                    Message message = new Message();
+                                    message.setMessageType(Message.MessageType.LeftSimpleMessage);
+                                    message.setTime(getTime());
+                                    message.setUserName("Groot");
+                                    message.setBody(text);
+                                    message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
+                                    chatView.addMessage(message);
+                                    switchbool = false;
+                                } else {
+                                    Message message = new Message();
+
+                                    message.setMessageType(Message.MessageType.RightSimpleImage);
+                                    message.setTime(getTime());
+                                    message.setUserName("Hodor");
+                                    message.setBody(text);
+                                    message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+                                    chatView.addMessage(message);
+                                    switchbool = true;
+                                }
+                                messageET.setText("");
                             } else {
                                 messageET.setText(text);
                             }
-                            messageET.setSelection(text.length());
+                            if (messageET.getText().toString().length() != 0)
+                                messageET.setSelection(messageET.getText().toString().length());
                         }
                     });
                 }
             };
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    public void setEnableVoidButton(boolean isEnable) {
+        if (isEnable) {
+            micMRL.setVisibility(View.VISIBLE);
+            avi.setVisibility(View.GONE);
+        } else {
+            micMRL.setVisibility(View.GONE);
+            avi.setVisibility(View.VISIBLE);
 
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         // Prepare Cloud Speech API
         bindService(new Intent(this, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
-
-        // Start listening to voices
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED) {
-            startVoiceRecorder();
-        } else if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.RECORD_AUDIO)) {
-            showPermissionMessageDialog();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
-                    REQUEST_RECORD_AUDIO_PERMISSION);
-        }
     }
 
     private void startVoiceRecorder() {

@@ -197,22 +197,38 @@
                         android:textColor="@android:color/black"
                         android:textSize="18sp" />
 
-                    <com.balysv.materialripple.MaterialRippleLayout
-                        android:id="@+id/micMRL"
+                    <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:minHeight="40dp"
-                        android:minWidth="40dp"
-                        app:mrl_rippleOverlay="true"
-                        app:mrl_rippleRoundedCorners="30dp">
+                        android:layout_gravity="center">
 
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/mic_icon"
-                            android:tint="@android:color/black" />
-                    </com.balysv.materialripple.MaterialRippleLayout>
+                        <com.balysv.materialripple.MaterialRippleLayout
+                            android:id="@+id/micMRL"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:minHeight="40dp"
+                            android:minWidth="40dp"
+                            app:mrl_rippleOverlay="true"
+                            app:mrl_rippleRoundedCorners="30dp">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/mic_icon"
+                                android:tint="@android:color/black" />
+                        </com.balysv.materialripple.MaterialRippleLayout>
+
+                        <com.wang.avi.AVLoadingIndicatorView
+                            android:id="@+id/avi"
+                            style="@style/AVLoadingIndicatorView"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerInParent="true"
+                            android:visibility="gone"
+                            app:indicatorColor="#42ebf4"
+                            app:indicatorName="LineScaleIndicator" />
+                    </RelativeLayout>
 
                     <com.balysv.materialripple.MaterialRippleLayout
                         android:id="@+id/sendMRL"
