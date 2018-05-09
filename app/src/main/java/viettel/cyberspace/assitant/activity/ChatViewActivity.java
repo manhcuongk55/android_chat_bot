@@ -1,4 +1,4 @@
-package viettel.cyberspace.viettel_assitant.activity;
+package viettel.cyberspace.assitant.activity;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -15,10 +15,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -26,7 +23,6 @@ import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.github.zagum.expandicon.ExpandIconView;
-import com.google.cloud.android.speech.MainActivity;
 import com.google.cloud.android.speech.MessageDialogFragment;
 import com.google.cloud.android.speech.R;
 import com.google.cloud.android.speech.SpeechService;
@@ -465,7 +461,6 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
                             @Override
                             public void run() {
                                 if (isFinal) {
-                                    messageET.setText(null);
                                     Message message = new Message();
                                     message.setBody(text);
                                     message.setMessageType(Message.MessageType.RightSimpleImage);
@@ -473,6 +468,14 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
                                     message.setUserName("Groot");
                                     message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
                                     chatView.addMessage(message);
+
+                                    Message message2 = new Message();
+                                    message2.setBody("Anh biet rui");
+                                    message2.setMessageType(Message.MessageType.LeftSimpleMessage);
+                                    message2.setTime(getTime());
+                                    message2.setUserName("Groot");
+                                    message2.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+                                    chatView.addMessage(message2);
 
                                     switchbool = false;
 

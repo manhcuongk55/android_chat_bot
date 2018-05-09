@@ -1,4 +1,4 @@
-package viettel.cyberspace.viettel_assitant.activity;
+package viettel.cyberspace.assitant.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

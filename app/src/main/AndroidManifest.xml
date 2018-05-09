@@ -38,10 +38,10 @@
 
 
         <activity
-            android:name="viettel.cyberspace.viettel_assitant.activity.ChatViewActivity"
+            android:name="viettel.cyberspace.assitant.activity.ChatViewActivity"
             android:theme="@style/MyTheme.NoActionBar1"></activity>
         <activity
-            android:name="viettel.cyberspace.viettel_assitant.activity.LoginActivity"
+            android:name="viettel.cyberspace.assitant.activity.LoginActivity"
             android:theme="@style/MyTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
