@@ -1,21 +1,36 @@
 package viettel.cyberspace.viettel_assitant.activity;
 
+import android.Manifest;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.github.zagum.expandicon.ExpandIconView;
+import com.google.cloud.android.speech.MainActivity;
+import com.google.cloud.android.speech.MessageDialogFragment;
 import com.google.cloud.android.speech.R;
+import com.google.cloud.android.speech.SpeechService;
+import com.google.cloud.android.speech.VoiceRecorder;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.PicassoEngine;
@@ -29,7 +44,7 @@ import java.util.Random;
 import chatview.data.Message;
 import chatview.widget.ChatView;
 
-public class ChatViewActivity extends AppCompatActivity {
+public class ChatViewActivity extends AppCompatActivity implements MessageDialogFragment.Listener {
 
 
     HorizontalScrollView moreHSV;
@@ -45,6 +60,68 @@ public class ChatViewActivity extends AppCompatActivity {
     boolean switchbool = true;
     boolean more = false;
     List<Uri> mSelected;
+
+
+    private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
+
+    private static final String STATE_RESULTS = "results";
+
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
+
+    private SpeechService mSpeechService;
+
+    private VoiceRecorder mVoiceRecorder;
+    private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
+
+        @Override
+        public void onVoiceStart() {
+            showStatus(true);
+            if (mSpeechService != null) {
+                mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
+            }
+        }
+
+        @Override
+        public void onVoice(byte[] data, int size) {
+            if (mSpeechService != null) {
+                mSpeechService.recognize(data, size);
+            }
+        }
+
+        @Override
+        public void onVoiceEnd() {
+            showStatus(false);
+            if (mSpeechService != null) {
+                mSpeechService.finishRecognizing();
+            }
+        }
+
+    };
+
+    // Resource caches
+    private int mColorHearing;
+    private int mColorNotHearing;
+
+    // View references
+//    private TextView mStatus;
+//    private TextView mText;
+//    private RecyclerView mRecyclerView;
+
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder binder) {
+            mSpeechService = SpeechService.from(binder);
+            mSpeechService.addListener(mSpeechServiceListener);
+            // mStatus.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mSpeechService = null;
+        }
+
+    };
 
 
     @Override
@@ -354,5 +431,100 @@ public class ChatViewActivity extends AppCompatActivity {
         } else return null;
     }
 
+
+    @Override
+    public void onMessageDialogDismissed() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
+                REQUEST_RECORD_AUDIO_PERMISSION);
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    private void showStatus(final boolean hearingVoice) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // mStatus.setTextColor(hearingVoice ? mColorHearing : mColorNotHearing);
+            }
+        });
+    }
+
+    private final SpeechService.Listener mSpeechServiceListener =
+            new SpeechService.Listener() {
+                @Override
+                public void onSpeechRecognized(final String text, final boolean isFinal) {
+                    if (isFinal) {
+                        mVoiceRecorder.dismiss();
+                    }
+                    Log.i("duypq3", "text=" + text);
+                    messageET.setText("duy");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isFinal) {
+                                    messageET.setText(null);
+                                    Message message = new Message();
+                                    message.setBody(text);
+                                    message.setMessageType(Message.MessageType.RightSimpleImage);
+                                    message.setTime(getTime());
+                                    message.setUserName("Groot");
+                                    message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
+                                    chatView.addMessage(message);
+
+                                    switchbool = false;
+
+                                    // mAdapter.addResult(text);
+                                    //  mRecyclerView.smoothScrollToPosition(0);
+                                } else {
+                                    messageET.setText(text, TextView.BufferType.EDITABLE);
+                                }
+                            }
+                        });
+                }
+            };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Prepare Cloud Speech API
+        bindService(new Intent(this, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
+
+        // Start listening to voices
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED) {
+            startVoiceRecorder();
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.RECORD_AUDIO)) {
+            showPermissionMessageDialog();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
+                    REQUEST_RECORD_AUDIO_PERMISSION);
+        }
+    }
+
+    private void startVoiceRecorder() {
+        if (mVoiceRecorder != null) {
+            mVoiceRecorder.stop();
+        }
+        mVoiceRecorder = new VoiceRecorder(mVoiceCallback);
+        mVoiceRecorder.start();
+    }
+
+    private void stopVoiceRecorder() {
+        if (mVoiceRecorder != null) {
+            mVoiceRecorder.stop();
+            mVoiceRecorder = null;
+        }
+    }
+
+    private void showPermissionMessageDialog() {
+        MessageDialogFragment
+                .newInstance(getString(R.string.permission_message))
+                .show(getSupportFragmentManager(), FRAGMENT_MESSAGE_DIALOG);
+    }
 
 }
