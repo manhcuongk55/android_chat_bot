@@ -2,6 +2,7 @@ package viettel.cyberspace.assitant.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -29,6 +30,16 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                Intent intent = new Intent(LoginActivity.this, ChatViewActivity.class);
+                startActivity(intent);
+            }
+        }, 1000);
 
     }
 }
