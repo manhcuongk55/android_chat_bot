@@ -12,15 +12,29 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.BottomNavigationView.OnNavigationItemReselectedListener;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.github.zagum.expandicon.ExpandIconView;
@@ -42,7 +56,7 @@ import java.util.Random;
 import chatview.data.Message;
 import chatview.widget.ChatView;
 
-public class ChatBotActivity extends AppCompatActivity implements MessageDialogFragment.Listener {
+public class ChatBotActivity extends AppCompatActivity implements MessageDialogFragment.Listener, NavigationView.OnNavigationItemSelectedListener {
 
 
     ChatView chatView;
@@ -54,7 +68,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     AVLoadingIndicatorView avi;
     TextView tvVoice;
 
-
+    DrawerLayout drawer;
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
 
     private static final String STATE_RESULTS = "results";
@@ -109,13 +123,13 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_bot);
-
+        setContentView(R.layout.activity_main);
         chatView = findViewById(R.id.chatView);
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         //Initialization start
         mSelected = new ArrayList<>();
-
+        getSupportActionBar().setTitle("Virtual Assistant");
         micMRL = findViewById(R.id.micMRL2);
         avi = findViewById(R.id.avi2);
         tvVoice = findViewById(R.id.tvVoice);
@@ -138,7 +152,35 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             }
         });
 
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+/*        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
 
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();*/
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+/*        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerOpen(Gravity.RIGHT)) {
+                    drawer.closeDrawer(Gravity.RIGHT);
+                } else {
+                    drawer.openDrawer(Gravity.RIGHT);
+                }
+            }
+        });*/
         //Send button click listerer
 //        chatView.setOnClickSendButtonListener(new ChatView.OnClickSendButtonListener() {
 //            @Override
@@ -183,6 +225,29 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.chatview_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.user_information:
+                Toast.makeText(this, "user information", Toast.LENGTH_SHORT).show();
+                if (drawer.isDrawerOpen(Gravity.RIGHT)) {
+                    drawer.closeDrawer(Gravity.RIGHT);
+                } else {
+                    drawer.openDrawer(Gravity.RIGHT);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
 
     public String getTime() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
@@ -305,4 +370,26 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 .show(getSupportFragmentManager(), FRAGMENT_MESSAGE_DIALOG);
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.END);
+        return true;
+    }
 }

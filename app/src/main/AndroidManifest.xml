@@ -40,7 +40,7 @@
 
         <activity
             android:name="viettel.cyberspace.assitant.activity.ChatViewActivity"
-            android:theme="@style/MyTheme.NoActionBar1" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="viettel.cyberspace.assitant.activity.LoginActivity"
             android:theme="@style/MyTheme.NoActionBar">
@@ -54,10 +54,10 @@
         </activity>
         <activity
             android:name="viettel.cyberspace.assitant.Webview.WebviewActivity"
-            android:theme="@style/MyTheme.NoActionBar1" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="viettel.cyberspace.assitant.activity.ChatBotActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

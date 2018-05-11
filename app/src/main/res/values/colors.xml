@@ -15,7 +15,7 @@
 -->
 <resources>
     <color name="primary">#3366FF</color>
-    <color name="primary_dark">#0066CC</color>
+    <color name="primary_dark">#0052a5</color>
     <color name="accent">#536DFE</color>
 
     <color name="status_hearing">#7B1FA2</color>
