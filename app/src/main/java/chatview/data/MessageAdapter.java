@@ -75,7 +75,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     protected boolean showRightBubbleIcon = true;
     protected boolean showSenderName = true;
 
-    private int leftBubbleLayoutColor = R.color.colorAccent2;
+    private int leftBubbleLayoutColor = R.color.colorAccent;
     private int rightBubbleLayoutColor = R.color.colorAccent1;
     private int leftBubbleTextColor = android.R.color.black;
     private int rightBubbleTextColor = android.R.color.white;
