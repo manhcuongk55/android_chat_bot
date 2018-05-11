@@ -29,19 +29,34 @@
         android:theme="@style/Theme.Speech"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN"/>-->
-            <!--<category android:name="android.intent.category.LAUNCHER"/>-->
-            <!--</intent-filter>-->
-        </activity>
-        <service android:name=".SpeechService" />
 
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN"/> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
+            <!-- </intent-filter> -->
+        </activity>
+
+        <service android:name=".SpeechService" />
 
         <activity
             android:name="viettel.cyberspace.assitant.activity.ChatViewActivity"
-            android:theme="@style/MyTheme.NoActionBar1"></activity>
+            android:theme="@style/MyTheme.NoActionBar1" />
         <activity
             android:name="viettel.cyberspace.assitant.activity.LoginActivity"
+            android:theme="@style/MyTheme.NoActionBar">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
+        <activity
+            android:name="viettel.cyberspace.assitant.Webview.WebviewActivity"
+            android:theme="@style/MyTheme.NoActionBar1" />
+        <activity
+            android:name="viettel.cyberspace.assitant.activity.ChatBotActivity"
             android:theme="@style/MyTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,10 +64,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="viettel.cyberspace.assitant.Webview.WebviewActivity"
-            android:theme="@style/MyTheme.NoActionBar1"></activity>
-
     </application>
 
 </manifest>
