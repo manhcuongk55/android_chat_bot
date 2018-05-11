@@ -47,7 +47,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     ChatView chatView;
     ImageView sendIcon;
-    EditText messageET;
     boolean switchbool = true;
     boolean more = false;
     List<Uri> mSelected;
@@ -114,15 +113,12 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
         chatView = findViewById(R.id.chatView);
 
-        messageET = findViewById(R.id.messageET);
-        messageET.requestFocus();
-
         //Initialization start
         mSelected = new ArrayList<>();
 
         micMRL = findViewById(R.id.micMRL2);
         avi = findViewById(R.id.avi2);
-        tvVoice= findViewById(R.id.tvVoice);
+        tvVoice = findViewById(R.id.tvVoice);
 
         micMRL.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,26 +219,11 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                                 micMRL.setAlpha(0.4f);
                                 tvVoice.setText(text);
 
-                                if (switchbool) {
-                                    Message message = new Message();
-                                    message.setMessageType(Message.MessageType.LeftSimpleMessage);
-                                    message.setTime(getTime());
-                                    message.setUserName("Groot");
-                                    message.setBody(text);
-                                    message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
-                                    chatView.addMessage(message);
-                                    switchbool = false;
-                                } else {
-                                    Message message = new Message();
 
-                                    message.setMessageType(Message.MessageType.RightSimpleImage);
-                                    message.setTime(getTime());
-                                    message.setUserName("Hodor");
-                                    message.setBody(text);
-                                    message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
-                                    chatView.addMessage(message);
-                                    switchbool = true;
-                                }
+                                getTextFromVoice(text);
+                                //test
+                                receiveTextFromServer("Biet Rui");
+
                                 tvVoice.setText("");
                             } else {
                                 tvVoice.setText(text);
@@ -274,6 +255,25 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             avi.setVisibility(View.VISIBLE);
 
         }
+    }
+
+
+    public void getTextFromVoice(String text) {
+        Message message = new Message();
+        message.setMessageType(Message.MessageType.RightSimpleImage);
+        message.setTime(getTime());
+        message.setBody(text);
+        message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
+        chatView.addMessage(message);
+    }
+
+    public void receiveTextFromServer(String text) {
+        Message message = new Message();
+        message.setMessageType(Message.MessageType.LeftSimpleMessage);
+        message.setTime(getTime());
+        message.setBody(text);
+        message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+        chatView.addMessage(message);
     }
 
 

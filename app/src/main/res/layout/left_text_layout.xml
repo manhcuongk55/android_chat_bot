@@ -45,13 +45,13 @@
                     android:layout_gravity="center_vertical"
                     android:layout_margin="5dp"
                     app:cardBackgroundColor="@color/colorAccent2"
-                    app:cardCornerRadius="12.5dp"
+                    app:cardCornerRadius="@dimen/cardcorner"
                     app:cardElevation="2.5dp">
 
                     <ImageView
                         android:id="@+id/leftBubbleIconIV"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/space_image"
+                        android:layout_height="@dimen/space_image"
                         android:layout_gravity="center_vertical"
                         android:scaleType="centerCrop"
                         android:src="@drawable/profile_icon" />

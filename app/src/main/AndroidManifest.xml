@@ -57,7 +57,7 @@
             android:theme="@style/MyTheme.NoActionBar1" />
         <activity
             android:name="viettel.cyberspace.assitant.activity.ChatBotActivity"
-            android:theme="@style/MyTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

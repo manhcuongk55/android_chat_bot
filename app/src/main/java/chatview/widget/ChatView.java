@@ -115,6 +115,7 @@ public class ChatView extends RelativeLayout {
         chatRV.setLayoutManager(layoutManager);
         chatRV.setItemAnimator(new ScaleInBottomAnimator(new OvershootInterpolator(1f)));
         chatRV.setAdapter(messageAdapter);
+        messageET.clearFocus();
 
 
         expandIconView.setState(1, false);
