@@ -32,47 +32,166 @@
             android:text=""
             android:textColor="@color/colorAccent" />
 
-        <android.support.v7.widget.CardView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="10dp">
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center">
+            <android.support.v7.widget.CardView
+                android:id="@+id/hideKeyBoardLayout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:visibility="visible"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="10dp">
 
                 <com.balysv.materialripple.MaterialRippleLayout
-                    android:id="@+id/micMRL2"
+                    android:id="@+id/showKeyBoard"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_gravity="center_vertical"
                     android:minHeight="40dp"
                     android:minWidth="40dp"
                     app:mrl_rippleOverlay="true"
                     app:mrl_rippleRoundedCorners="30dp">
 
                     <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/mic_icon"
-                        android:tint="@android:color/black" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/baseline_keyboard_black_24dp"
+                        android:tint="#BDBDBD" />
                 </com.balysv.materialripple.MaterialRippleLayout>
 
-                <com.wang.avi.AVLoadingIndicatorView
-                    android:id="@+id/avi2"
-                    style="@style/AVLoadingIndicatorView"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_centerInParent="true"
-                    android:visibility="gone"
-                    app:indicatorColor="#42ebf4"
-                    app:indicatorName="LineScalePulseOutRapidIndicator" />
-            </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
 
-        </android.support.v7.widget.CardView>
+                    <com.balysv.materialripple.MaterialRippleLayout
+                        android:id="@+id/micMRL2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:minHeight="40dp"
+                        android:minWidth="40dp"
+                        app:mrl_rippleOverlay="true"
+                        app:mrl_rippleRoundedCorners="30dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/mic_icon"
+                            android:tint="@android:color/black" />
+                    </com.balysv.materialripple.MaterialRippleLayout>
+
+                    <com.wang.avi.AVLoadingIndicatorView
+                        android:id="@+id/avi2"
+                        style="@style/AVLoadingIndicatorView"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerInParent="true"
+                        android:visibility="gone"
+                        app:indicatorColor="#42ebf4"
+                        app:indicatorName="LineScalePulseOutRapidIndicator" />
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/showKeyBoardLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:minHeight="50dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <com.balysv.materialripple.MaterialRippleLayout
+                        android:id="@+id/micMRL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="2dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginTop="2dp"
+                        app:mrl_rippleOverlay="true"
+                        app:mrl_rippleRoundedCorners="30dp">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/mic_icon"
+                            android:tint="@android:color/black"
+                            android:visibility="visible" />
+                    </com.balysv.materialripple.MaterialRippleLayout>
+
+                    <com.wang.avi.AVLoadingIndicatorView
+                        android:id="@+id/avi"
+                        style="@style/AVLoadingIndicatorView"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginBottom="2dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginTop="2dp"
+                        android:visibility="gone"
+                        app:indicatorColor="#42ebf4"
+                        app:indicatorName="LineScalePulseOutRapidIndicator" />
+                </RelativeLayout>
+
+
+                <EditText
+                    android:id="@+id/messageET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/et_bg"
+                    android:hint="Say something..."
+                    android:maxHeight="100dp"
+                    android:minHeight="35dp"
+                    android:paddingBottom="4dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="4dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+
+                <com.balysv.materialripple.MaterialRippleLayout
+                    android:id="@+id/sendMRL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="2dp"
+                    app:mrl_rippleOverlay="true"
+                    app:mrl_rippleRoundedCorners="30dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/send_icon"
+                        android:tint="@color/colorAccent" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+
+            </LinearLayout>
+        </RelativeLayout>
+
 
     </LinearLayout>
 
@@ -82,7 +201,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/transparent">
+        android:background="@android:color/transparent"
+        android:visibility="gone">
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
@@ -217,102 +337,6 @@
                     </LinearLayout>
                 </HorizontalScrollView>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <com.balysv.materialripple.MaterialRippleLayout
-                        android:id="@+id/expandMRL"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="2dp"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginRight="2dp"
-                        android:layout_marginTop="2dp"
-                        app:mrl_rippleOverlay="true"
-                        app:mrl_rippleRoundedCorners="30dp">
-
-                        <com.github.zagum.expandicon.ExpandIconView
-                            android:id="@+id/expandIconView"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:layout_gravity="center" />
-                    </com.balysv.materialripple.MaterialRippleLayout>
-
-                    <EditText
-                        android:id="@+id/messageET"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/et_bg"
-                        android:hint="Say something..."
-                        android:maxHeight="100dp"
-                        android:minHeight="45dp"
-                        android:paddingBottom="4dp"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="4dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="18sp" />
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center">
-
-                        <com.balysv.materialripple.MaterialRippleLayout
-                            android:id="@+id/micMRL"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:minHeight="40dp"
-                            android:minWidth="40dp"
-                            app:mrl_rippleOverlay="true"
-                            app:mrl_rippleRoundedCorners="30dp">
-
-                            <ImageView
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:src="@drawable/mic_icon"
-                                android:tint="@android:color/black" />
-                        </com.balysv.materialripple.MaterialRippleLayout>
-
-                        <com.wang.avi.AVLoadingIndicatorView
-                            android:id="@+id/avi"
-                            style="@style/AVLoadingIndicatorView"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_centerInParent="true"
-                            android:visibility="gone"
-                            app:indicatorColor="#42ebf4"
-                            app:indicatorName="LineScalePulseOutRapidIndicator" />
-                    </RelativeLayout>
-
-                    <com.balysv.materialripple.MaterialRippleLayout
-                        android:id="@+id/sendMRL"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="2dp"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginRight="4dp"
-
-                        android:layout_marginTop="2dp"
-                        app:mrl_rippleOverlay="true"
-                        app:mrl_rippleRoundedCorners="30dp">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/send_icon"
-                            android:tint="@color/colorAccent" />
-                    </com.balysv.materialripple.MaterialRippleLayout>
-
-                </LinearLayout>
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

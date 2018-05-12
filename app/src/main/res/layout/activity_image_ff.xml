@@ -12,6 +12,6 @@
         android:layout_height="match_parent"
         android:id="@+id/photoView"
         android:transitionName="photoTransition"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter" />
 
 </RelativeLayout>

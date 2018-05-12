@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright 2016 Google Inc. All Rights Reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<android.support.v7.widget.CardView
-    android:id="@+id/card"
+<android.support.v7.widget.CardView android:id="@+id/card"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -48,7 +46,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:textColor="@color/status_not_hearing"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/text"
@@ -57,7 +55,7 @@
             android:paddingBottom="@dimen/spacing_small"
             android:paddingTop="@dimen/spacing_small"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            tools:text="It is fine today."/>
+            tools:text="It is fine today." />
 
     </LinearLayout>
 

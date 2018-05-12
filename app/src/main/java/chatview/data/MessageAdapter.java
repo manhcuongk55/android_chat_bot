@@ -252,12 +252,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
-    protected class LeftTextViewHolder extends RecyclerView.ViewHolder {
+    protected class LeftTextViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public TextView leftTV, leftTimeTV, senderNameTV;
+        public TextView leftTV, leftTimeTV;
         public ExpandableLayout leftEL;
         public ImageView lefttMessageStatusIV, leftBubbleIconIV;
         public CardView leftBubbleIconCV;
+        View layoutFeedback;
+        RelativeLayout layoutContentLike, layoutContentSairoi, layoutContentGuichuyengia;
+        LinearLayout layoutLike;
+        LinearLayout layoutSairoi;
+        LinearLayout layoutGuichuyengia;
+        View layoutFeedBackContent;
 
         public LeftTextViewHolder(View view) {
             super(view);
@@ -265,25 +271,33 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             leftTV = view.findViewById(R.id.leftTV);
             leftTimeTV = view.findViewById(R.id.leftTimeTV);
             leftEL = view.findViewById(R.id.leftEL);
-            senderNameTV = view.findViewById(R.id.senderNameTV);
             leftBubbleIconIV = view.findViewById(R.id.leftBubbleIconIV);
             leftBubbleIconCV = view.findViewById(R.id.leftBubbleIconCV);
-            setBackgroundColor(leftBubbleLayoutColor);
-            setTextColor(leftBubbleTextColor);
+            layoutFeedback = view.findViewById(R.id.layoutFeedback);
+            layoutFeedBackContent = view.findViewById(R.id.layoutFeedBackContent);
+            layoutContentLike = view.findViewById(R.id.layoutContentLike);
+            layoutContentSairoi = view.findViewById(R.id.layoutContentSairoi);
+            layoutContentGuichuyengia = view.findViewById(R.id.layoutContentGuichuyengia);
+            layoutLike = view.findViewById(R.id.layoutLike);
+            layoutSairoi = view.findViewById(R.id.layoutSairoi);
+            layoutGuichuyengia = view.findViewById(R.id.layoutGuichuyengia);
+            layoutLike.setOnClickListener(this);
+            layoutSairoi.setOnClickListener(this);
+            layoutGuichuyengia.setOnClickListener(this);
+//            setBackgroundColor(leftBubbleLayoutColor);
+//            setTextColor(leftBubbleTextColor);
             setTimeTextColor(timeTextColor);
             setSenderNameTextColor(senderNameTextColor);
             showSenderName(showSenderName);
             showLeftBubbleIcon(showLeftBubbleIcon);
-            setTextSize(textSize);
+//            setTextSize(textSize);
 
             FontChanger fontChanger = new FontChanger(typeface);
             fontChanger.replaceFonts((ViewGroup) view);
-            view.setOnLongClickListener(new View.OnLongClickListener() {
+            leftTV.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-
-                    int pos = getLayoutPosition();
-
+                    layoutFeedback.setVisibility(View.VISIBLE);
                     return true;
                 }
             });
@@ -302,17 +316,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             leftTimeTV.setTextColor(color);
         }
 
-        public void setSenderNameTextColor(int color) {
-            senderNameTV.setTextColor(color);
-        }
-
-        public void showSenderName(boolean b) {
-            if (b) {
-                senderNameTV.setVisibility(View.VISIBLE);
-            } else {
-                senderNameTV.setVisibility(View.GONE);
-            }
-        }
 
         public void showLeftBubbleIcon(boolean b) {
             if (b) {
@@ -327,11 +330,46 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
 
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.layoutLike:
+                    layoutFeedback.setVisibility(View.GONE);
+                    setFeddbackContent(R.id.layoutLike);
+                    break;
+                case R.id.layoutSairoi:
+                    layoutFeedback.setVisibility(View.GONE);
+                    setFeddbackContent(R.id.layoutSairoi);
+                    break;
+                case R.id.layoutGuichuyengia:
+                    layoutFeedback.setVisibility(View.GONE);
+                    setFeddbackContent(R.id.layoutGuichuyengia);
+                    break;
+            }
+        }
+
+        public void setFeddbackContent(int layoutID) {
+            layoutFeedBackContent.setVisibility(View.VISIBLE);
+            layoutContentLike.setVisibility(View.GONE);
+            layoutContentSairoi.setVisibility(View.GONE);
+            layoutContentGuichuyengia.setVisibility(View.GONE);
+            switch (layoutID) {
+                case R.id.layoutLike:
+                    layoutContentLike.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.layoutSairoi:
+                    layoutContentSairoi.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.layoutGuichuyengia:
+                    layoutContentGuichuyengia.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }
     }
 
     protected class RightTextViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView rightTV, rightTimeTV, senderNameTV;
+        public TextView rightTV, rightTimeTV;
         public ImageView rightMessageStatusIV, rightBubbleIconIV;
         public ExpandableLayout rightEL;
         public CardView rightBubbleIconCV;
@@ -342,16 +380,15 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             rightTV = view.findViewById(R.id.rightTV);
             rightTimeTV = view.findViewById(R.id.rightTimeTV);
             rightEL = view.findViewById(R.id.rightEL);
-            senderNameTV = view.findViewById(R.id.senderNameTV);
             rightBubbleIconCV = view.findViewById(R.id.rightBubbleIconCV);
             rightBubbleIconIV = view.findViewById(R.id.rightBubbleIconIV);
-            setBackgroundColor(rightBubbleLayoutColor);
-            setTextColor(rightBubbleTextColor);
+//            setBackgroundColor(rightBubbleLayoutColor);
+//            setTextColor(rightBubbleTextColor);
             setTimeTextColor(timeTextColor);
             setSenderNameTextColor(senderNameTextColor);
             showSenderName(showSenderName);
             showRightBubbleIcon(showRightBubbleIcon);
-            setTextSize(textSize);
+//            setTextSize(textSize);
             FontChanger fontChanger = new FontChanger(typeface);
             fontChanger.replaceFonts((ViewGroup) view);
 
@@ -377,18 +414,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public void setTimeTextColor(int color) {
             rightTimeTV.setTextColor(color);
-        }
-
-        public void setSenderNameTextColor(int color) {
-            senderNameTV.setTextColor(color);
-        }
-
-        public void showSenderName(boolean b) {
-            if (b) {
-                senderNameTV.setVisibility(View.VISIBLE);
-            } else {
-                senderNameTV.setVisibility(View.GONE);
-            }
         }
 
         public void showRightBubbleIcon(boolean b) {
@@ -1211,19 +1236,19 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder1.leftTV.setText(message.getBody());
             holder1.leftTimeTV.setText(message.getTime());
 
-            if (message.getUserIcon() != null) {
+/*            if (message.getUserIcon() != null) {
                 Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
-            }
-            holder1.senderNameTV.setText(message.getUserName());
+            }*/
+//            holder1.senderNameTV.setText(message.getUserName());
         } else {
             if (holder instanceof RightTextViewHolder) {
                 final RightTextViewHolder holder1 = (RightTextViewHolder) holder;
                 holder1.rightTV.setText(message.getBody());
                 holder1.rightTimeTV.setText(message.getTime());
-                if (message.getUserIcon() != null) {
+/*                if (message.getUserIcon() != null) {
                     Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
                 }
-                holder1.senderNameTV.setText(message.getUserName());
+                holder1.senderNameTV.setText(message.getUserName());*/
             } else {
                 if (holder instanceof LeftImageViewHolder) {
                     final LeftImageViewHolder holder1 = (LeftImageViewHolder) holder;
