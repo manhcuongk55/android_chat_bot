@@ -40,13 +40,14 @@
         <item name="android:textColorHint">@android:color/white</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorControlNormal">@android:color/white</item>
-        <item name="colorControlActivated">@android:color/white</item>
+        <item name="colorControlActivated">@android:color/white</item>f
         <item name="colorControlHighlight">@android:color/white</item>
     </style>
 
     <style name="MyTheme.NoActionBar1">
         <!-- Both of these are needed -->
         <item name="windowActionBar">false</item>
+        <item name="android:statusBarColor">@color/primary_dark</item>
         <item name="windowNoTitle">true</item>
         <item name="android:textColorHint">#bababa</item>
         <!-- Label color in TRUE state and bababa color FALSE and TRUE State -->
@@ -54,6 +55,13 @@
         <item name="colorControlActivated">#28B5A8</item>
         <item name="colorControlHighlight">#28B5A8</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <!-- Both of these are needed -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 
     <style name="TextLabel" parent="TextAppearance.AppCompat">
         <!-- Hint color and label color in FALSE state -->
@@ -64,4 +72,9 @@
         <item name="colorControlActivated">@android:color/white</item>
         <item name="colorControlHighlight">@android:color/white</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

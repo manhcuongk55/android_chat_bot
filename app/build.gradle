@@ -124,7 +124,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-
+    compile 'de.hdodenhof:circleimageview:2.2.0'
 
 }
 

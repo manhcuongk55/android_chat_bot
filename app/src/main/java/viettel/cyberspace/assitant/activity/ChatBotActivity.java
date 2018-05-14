@@ -12,15 +12,29 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.BottomNavigationView.OnNavigationItemReselectedListener;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.github.zagum.expandicon.ExpandIconView;
@@ -42,7 +56,7 @@ import java.util.Random;
 import chatview.data.Message;
 import chatview.widget.ChatView;
 
-public class ChatBotActivity extends AppCompatActivity implements MessageDialogFragment.Listener {
+public class ChatBotActivity extends AppCompatActivity implements MessageDialogFragment.Listener, NavigationView.OnNavigationItemSelectedListener {
 
 
     ChatView chatView;
@@ -51,10 +65,12 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     boolean more = false;
     List<Uri> mSelected;
     MaterialRippleLayout micMRL;
+    MaterialRippleLayout micMRLWithKeyBoard;
     AVLoadingIndicatorView avi;
+    AVLoadingIndicatorView aviWithKeyBoard;
     TextView tvVoice;
 
-
+    DrawerLayout drawer;
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
 
     private static final String STATE_RESULTS = "results";
@@ -109,15 +125,17 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_bot);
-
+        setContentView(R.layout.activity_main);
         chatView = findViewById(R.id.chatView);
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         //Initialization start
         mSelected = new ArrayList<>();
-
+        getSupportActionBar().setTitle("Virtual Assistant");
         micMRL = findViewById(R.id.micMRL2);
+        micMRLWithKeyBoard = findViewById(R.id.micMRL);
         avi = findViewById(R.id.avi2);
+        aviWithKeyBoard = findViewById(R.id.avi);
         tvVoice = findViewById(R.id.tvVoice);
 
         micMRL.setOnClickListener(new View.OnClickListener() {
@@ -138,34 +156,80 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             }
         });
 
+        micMRLWithKeyBoard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setEnableVoidButton(false);
+                // Start listening to voices
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    startVoiceRecorder();
+                } else if (ActivityCompat.shouldShowRequestPermissionRationale(ChatBotActivity.this,
+                        Manifest.permission.RECORD_AUDIO)) {
+                    showPermissionMessageDialog();
+                } else {
+                    ActivityCompat.requestPermissions(ChatBotActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                            REQUEST_RECORD_AUDIO_PERMISSION);
+                }
+            }
+        });
 
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+/*        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();*/
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+/*        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerOpen(Gravity.RIGHT)) {
+                    drawer.closeDrawer(Gravity.RIGHT);
+                } else {
+                    drawer.openDrawer(Gravity.RIGHT);
+                }
+            }
+        });*/
         //Send button click listerer
-//        chatView.setOnClickSendButtonListener(new ChatView.OnClickSendButtonListener() {
-//            @Override
-//            public void onSendButtonClick(String body) {
-//                if (switchbool) {
-//                    Message message = new Message();
-//                    message.setBody(body);
-//                    message.setMessageType(Message.MessageType.RightSimpleImage);
-//                    message.setTime(getTime());
-//                    message.setUserName("Groot");
-//                    message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
-//                    chatView.addMessage(message);
-//
-//                    switchbool = false;
-//                } else {
-//                    Message message1 = new Message();
-//                    message1.setBody(body);
-//                    message1.setMessageType(Message.MessageType.ListQuestion);
-//                    message1.setTime(getTime());
-//                    message1.setUserName("Hodor");
-//                    message1.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
-//                    chatView.addMessage(message1);
-//
-//                    switchbool = true;
-//                }
-//            }
-//        });
+        chatView.setOnClickSendButtonListener(new ChatView.OnClickSendButtonListener() {
+            @Override
+            public void onSendButtonClick(String body) {
+                if (switchbool) {
+                    Message message = new Message();
+                    message.setBody(body);
+                    message.setMessageType(Message.MessageType.RightSimpleImage);
+                    message.setTime(getTime());
+                    message.setUserName("Groot");
+                    message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
+                    chatView.addMessage(message);
+
+                    switchbool = false;
+                } else {
+                    Message message1 = new Message();
+                    message1.setBody(body);
+                    message1.setMessageType(Message.MessageType.LeftSimpleMessage);
+                    message1.setTime(getTime());
+                    message1.setUserName("Hodor");
+                    message1.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+                    chatView.addMessage(message1);
+
+                    switchbool = true;
+                }
+            }
+        });
 
     }
 
@@ -177,12 +241,46 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         stopVoiceRecorder();
 
         // Stop Cloud Speech API
-        mSpeechService.removeListener(mSpeechServiceListener);
+        if (mSpeechService != null)
+            mSpeechService.removeListener(mSpeechServiceListener);
         unbindService(mServiceConnection);
         mSpeechService = null;
 
     }
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else if (chatView.onBackpress()) return;
+        else
+            super.onBackPressed();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.chatview_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.user_information:
+                if (drawer.isDrawerOpen(Gravity.RIGHT)) {
+                    drawer.closeDrawer(Gravity.RIGHT);
+                } else {
+                    drawer.openDrawer(Gravity.RIGHT);
+                }
+                chatView.onBackpress();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
 
     public String getTime() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
@@ -217,6 +315,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                                 setEnableVoidButton(true);
                                 micMRL.setEnabled(false);
                                 micMRL.setAlpha(0.4f);
+                                micMRLWithKeyBoard.setEnabled(false);
+                                micMRLWithKeyBoard.setAlpha(0.4f);
                                 tvVoice.setText(text);
 
 
@@ -239,6 +339,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                             public void run() {
                                 micMRL.setEnabled(true);
                                 micMRL.setAlpha(1.0f);
+                                micMRLWithKeyBoard.setEnabled(true);
+                                micMRLWithKeyBoard.setAlpha(1.0f);
                             }
                         });
                         Log.i("duypq4", "time1=" + (System.currentTimeMillis() - s1));
@@ -249,11 +351,14 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     public void setEnableVoidButton(boolean isEnable) {
         if (isEnable) {
             micMRL.setVisibility(View.VISIBLE);
+            micMRLWithKeyBoard.setVisibility(View.VISIBLE);
             avi.setVisibility(View.GONE);
+            aviWithKeyBoard.setVisibility(View.GONE);
         } else {
             micMRL.setVisibility(View.GONE);
+            micMRLWithKeyBoard.setVisibility(View.GONE);
             avi.setVisibility(View.VISIBLE);
-
+            aviWithKeyBoard.setVisibility(View.VISIBLE);
         }
     }
 
@@ -305,4 +410,22 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 .show(getSupportFragmentManager(), FRAGMENT_MESSAGE_DIALOG);
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.END);
+        return true;
+    }
 }

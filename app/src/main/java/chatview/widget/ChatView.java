@@ -3,13 +3,17 @@ package chatview.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -46,7 +50,10 @@ public class ChatView extends RelativeLayout {
     protected MaterialRippleLayout sendMRL;
     protected HorizontalScrollView moreHSV;
     protected MaterialRippleLayout galleryMRL, videoMRL, cameraMRL, audioMRL, micMRL;
-    protected ExpandIconView expandIconView;
+    //    protected ExpandIconView expandIconView;
+    protected MaterialRippleLayout showKeyBoard;
+    protected CardView hideKeyBoardLayout;
+    protected LinearLayout showKeyBoardLayout;
     protected List<Message> messageList;
     protected MessageAdapter messageAdapter;
     protected boolean showSenderLL = false;
@@ -107,7 +114,10 @@ public class ChatView extends RelativeLayout {
         cameraMRL = rootView.findViewById(R.id.cameraMRL);
         audioMRL = rootView.findViewById(R.id.audioMRL);
         micMRL = rootView.findViewById(R.id.micMRL);
-        expandIconView = rootView.findViewById(R.id.expandIconView);
+//        expandIconView = rootView.findViewById(R.id.expandIconView);
+        showKeyBoard = rootView.findViewById(R.id.showKeyBoard);
+        hideKeyBoardLayout = rootView.findViewById(R.id.hideKeyBoardLayout);
+        showKeyBoardLayout = rootView.findViewById(R.id.showKeyBoardLayout);
         messageList = new ArrayList<>();
         messageAdapter = new MessageAdapter(messageList, context, chatRV);
         WrapContentLinearLayoutManager layoutManager = new WrapContentLinearLayoutManager(context, LinearLayoutManager.VERTICAL, true);
@@ -116,22 +126,38 @@ public class ChatView extends RelativeLayout {
         chatRV.setItemAnimator(new ScaleInBottomAnimator(new OvershootInterpolator(1f)));
         chatRV.setAdapter(messageAdapter);
         messageET.clearFocus();
+        messageET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                chatRV.scrollToPosition(0);
+                messageAdapter.notifyDataSetChanged();
+            }
 
-        expandIconView.setState(1, false);
+            @Override
+            public void afterTextChanged(Editable editable) {
 
-        expandIconView.setOnClickListener(new OnClickListener() {
+            }
+        });
+        messageET.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                chatRV.scrollToPosition(0);
+                messageAdapter.notifyDataSetChanged();
+            }
+        });
+
+        showKeyBoard.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (more) {
-                    expandIconView.setState(1, true);
-                    moreHSV.setVisibility(View.GONE);
-                    more = false;
-                } else {
-                    expandIconView.setState(0, true);
-                    moreHSV.setVisibility(View.VISIBLE);
-                    more = true;
-                }
+                hideKeyBoardLayout.setVisibility(View.GONE);
+                showKeyBoardLayout.setVisibility(View.VISIBLE);
+                messageET.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(messageET, InputMethodManager.SHOW_IMPLICIT);
             }
         });
 
@@ -190,6 +216,17 @@ public class ChatView extends RelativeLayout {
         });*/
 
 
+    }
+
+    public boolean onBackpress() {
+        if (messageET.isFocused()) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(messageET.getWindowToken(), 0);
+            hideKeyBoardLayout.setVisibility(View.VISIBLE);
+            showKeyBoardLayout.setVisibility(View.GONE);
+            return true;
+        }
+        return false;
     }
 
     protected void setAttributes(TypedArray attrs) {

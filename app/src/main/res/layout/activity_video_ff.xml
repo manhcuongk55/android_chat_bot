@@ -8,10 +8,12 @@
     android:transitionName="videoFF"
     android:background="@android:color/black"
     tools:context="com.shrikanthravi.chatview.activities.VideoFFActivity">
+
     <TextureView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/textureView"/>
+        android:id="@+id/textureView" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,6 +23,7 @@
         android:id="@+id/seekbarLL"
         android:padding="5dp"
         android:orientation="vertical">
+
         <com.marcinmoskala.arcseekbar.ArcSeekBar
             android:id="@+id/seekArc"
             android:layout_width="match_parent"
@@ -33,6 +36,7 @@
             app:progressWidth="5dp"
 
             app:roundEdges="true" />
+
         <com.ohoussein.playpause.PlayPauseView
             android:id="@+id/play_pause_view"
             android:layout_width="50dp"

@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -28,22 +29,23 @@ import viettel.cyberspace.assitant.utils.Const;
  */
 
 public class LoginActivity extends AppCompatActivity {
-    RelativeLayout layoutSkip;
+    //    RelativeLayout layoutSkip;
+    Button signin;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        layoutSkip = findViewById(R.id.layoutSkip);
-        layoutSkip.setOnClickListener(new View.OnClickListener() {
+        signin = findViewById(R.id.signin);
+        signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, ChatViewActivity.class);
+                Intent intent = new Intent(LoginActivity.this, ChatBotActivity.class);
                 startActivity(intent);
             }
         });
 
-        final Handler handler = new Handler();
+/*        final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -51,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginActivity.this, ChatViewActivity.class);
                 startActivity(intent);
             }
-        }, 1000);
+        }, 1000);*/
 
     }
 
