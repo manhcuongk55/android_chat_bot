@@ -7,10 +7,16 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class User {
-    @SerializedName("token")
-    private String token;
+    @SerializedName("code")
+    private long  code;
+    @SerializedName("messange")
+    private String messange;
 
-    public String getToken() {
-        return token;
+    public String getMessange() {
+        return messange;
+    }
+
+    public long getCode() {
+        return code;
     }
 }

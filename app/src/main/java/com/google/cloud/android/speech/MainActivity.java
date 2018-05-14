@@ -38,8 +38,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import viettel.cyberspace.assitant.model.Response;
+import viettel.cyberspace.assitant.model.User;
+import viettel.cyberspace.assitant.rest.ApiClient;
+import viettel.cyberspace.assitant.rest.ApiInterface;
 
 
 public class MainActivity extends AppCompatActivity implements MessageDialogFragment.Listener {
@@ -306,6 +315,95 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
             return mResults;
         }
 
+    }
+
+
+//    private void SendMessage() {
+//        ApiInterface apiService =
+//                ApiClient.getClient().create(ApiInterface.class);
+//
+//        HashMap<String, String> map = new HashMap<>();
+//        map.put("username", "namnh475");
+//        map.put("message", "gteyeyse");
+//        map.put("timestamp", "1312415");
+//        map.put("type", "text");
+//
+//        Call<Response> call = apiService.sendMessage(map);
+//
+//        call.enqueue(new Callback<Response>() {
+//            @Override
+//            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+//                String s= response.body().toString();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Response> call, Throwable t) {
+//
+//            }
+//        });
+//    }
+
+
+//    private void requestAnswer() {
+//        ApiInterface apiService =
+//                ApiClient.getClient().create(ApiInterface.class);
+//
+//        HashMap<String, String> map = new HashMap<>();
+//        map.put("username", "namnh475");
+//        map.put("mid", "mid.1457764197618:41d102a3e1ae206a38");
+//
+//        Call<Response> call = apiService.getAnswer(map);
+//
+//        call.enqueue(new Callback<Response>() {
+//            @Override
+//            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+//                int statusCode = response.code();
+//                if (statusCode == 200) {
+//                    //success
+//                    Toast.makeText(getBaseContext(), "success", Toast.LENGTH_LONG).show();
+//                } else {
+//                    //not success
+//                    Toast.makeText(getBaseContext(), "not success", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Response> call, Throwable t) {
+//                Toast.makeText(getBaseContext(), "onFailure", Toast.LENGTH_LONG).show();
+//            }
+//        });
+//    }
+
+
+    private void rateMessage() {
+        ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", "namnh475");
+        map.put("mid", "gteyeyse");
+        map.put("rate", "1312415");
+
+        Call<Response> call = apiService.rateMessage(map);
+
+        call.enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                int statusCode = response.code();
+                if (statusCode == 200) {
+                    //success
+                    Toast.makeText(getBaseContext(), "success", Toast.LENGTH_LONG).show();
+                } else {
+                    //not success
+                    Toast.makeText(getBaseContext(), "not success", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response> call, Throwable t) {
+                Toast.makeText(getBaseContext(), "onFailure", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }

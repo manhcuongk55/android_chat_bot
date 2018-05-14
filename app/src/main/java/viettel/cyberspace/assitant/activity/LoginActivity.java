@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -17,8 +16,7 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
-import viettel.cyberspace.assitant.model.Respose;
+import viettel.cyberspace.assitant.model.Response;
 import viettel.cyberspace.assitant.model.User;
 import viettel.cyberspace.assitant.rest.ApiClient;
 import viettel.cyberspace.assitant.rest.ApiInterface;
@@ -64,23 +62,17 @@ public class LoginActivity extends AppCompatActivity {
                 ApiClient.getClient().create(ApiInterface.class);
 
         HashMap<String, String> map = new HashMap<>();
-        map.put("email", "phamduybk@gmail.com");
-        map.put("password", "123456");
-        StorageManager.setStringValue(getApplicationContext(), Const.NAME_CONSUMER, "phamduybk@gmail.com");
-        Call<User> call = apiService.getTokenAuthen(map);
+        map.put("username", "namnh475");
+        map.put("password", "123456a@");
+
+        Call<User> call = apiService.login(map);
 
         call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-
+            public void onResponse(Call<User> call, retrofit2.Response<User> response) {
                 int statusCode = response.code();
                 if (statusCode == 200) {
-                    if (response.body().getToken() != null) {
-                        StorageManager.setStringValue(getApplicationContext(), Const.TOKEN, response.body().getToken());
-                        onLoginSuccess();
-                    } else {
-                        onLoginFailed("token null");
-                    }
+
                 } else {
                     onLoginFailed(response.message());
                 }
@@ -88,12 +80,9 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                // Log error here since request failed
 
-                onLoginFailed(t.toString());
             }
         });
-
     }
 
     private void onLoginSuccess() {

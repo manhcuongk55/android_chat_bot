@@ -82,14 +82,12 @@ protobuf {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     // Support libraries
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"
     compile "com.android.support:cardview-v7:$supportLibraryVersion"
     compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
     compile "com.android.support:design:$supportLibraryVersion"
-
     compile 'com.github.zagum:Android-ExpandIcon:1.2.1'
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'com.github.SilenceDut:ExpandableLayout:1.2.0'
@@ -103,29 +101,25 @@ dependencies {
     compile 'com.wang.avi:library:2.1.3'
     compile 'com.github.marcinmoskala:ArcSeekBar:0.31'
     compile 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
-
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-
     // gRPC
     compile "io.grpc:grpc-okhttp:$grpcVersion"
     compile "io.grpc:grpc-protobuf-lite:$grpcVersion"
     compile "io.grpc:grpc-stub:$grpcVersion"
     compile 'javax.annotation:javax.annotation-api:1.2'
     protobuf 'com.google.protobuf:protobuf-java:3.3.1'
-
     // OAuth2 for Google API
     compile('com.google.auth:google-auth-library-oauth2-http:0.7.0') {
         exclude module: 'httpclient'
     }
     compile 'com.wang.avi:library:2.1.3'
-
     // Tests
     testCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     compile 'de.hdodenhof:circleimageview:2.2.0'
-
+    compile project(':speech')
 }
 
 task copySecretKey(type: Copy) {
