@@ -9,10 +9,10 @@ import com.google.gson.annotations.SerializedName;
 public class BaseResponse {
     @SerializedName("status")
     private long status;
-    @SerializedName("message")
-    private Answer message;
+    @SerializedName("messageList")
+    private Answer[] message;
 
-    public Answer getMessage() {
+    public Answer[] getMessage() {
         return message;
     }
 

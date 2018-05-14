@@ -469,7 +469,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         HashMap<String, String> map = new HashMap<>();
-        map.put("username", "namnh475");
+        map.put("username", "duypq3");
         map.put("message", messa);
         map.put("timestamp", timestamp.toString());
         map.put("type", "text");
@@ -484,7 +484,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     Log.i("duypq3", "sendMessage:success");
                     String s = response.body().getMid();
                     Log.i("duypq3", "sendMessage:success=" + s);
-                    getAnswer(s, nameuser);
+                    getAnswer(s, "duypq3");
                 } else {
                     //not success
                     Log.i("duypq3", "sendMessage:not success");
@@ -518,7 +518,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     String s = response.body().getMessage().toString();
                     Log.i("duypq3", "getAnswer:success=" + s);
 
-                    receiveTextFromServer(response.body().getMessage().getText(), nameuser, mid);
+                    receiveTextFromServer(response.body().getMessage()[0].getText(), nameuser, mid);
                 } else {
                     //not success
                     Log.i("duypq3", "getAnswer:not success");

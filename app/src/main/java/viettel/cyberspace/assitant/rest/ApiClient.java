@@ -7,10 +7,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
 
    // public static final String BASE_URL = "http://203.113.130.136:9988/";
-    public static final String BASE_URL = "http://10.30.153.132:9988/";
-    public static final String SUFFIX_URL_AUTHEN = "auth";
-    public static final String SUFFIX_URL_GETCONTENT = "getContent";
-    public static final String SUFFIX_URL_SAVE_AUDIO = "saveAudio";
+    public static final String BASE_URL = "http://10.30.153.132:9696/";
+
     private static Retrofit retrofit = null;
 
 
