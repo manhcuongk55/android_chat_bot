@@ -41,6 +41,7 @@ public class Message {
     protected Uri videoUri;
     protected Uri audioUri;
     protected int indexPosition;
+    protected String mid;
 
     public enum MessageType {
         LeftSimpleMessage,
@@ -154,6 +155,14 @@ public class Message {
 
     public void setVideoUri(Uri videoUri) {
         this.videoUri = videoUri;
+    }
+
+    public String getMid() {
+        return mid;
+    }
+
+    public void setMid(String mid) {
+        this.mid = mid;
     }
 }
 

@@ -48,13 +48,22 @@ import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.PicassoEngine;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import chatview.data.Message;
 import chatview.widget.ChatView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import viettel.cyberspace.assitant.model.BaseResponse;
+import viettel.cyberspace.assitant.model.Response;
+import viettel.cyberspace.assitant.model.ResponseMessage;
+import viettel.cyberspace.assitant.rest.ApiClient;
+import viettel.cyberspace.assitant.rest.ApiInterface;
 
 public class ChatBotActivity extends AppCompatActivity implements MessageDialogFragment.Listener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -78,6 +87,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
 
     private SpeechService mSpeechService;
+
+    ApiInterface apiService;
 
     private VoiceRecorder mVoiceRecorder;
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
@@ -126,6 +137,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        apiService =
+                ApiClient.getClient().create(ApiInterface.class);
         chatView = findViewById(R.id.chatView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -322,7 +335,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
                                 getTextFromVoice(text);
                                 //test
-                                receiveTextFromServer("Biet Rui");
+                                //  receiveTextFromServer("Biet Rui");
 
                                 tvVoice.setText("");
                             } else {
@@ -370,14 +383,17 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         message.setBody(text);
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
         chatView.addMessage(message);
+
+        sendMessage(text, "fafa");
     }
 
-    public void receiveTextFromServer(String text) {
+    public void receiveTextFromServer(String text, String nameuser, String mid) {
         Message message = new Message();
         message.setMessageType(Message.MessageType.LeftSimpleMessage);
         message.setTime(getTime());
         message.setBody(text);
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+        message.setMid(mid);
         chatView.addMessage(message);
     }
 
@@ -427,5 +443,75 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.END);
         return true;
+    }
+
+    private void sendMessage(String messa, final String nameuser) {
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", "namnh475");
+        map.put("message", messa);
+        map.put("timestamp", timestamp.toString());
+        map.put("type", "text");
+
+        Call<ResponseMessage> call = apiService.sendMessage(map);
+        call.enqueue(new Callback<ResponseMessage>() {
+            @Override
+            public void onResponse(Call<ResponseMessage> call, retrofit2.Response<ResponseMessage> response) {
+                int statusCode = response.code();
+                if (statusCode == 200) {
+                    //success
+                    Log.i("duypq3", "sendMessage:success");
+                    String s = response.body().getMid();
+                    Log.i("duypq3", "sendMessage:success=" + s);
+                    getAnswer(s, nameuser);
+                } else {
+                    //not success
+                    Log.i("duypq3", "sendMessage:not success");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseMessage> call, Throwable t) {
+                Log.i("duypq3", "sendMessage:onFailure");
+                receiveTextFromServer("Co van de ve ket noi mang", nameuser, null);
+            }
+        });
+
+    }
+
+    private void getAnswer(final String mid, final String nameuser) {
+        Log.i("duypq3", "getAnswer:mid=" + mid);
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", nameuser);
+        map.put("mid", mid);
+
+        Call<BaseResponse> call2 = apiService.getAnswer(map);
+        call2.enqueue(new Callback<BaseResponse>() {
+            @Override
+            public void onResponse(Call<BaseResponse> call2, retrofit2.Response<BaseResponse> response) {
+                int statusCode = response.code();
+                if (statusCode == 200) {
+                    //success
+                    Log.i("duypq3", "getAnswer:success");
+                    String s = response.body().getMessage().toString();
+                    Log.i("duypq3", "getAnswer:success=" + s);
+
+                    receiveTextFromServer(response.body().getMessage().getText(), nameuser, mid);
+                } else {
+                    //not success
+                    Log.i("duypq3", "getAnswer:not success");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseResponse> call, Throwable t) {
+                Log.i("duypq3", "getAnswer:onFailure");
+                receiveTextFromServer("Co van de ve ket noi mang", nameuser, mid);
+            }
+        });
+
     }
 }
