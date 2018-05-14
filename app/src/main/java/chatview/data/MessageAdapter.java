@@ -90,7 +90,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.filterList = verticalList;
         filter = new MessageFilter(verticalList, this);
         imageLoader = ImageLoader.getInstance();
-        typeface = Typeface.createFromAsset(context.getAssets(), "fonts/product_san_regular.ttf");
+//        typeface = Typeface.createFromAsset(context.getAssets(), "fonts/product_san_regular.ttf");
         mCompletionListener = new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -149,6 +149,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
             case ListQuestion: {
                 type = 11;
+                break;
+            }
+            case ListSuggestion: {
+                type = 12;
                 break;
             }
         }
@@ -226,6 +230,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                     if (viewType == 11) {
                                                         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_question_layout, parent, false);
                                                         viewHolder = new ListQuestionViewHolder(view);
+                                                    } else {
+                                                        if (viewType == 12) {
+                                                            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_suggestion_layout, parent, false);
+                                                            viewHolder = new ListSuggestionViewHolder(view);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -259,7 +268,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public ImageView lefttMessageStatusIV, leftBubbleIconIV;
         public CardView leftBubbleIconCV;
         View layoutFeedback;
-        RelativeLayout layoutContentLike, layoutContentSairoi, layoutContentGuichuyengia;
+        RelativeLayout layoutContentLike, layoutContentSairoi, layoutContentGuichuyengia, answerContent;
         LinearLayout layoutLike;
         LinearLayout layoutSairoi;
         LinearLayout layoutGuichuyengia;
@@ -281,6 +290,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             layoutLike = view.findViewById(R.id.layoutLike);
             layoutSairoi = view.findViewById(R.id.layoutSairoi);
             layoutGuichuyengia = view.findViewById(R.id.layoutGuichuyengia);
+            answerContent = view.findViewById(R.id.answerContent);
             layoutLike.setOnClickListener(this);
             layoutSairoi.setOnClickListener(this);
             layoutGuichuyengia.setOnClickListener(this);
@@ -294,7 +304,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             FontChanger fontChanger = new FontChanger(typeface);
             fontChanger.replaceFonts((ViewGroup) view);
-            leftTV.setOnLongClickListener(new View.OnLongClickListener() {
+            answerContent.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     layoutFeedback.setVisibility(View.VISIBLE);
@@ -442,6 +452,16 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     context.startActivity(intent);
                 }
             });
+        }
+    }
+
+
+    protected class ListSuggestionViewHolder extends RecyclerView.ViewHolder {
+        RecyclerView rvListSuggestion;
+
+        public ListSuggestionViewHolder(View itemView) {
+            super(itemView);
+            rvListSuggestion = (RecyclerView) itemView.findViewById(R.id.rvListSuggestion);
         }
     }
 
@@ -1521,10 +1541,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 } else {
                                                     if (holder instanceof ListQuestionViewHolder) {
                                                         final ListQuestionViewHolder holder1 = (ListQuestionViewHolder) holder;
-                                                        ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context);
+                                                        ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_QUESTION);
                                                         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
                                                         holder1.rvListQuestion.setLayoutManager(mLinearLayoutManager);
                                                         holder1.rvListQuestion.setAdapter(listQuestionAdapter);
+                                                    } else {
+                                                        if (holder instanceof ListSuggestionViewHolder) {
+                                                            final ListSuggestionViewHolder holder1 = (ListSuggestionViewHolder) holder;
+                                                            ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_SUGGESTION);
+                                                            LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+                                                            holder1.rvListSuggestion.setLayoutManager(mLinearLayoutManager);
+                                                            holder1.rvListSuggestion.setAdapter(listQuestionAdapter);
+                                                        }
                                                     }
                                                 }
 

@@ -4,7 +4,7 @@
     android:id="@+id/rootRL"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E4EAFF">
+    android:background="#ffffff">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/chatRV"
@@ -31,6 +31,11 @@
             android:padding="10dp"
             android:text=""
             android:textColor="@color/colorAccent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"></View>
 
         <RelativeLayout
             android:layout_width="match_parent"

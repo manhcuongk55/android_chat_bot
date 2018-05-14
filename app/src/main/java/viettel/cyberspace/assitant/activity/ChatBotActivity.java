@@ -175,21 +175,27 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         });
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-/*        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
             }
 
             @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
+            public void onDrawerOpened(@NonNull View drawerView) {
+                chatView.onBackpress();
             }
-        };
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();*/
 
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 /*        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -226,6 +232,14 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     message1.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
                     chatView.addMessage(message1);
 
+                    Message message2 = new Message();
+                    message2.setBody(body);
+                    message2.setMessageType(Message.MessageType.ListSuggestion);
+                    message2.setTime(getTime());
+                    message2.setUserName("Hodor");
+                    message2.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+                    chatView.addMessage(message2);
+
                     switchbool = true;
                 }
             }
@@ -251,8 +265,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (drawer.isDrawerOpen(GravityCompat.END)) {
+            drawer.closeDrawer(GravityCompat.END);
         } else if (chatView.onBackpress()) return;
         else
             super.onBackPressed();
