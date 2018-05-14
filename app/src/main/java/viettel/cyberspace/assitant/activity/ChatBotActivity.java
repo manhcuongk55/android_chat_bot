@@ -1,6 +1,7 @@
 package viettel.cyberspace.assitant.activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -42,6 +43,8 @@ import com.google.cloud.android.speech.MessageDialogFragment;
 import com.google.cloud.android.speech.R;
 import com.google.cloud.android.speech.SpeechService;
 import com.google.cloud.android.speech.VoiceRecorder;
+import com.microsoft.speech.tts.Synthesizer;
+import com.microsoft.speech.tts.Voice;
 import com.wang.avi.AVLoadingIndicatorView;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -89,6 +92,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     private SpeechService mSpeechService;
 
     ApiInterface apiService;
+
+    private Synthesizer m_syn;
 
     private VoiceRecorder mVoiceRecorder;
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
@@ -244,6 +249,19 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             }
         });
 
+        if (getString(R.string.api_key).startsWith("Please")) {
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.add_subscription_key_tip_title))
+                    .setMessage(getString(R.string.add_subscription_key_tip))
+                    .setCancelable(false)
+                    .show();
+        } else {
+            if (m_syn == null) {
+                // Create Text To Speech Synthesizer.
+                m_syn = new Synthesizer(getString(R.string.api_key));
+            }
+        }
+
     }
 
 
@@ -395,6 +413,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
         message.setMid(mid);
         chatView.addMessage(message);
+        playVoice(text);
     }
 
 
@@ -475,7 +494,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onFailure(Call<ResponseMessage> call, Throwable t) {
                 Log.i("duypq3", "sendMessage:onFailure");
-                receiveTextFromServer("Co van de ve ket noi mang", nameuser, null);
+                receiveTextFromServer(getString(R.string.error_network), nameuser, null);
             }
         });
 
@@ -509,9 +528,31 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onFailure(Call<BaseResponse> call, Throwable t) {
                 Log.i("duypq3", "getAnswer:onFailure");
-                receiveTextFromServer("Co van de ve ket noi mang", nameuser, mid);
+                receiveTextFromServer(getString(R.string.error_network), nameuser, mid);
             }
         });
 
+    }
+
+
+    public void playVoice(String text){
+        if (getString(R.string.api_key).startsWith("Please")) {
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.add_subscription_key_tip_title))
+                    .setMessage(getString(R.string.add_subscription_key_tip))
+                    .setCancelable(false)
+                    .show();
+        } else {
+            if (m_syn == null) {
+                // Create Text To Speech Synthesizer.
+                m_syn = new Synthesizer(getString(R.string.api_key));
+            }
+            m_syn.SetServiceStrategy(Synthesizer.ServiceStrategy.AlwaysService);
+
+            Voice v = new Voice("vi-VN", "Microsoft Server Speech Text to Speech Voice (vi-VN, An)", Voice.Gender.Male, true);
+            m_syn.SetVoice(v, null);
+            // Use a string for speech.
+            m_syn.SpeakToAudio(text);
+        }
     }
 }
