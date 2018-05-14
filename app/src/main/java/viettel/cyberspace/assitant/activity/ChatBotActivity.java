@@ -85,6 +85,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     DrawerLayout drawer;
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
 
+    private static final String NAME_USER_REQUEST = "duypq3";
+
     private static final String STATE_RESULTS = "results";
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
@@ -439,6 +441,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     }
 
     private void startVoiceRecorder() {
+        if (m_syn != null)
+            m_syn.stopSound();
         if (mVoiceRecorder != null) {
             mVoiceRecorder.stop();
         }
@@ -549,7 +553,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     }
 
 
-    public void playVoice(String text){
+    public void playVoice(String text) {
         if (getString(R.string.api_key).startsWith("Please")) {
             new AlertDialog.Builder(this)
                     .setTitle(getString(R.string.add_subscription_key_tip_title))
@@ -567,6 +571,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             m_syn.SetVoice(v, null);
             // Use a string for speech.
             m_syn.SpeakToAudio(text);
+
+            // m_syn.stopSound();
         }
     }
 }
