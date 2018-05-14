@@ -5,24 +5,15 @@ import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.BottomNavigationView.OnNavigationItemReselectedListener;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,14 +22,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.balysv.materialripple.MaterialRippleLayout;
-import com.github.zagum.expandicon.ExpandIconView;
 import com.google.cloud.android.speech.MessageDialogFragment;
 import com.google.cloud.android.speech.R;
 import com.google.cloud.android.speech.SpeechService;
@@ -46,24 +33,18 @@ import com.google.cloud.android.speech.VoiceRecorder;
 import com.microsoft.speech.tts.Synthesizer;
 import com.microsoft.speech.tts.Voice;
 import com.wang.avi.AVLoadingIndicatorView;
-import com.zhihu.matisse.Matisse;
-import com.zhihu.matisse.MimeType;
-import com.zhihu.matisse.engine.impl.PicassoEngine;
 
-import java.io.File;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import chatview.data.Message;
 import chatview.widget.ChatView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import viettel.cyberspace.assitant.model.BaseResponse;
-import viettel.cyberspace.assitant.model.Response;
 import viettel.cyberspace.assitant.model.ResponseMessage;
 import viettel.cyberspace.assitant.rest.ApiClient;
 import viettel.cyberspace.assitant.rest.ApiInterface;
@@ -418,7 +399,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
         chatView.addMessage(message);
 
-        sendMessage(text, "fafa");
+        sendMessage(text, NAME_USER_REQUEST);
     }
 
     public void receiveTextFromServer(String text, String nameuser, String mid) {
@@ -482,12 +463,12 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         return true;
     }
 
-    private void sendMessage(String messa, final String nameuser) {
+    private void sendMessage(String messa, final String name_user) {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         HashMap<String, String> map = new HashMap<>();
-        map.put("username", "duypq3");
+        map.put("username", name_user);
         map.put("message", messa);
         map.put("timestamp", timestamp.toString());
         map.put("type", "text");
@@ -502,7 +483,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     Log.i("duypq3", "sendMessage:success");
                     String s = response.body().getMid();
                     Log.i("duypq3", "sendMessage:success=" + s);
-                    getAnswer(s, "duypq3");
+                    getAnswer(s, name_user);
                 } else {
                     //not success
                     Log.i("duypq3", "sendMessage:not success");
@@ -512,17 +493,17 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onFailure(Call<ResponseMessage> call, Throwable t) {
                 Log.i("duypq3", "sendMessage:onFailure");
-                receiveTextFromServer(getString(R.string.error_network), nameuser, null);
+                receiveTextFromServer(getString(R.string.error_network), name_user, null);
             }
         });
 
     }
 
-    private void getAnswer(final String mid, final String nameuser) {
+    private void getAnswer(final String mid, final String name_user ) {
         Log.i("duypq3", "getAnswer:mid=" + mid);
 
         HashMap<String, String> map = new HashMap<>();
-        map.put("username", nameuser);
+        map.put("username", name_user );
         map.put("mid", mid);
 
         Call<BaseResponse> call2 = apiService.getAnswer(map);
@@ -536,7 +517,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     String s = response.body().getMessage().toString();
                     Log.i("duypq3", "getAnswer:success=" + s);
 
-                    receiveTextFromServer(response.body().getMessage()[0].getText(), nameuser, mid);
+                    receiveTextFromServer(response.body().getMessage()[0].getText(), name_user , mid);
                 } else {
                     //not success
                     Log.i("duypq3", "getAnswer:not success");
@@ -546,7 +527,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onFailure(Call<BaseResponse> call, Throwable t) {
                 Log.i("duypq3", "getAnswer:onFailure");
-                receiveTextFromServer(getString(R.string.error_network), nameuser, mid);
+                receiveTextFromServer(getString(R.string.error_network), name_user , mid);
             }
         });
 

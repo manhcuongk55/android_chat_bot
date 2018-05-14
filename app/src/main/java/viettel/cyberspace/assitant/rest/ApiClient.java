@@ -8,7 +8,7 @@ public class ApiClient {
 
     // public static final String BASE_URL = "http://203.113.130.136:9988/";
     // public static final String BASE_URL = "http://10.30.153.132:9696/";
-    public static final String BASE_URL = "http://203.113.130.116:9696/";
+    public static final String BASE_URL = "http://203.113.130.136:9696/";
 
     private static Retrofit retrofit = null;
 
