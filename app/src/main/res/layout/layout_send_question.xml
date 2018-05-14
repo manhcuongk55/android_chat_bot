@@ -31,26 +31,28 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_alignParentRight="true"
                 android:orientation="horizontal">
 
                 <Button
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/border_shape"
+                    android:background="@drawable/border_shape_gray"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:text="Hủy" />
+                    android:text="Hủy"
+                    android:textColor="@android:color/white" />
 
                 <Button
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:background="@drawable/border_shape"
+                    android:background="@drawable/border_shape_blue"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:text="Gửi đi" />
+                    android:text="Gửi đi"
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

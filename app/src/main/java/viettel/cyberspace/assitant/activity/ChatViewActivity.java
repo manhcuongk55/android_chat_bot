@@ -175,7 +175,7 @@ public class ChatViewActivity extends AppCompatActivity implements MessageDialog
                 } else {
                     Message message1 = new Message();
                     message1.setBody(body);
-                    message1.setMessageType(Message.MessageType.ListQuestion);
+                    message1.setMessageType(Message.MessageType.ListSuggestion);
                     message1.setTime(getTime());
                     message1.setUserName("Hodor");
                     message1.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
