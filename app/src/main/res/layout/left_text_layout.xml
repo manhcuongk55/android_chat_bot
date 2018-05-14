@@ -63,7 +63,7 @@
                             layout="@layout/layout_answer_content_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="gone"></include>
+                            android:visibility="visible"></include>
 
                         <include
                             layout="@layout/layout_answer_content_web_link"
@@ -75,7 +75,8 @@
                             layout="@layout/layout_answering"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"></include>
+                            android:layout_centerInParent="true"
+                            android:visibility="gone"></include>
                     </RelativeLayout>
 
                     <View
@@ -84,14 +85,14 @@
                         android:layout_height="10dp"
                         android:layout_alignRight="@id/answerContent"
                         android:layout_below="@id/answerContent"
-                        android:visibility="gone"></View>
+                        android:visibility="visible"></View>
 
                     <View
                         android:id="@+id/layoutBottomTextview1"
                         android:layout_width="wrap_content"
                         android:layout_height="20dp"
                         android:layout_below="@id/answerContent"
-                        android:visibility="gone"></View>
+                        android:visibility="visible"></View>
 
                     <include
                         android:id="@+id/layoutFeedBackContent"
