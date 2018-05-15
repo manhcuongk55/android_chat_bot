@@ -42,6 +42,7 @@ public class Message {
     protected Uri audioUri;
     protected int indexPosition;
     protected String mid;
+    protected String rateMessage;
 
     public enum MessageType {
         LeftSimpleMessage,
@@ -60,6 +61,14 @@ public class Message {
 
     public Message() {
 
+    }
+
+    public String getRateMessage() {
+        return rateMessage;
+    }
+
+    public void setRateMessage(String rateMessage) {
+        this.rateMessage = rateMessage;
     }
 
     public Uri getAudioUri() {

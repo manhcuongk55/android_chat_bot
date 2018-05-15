@@ -34,7 +34,21 @@ import jp.wasabeef.recyclerview.animators.ScaleInBottomAnimator;
  * Created by shrikanthravi on 20/02/18.
  */
 
-public class ChatView extends RelativeLayout {
+public class ChatView extends RelativeLayout implements MessageAdapter.RateMessageListener {
+    public void rateMessageSuccess(int position, String rate) {
+        messageList.get(position).setRateMessage(rate);
+        messageAdapter.notifyDataSetChanged();
+    }
+
+    public interface RateMessageListener {
+        void rateMessage(String rate, String mId, int position);
+    }
+
+    RateMessageListener rateMessageListener;
+
+    public void setRateMessageListener(RateMessageListener rateMessageListener) {
+        this.rateMessageListener = rateMessageListener;
+    }
 
     public static int Personal = 1;
     public static int Group = 2;
@@ -120,6 +134,7 @@ public class ChatView extends RelativeLayout {
         showKeyBoardLayout = rootView.findViewById(R.id.showKeyBoardLayout);
         messageList = new ArrayList<>();
         messageAdapter = new MessageAdapter(messageList, context, chatRV);
+        messageAdapter.setRateMessageListener(this);
         WrapContentLinearLayoutManager layoutManager = new WrapContentLinearLayoutManager(context, LinearLayoutManager.VERTICAL, true);
         layoutManager.setStackFromEnd(true);
         chatRV.setLayoutManager(layoutManager);
@@ -247,6 +262,12 @@ public class ChatView extends RelativeLayout {
         setChatViewBackgroundColor(attrs.getColor(R.styleable.ChatView_chatViewBackgroundColor, getResources().getColor(chatViewBackgroundColor)));
 
     }
+
+    @Override
+    public void rateMessage(String rate, String mId, int position) {
+        rateMessageListener.rateMessage(rate, mId, position);
+    }
+
 
     public interface OnClickSendButtonListener {
         public void onSendButtonClick(String body);

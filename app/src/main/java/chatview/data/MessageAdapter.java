@@ -101,6 +101,16 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
 
+    public interface RateMessageListener {
+        void rateMessage(String rate, String mId, int position);
+    }
+
+    RateMessageListener rateMessageListener;
+
+    public void setRateMessageListener(RateMessageListener rateMessageListener) {
+        this.rateMessageListener = rateMessageListener;
+    }
+
     @Override
     public int getItemViewType(int position) {
 
@@ -260,7 +270,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return viewHolder;
     }
 
-
     protected class LeftTextViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView leftTV, leftTimeTV;
@@ -272,7 +281,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         LinearLayout layoutLike;
         LinearLayout layoutSairoi;
         LinearLayout layoutGuichuyengia;
-        View layoutFeedBackContent;
+        View layoutFeedBackContent, layoutBottomTextview1;
 
         public LeftTextViewHolder(View view) {
             super(view);
@@ -291,6 +300,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             layoutSairoi = view.findViewById(R.id.layoutSairoi);
             layoutGuichuyengia = view.findViewById(R.id.layoutGuichuyengia);
             answerContent = view.findViewById(R.id.answerContent);
+            layoutBottomTextview1 = view.findViewById(R.id.layoutBottomTextview1);
             layoutLike.setOnClickListener(this);
             layoutSairoi.setOnClickListener(this);
             layoutGuichuyengia.setOnClickListener(this);
@@ -307,6 +317,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             answerContent.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    layoutBottomTextview1.setVisibility(View.VISIBLE);
                     layoutFeedback.setVisibility(View.VISIBLE);
                     return true;
                 }
@@ -342,20 +353,27 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View view) {
+            String rate = "";
             switch (view.getId()) {
                 case R.id.layoutLike:
                     layoutFeedback.setVisibility(View.GONE);
-                    setFeddbackContent(R.id.layoutLike);
+                    layoutBottomTextview1.setVisibility(View.GONE);
+//                    setFeddbackContent(R.id.layoutLike);
+                    rate = "like";
                     break;
                 case R.id.layoutSairoi:
                     layoutFeedback.setVisibility(View.GONE);
-                    setFeddbackContent(R.id.layoutSairoi);
+                    layoutBottomTextview1.setVisibility(View.GONE);
+//                    setFeddbackContent(R.id.layoutSairoi);
+                    rate = "dislike";
                     break;
                 case R.id.layoutGuichuyengia:
                     layoutFeedback.setVisibility(View.GONE);
-                    setFeddbackContent(R.id.layoutGuichuyengia);
+                    layoutBottomTextview1.setVisibility(View.GONE);
+//                    setFeddbackContent(R.id.layoutGuichuyengia);
                     break;
             }
+            rateMessageListener.rateMessage(rate, messageList.get(getAdapterPosition()).getMid(), getAdapterPosition());
         }
 
         public void setFeddbackContent(int layoutID) {
@@ -1255,11 +1273,20 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             final LeftTextViewHolder holder1 = (LeftTextViewHolder) holder;
             holder1.leftTV.setText(message.getBody());
             holder1.leftTimeTV.setText(message.getTime());
-
-/*            if (message.getUserIcon() != null) {
-                Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
-            }*/
-//            holder1.senderNameTV.setText(message.getUserName());
+            String rate = message.getRateMessage();
+            if (rate != null) {
+                if (rate.equals("")) {
+                    holder1.layoutFeedBackContent.setVisibility(View.GONE);
+                } else if (rate.equals("like")) {
+                    holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
+                    holder1.layoutContentLike.setVisibility(View.VISIBLE);
+                    holder1.layoutContentSairoi.setVisibility(View.GONE);
+                } else if (rate.equals("dislike")) {
+                    holder1.layoutContentLike.setVisibility(View.GONE);
+                    holder1.layoutContentSairoi.setVisibility(View.VISIBLE);
+                    holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
+                }
+            }
         } else {
             if (holder instanceof RightTextViewHolder) {
                 final RightTextViewHolder holder1 = (RightTextViewHolder) holder;

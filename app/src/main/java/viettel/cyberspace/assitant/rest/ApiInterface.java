@@ -14,6 +14,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
 import viettel.cyberspace.assitant.model.BaseResponse;
+import viettel.cyberspace.assitant.model.RateMessageResponse;
 import viettel.cyberspace.assitant.model.Response;
 import viettel.cyberspace.assitant.model.ResponseMessage;
 import viettel.cyberspace.assitant.model.StaticReponse;
@@ -41,6 +42,7 @@ public interface ApiInterface {
 
     @Headers("Content-Type: application/json")
     @POST("va/rate-message")
-    Call<Response> rateMessage(@Body HashMap<String, String> body);
+    Call<RateMessageResponse> rateMessage(@Body HashMap<String, String> body);
+
 
 }

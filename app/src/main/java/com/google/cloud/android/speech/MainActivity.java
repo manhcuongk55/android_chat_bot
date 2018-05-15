@@ -374,36 +374,4 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
 //        });
 //    }
 
-
-    private void rateMessage() {
-        ApiInterface apiService =
-                ApiClient.getClient().create(ApiInterface.class);
-
-        HashMap<String, String> map = new HashMap<>();
-        map.put("username", "namnh475");
-        map.put("mid", "gteyeyse");
-        map.put("rate", "1312415");
-
-        Call<Response> call = apiService.rateMessage(map);
-
-        call.enqueue(new Callback<Response>() {
-            @Override
-            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                int statusCode = response.code();
-                if (statusCode == 200) {
-                    //success
-                    Toast.makeText(getBaseContext(), "success", Toast.LENGTH_LONG).show();
-                } else {
-                    //not success
-                    Toast.makeText(getBaseContext(), "not success", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Response> call, Throwable t) {
-                Toast.makeText(getBaseContext(), "onFailure", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
 }

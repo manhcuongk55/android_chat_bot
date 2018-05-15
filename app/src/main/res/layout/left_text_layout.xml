@@ -92,7 +92,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="20dp"
                         android:layout_below="@id/answerContent"
-                        android:visibility="visible"></View>
+                        android:visibility="gone"></View>
 
                     <include
                         android:id="@+id/layoutFeedBackContent"
