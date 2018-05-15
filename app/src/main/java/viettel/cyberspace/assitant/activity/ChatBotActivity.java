@@ -70,7 +70,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     DrawerLayout drawer;
 
     public int COUNT_DOWNT_CALL_ANSWER;
-    public final int MAX_CALL_ANSWER = 5;
+    public final int MAX_CALL_ANSWER = 20;
+    public final int TIME_TO_CALL_API_AGAIN = 250;
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
 
     private static final String NAME_USER_REQUEST = "fafa";
@@ -549,7 +550,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                             // Do something after 5s = 1000ms
                             getAnswer(mid, name_user);
                         }
-                    }, 1000);
+                    }, TIME_TO_CALL_API_AGAIN);
 
                 }
             }
