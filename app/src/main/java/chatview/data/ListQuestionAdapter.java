@@ -26,14 +26,17 @@ public class ListQuestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     int type;
     List<String> suggestion = new ArrayList<>();
 
-    public ListQuestionAdapter(Context context, int type) {
+    public interface OnItemClick {
+        void onClick(int position);
+    }
+
+    OnItemClick onItemClick;
+
+    public ListQuestionAdapter(Context context, int type, List<String> suggestion, OnItemClick onItemClick) {
         this.context = context;
         this.type = type;
-        suggestion.add("Tểu sử");
-        suggestion.add("Quá trình học tập");
-        suggestion.add("Gia đình");
-        suggestion.add("Đảng chính trị");
-        suggestion.add("Chức sắc");
+        this.suggestion = suggestion;
+        this.onItemClick = onItemClick;
     }
 
     @NonNull
@@ -61,7 +64,7 @@ public class ListQuestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        return 5;
+        return suggestion.size();
     }
 
     public class ListQuestionViewHolder extends RecyclerView.ViewHolder {
@@ -77,6 +80,12 @@ public class ListQuestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public ListSuggestionViewHolder(View itemView) {
             super(itemView);
             textSuggestion = itemView.findViewById(R.id.textSuggestion);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onItemClick.onClick(getAdapterPosition());
+                }
+            });
         }
     }
 }

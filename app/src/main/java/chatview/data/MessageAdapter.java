@@ -12,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.CardView;
@@ -41,6 +42,8 @@ import com.silencedut.expandablelayout.ExpandableLayout;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -281,7 +284,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         LinearLayout layoutLike;
         LinearLayout layoutSairoi;
         LinearLayout layoutGuichuyengia;
-        View layoutFeedBackContent, layoutBottomTextview1;
+        View layoutFeedBackContent, layoutBottomTextview1, layoutAnswering, layoutAnswerText;
+        RecyclerView moreAnswer;
 
         public LeftTextViewHolder(View view) {
             super(view);
@@ -301,6 +305,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             layoutGuichuyengia = view.findViewById(R.id.layoutGuichuyengia);
             answerContent = view.findViewById(R.id.answerContent);
             layoutBottomTextview1 = view.findViewById(R.id.layoutBottomTextview1);
+            layoutAnswering = view.findViewById(R.id.layoutAnswering);
+            layoutAnswerText = view.findViewById(R.id.layoutAnswerText);
+            moreAnswer = view.findViewById(R.id.moreAnswer);
             layoutLike.setOnClickListener(this);
             layoutSairoi.setOnClickListener(this);
             layoutGuichuyengia.setOnClickListener(this);
@@ -1260,6 +1267,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    public static String getDomainName(String url) throws URISyntaxException {
+        URI uri = new URI(url);
+        String domain = uri.getHost();
+        return domain.startsWith("www.") ? domain.substring(4) : domain;
+    }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
@@ -1271,20 +1283,93 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         if (holder instanceof LeftTextViewHolder) {
             final LeftTextViewHolder holder1 = (LeftTextViewHolder) holder;
-            holder1.leftTV.setText(message.getBody());
-            holder1.leftTimeTV.setText(message.getTime());
-            String rate = message.getRateMessage();
-            if (rate != null) {
-                if (rate.equals("")) {
+
+            if (message.isAnswer()) {
+                holder1.layoutAnswering.setVisibility(View.VISIBLE);
+                holder1.layoutAnswerText.setVisibility(View.GONE);
+                holder1.layoutFeedBackContent.setVisibility(View.GONE);
+                holder1.moreAnswer.setVisibility(View.GONE);
+            } else {
+                holder1.layoutAnswering.setVisibility(View.GONE);
+                holder1.layoutAnswerText.setVisibility(View.VISIBLE);
+                holder1.leftTV.setText(message.getBody());
+                holder1.leftTimeTV.setText(message.getTime());
+                String rate = message.getRateMessage();
+                if (rate != null) {
+                    if (rate.equals("")) {
+                        holder1.layoutFeedBackContent.setVisibility(View.GONE);
+                    } else if (rate.equals("like")) {
+                        holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
+                        holder1.layoutContentLike.setVisibility(View.VISIBLE);
+                        holder1.layoutContentSairoi.setVisibility(View.GONE);
+                    } else if (rate.equals("dislike")) {
+                        holder1.layoutContentLike.setVisibility(View.GONE);
+                        holder1.layoutContentSairoi.setVisibility(View.VISIBLE);
+                        holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
+                    }
+                } else {
                     holder1.layoutFeedBackContent.setVisibility(View.GONE);
-                } else if (rate.equals("like")) {
-                    holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
-                    holder1.layoutContentLike.setVisibility(View.VISIBLE);
-                    holder1.layoutContentSairoi.setVisibility(View.GONE);
-                } else if (rate.equals("dislike")) {
-                    holder1.layoutContentLike.setVisibility(View.GONE);
-                    holder1.layoutContentSairoi.setVisibility(View.VISIBLE);
-                    holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
+                }
+                holder1.layoutAnswerText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (holder1.layoutFeedback.getVisibility() == View.VISIBLE) {
+                            holder1.layoutBottomTextview1.setVisibility(View.GONE);
+                            holder1.layoutFeedback.setVisibility(View.GONE);
+                            return;
+                        }
+                        if (message.getWebUrl() == null) return;
+                        if (!message.getWebUrl().equals("")) {
+/*                            Intent intent = new Intent(context, WebviewActivity.class);
+                            intent.putExtra("weblink", message.getWebUrl());
+                            context.startActivity(intent);*/
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(message.getWebUrl()));
+                            context.startActivity(browserIntent);
+                        }
+                    }
+                });
+                holder1.layoutAnswerText.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        holder1.layoutBottomTextview1.setVisibility(View.VISIBLE);
+                        holder1.layoutFeedback.setVisibility(View.VISIBLE);
+                        return true;
+                    }
+
+                });
+            }
+            if (message.getMessage() != null) {
+                if (message.getMessage().length > 1) {
+                    List<String> domains = new ArrayList<>();
+                    final List<String> weblinks = new ArrayList<>();
+                    for (int i = 0; i < message.getMessage().length; i++) {
+                        String url = message.getMessage()[i].getUrl();
+                        weblinks.add(url);
+                        try {
+                            domains.add(getDomainName(url));
+                        } catch (URISyntaxException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_SUGGESTION, domains, new ListQuestionAdapter.OnItemClick() {
+                        @Override
+                        public void onClick(int position) {
+                            if (weblinks.get(position) == null) return;
+                            if (!weblinks.get(position).equals("")) {
+/*                                Intent intent = new Intent(context, WebviewActivity.class);
+                                intent.putExtra("weblink", weblinks.get(position));
+                                context.startActivity(intent);*/
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(weblinks.get(position)));
+                                context.startActivity(browserIntent);
+                            }
+                        }
+                    });
+                    LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+                    holder1.moreAnswer.setLayoutManager(mLinearLayoutManager);
+                    holder1.moreAnswer.setAdapter(listQuestionAdapter);
+                    holder1.moreAnswer.setVisibility(View.VISIBLE);
+                } else {
+                    holder1.moreAnswer.setVisibility(View.GONE);
                 }
             }
         } else {
@@ -1568,14 +1653,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 } else {
                                                     if (holder instanceof ListQuestionViewHolder) {
                                                         final ListQuestionViewHolder holder1 = (ListQuestionViewHolder) holder;
-                                                        ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_QUESTION);
+                                                        ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_QUESTION, null, null);
                                                         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
                                                         holder1.rvListQuestion.setLayoutManager(mLinearLayoutManager);
                                                         holder1.rvListQuestion.setAdapter(listQuestionAdapter);
                                                     } else {
                                                         if (holder instanceof ListSuggestionViewHolder) {
                                                             final ListSuggestionViewHolder holder1 = (ListSuggestionViewHolder) holder;
-                                                            ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_SUGGESTION);
+                                                            ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_SUGGESTION, null, null);
                                                             LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
                                                             holder1.rvListSuggestion.setLayoutManager(mLinearLayoutManager);
                                                             holder1.rvListSuggestion.setAdapter(listQuestionAdapter);

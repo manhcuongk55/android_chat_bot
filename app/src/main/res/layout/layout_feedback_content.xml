@@ -6,7 +6,8 @@
     <RelativeLayout
         android:id="@+id/layoutContentLike"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="gone">
 
         <View
             android:layout_width="20dp"
@@ -24,7 +25,8 @@
     <RelativeLayout
         android:id="@+id/layoutContentSairoi"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="gone">
 
         <View
             android:layout_width="20dp"

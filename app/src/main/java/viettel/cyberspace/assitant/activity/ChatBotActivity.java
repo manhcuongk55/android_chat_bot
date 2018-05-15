@@ -71,7 +71,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     public int COUNT_DOWNT_CALL_ANSWER;
     public final int MAX_CALL_ANSWER = 20;
-    public final int TIME_TO_CALL_API_AGAIN = 250;
+    public final int TIME_TO_CALL_API_AGAIN = 1000;
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
 
     private static final String NAME_USER_REQUEST = "fafa";
@@ -240,6 +240,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         chatView.setOnClickSendButtonListener(new ChatView.OnClickSendButtonListener() {
             @Override
             public void onSendButtonClick(String body) {
+                Log.v("trungbd", body);
                 Message message = new Message();
                 message.setBody(body);
                 message.setMessageType(Message.MessageType.RightSimpleImage);
@@ -407,22 +408,27 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         sendMessage(text, NAME_USER_REQUEST);
     }
 
-    public void receiveTextFromServer(String text, String nameuser, String mid) {
+    public void receiveTextFromServer(String text, String url, BaseResponse baseResponse, String nameuser, String mid) {
         Message message = new Message();
         message.setMessageType(Message.MessageType.LeftSimpleMessage);
         message.setTime(getTime());
         message.setBody(text);
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
         message.setMid(mid);
+        if (baseResponse != null)
+            message.setMessage(baseResponse.getMessage());
+        message.setWebUrl(url);
+        message.setAnswer(false);
         chatView.addMessage(message);
-
+/*
         Message message1 = new Message();
         message1.setMessageType(Message.MessageType.ListSuggestion);
         message1.setTime(getTime());
         message1.setBody(text);
         message1.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
         message1.setMid(mid);
-        chatView.addMessage(message1);
+        message1.setAnswer(false);
+        chatView.addMessage(message1);*/
         playVoice(text);
     }
 
@@ -496,6 +502,10 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     Log.i("duypq3", "sendMessage:success");
                     String s = response.body().getMid();
                     Log.i("duypq3", "sendMessage:success=" + s);
+                    Message messageAnswering = new Message();
+                    messageAnswering.setMessageType(Message.MessageType.LeftSimpleMessage);
+                    messageAnswering.setAnswer(true);
+                    chatView.addMessage(messageAnswering);
                     getAnswer(s, name_user);
                 } else {
                     //not success
@@ -506,53 +516,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onFailure(Call<ResponseMessage> call, Throwable t) {
                 Log.i("duypq3", "sendMessage:onFailure");
-                receiveTextFromServer(getString(R.string.error_send_message), name_user, null);
-            }
-        });
-
-    }
-
-    private void getAnswer(final String mid, final String name_user) {
-        Log.i("duypq3", "getAnswer:mid=" + mid);
-
-        HashMap<String, String> map = new HashMap<>();
-        map.put("username", name_user);
-        map.put("mid", mid);
-
-        Call<BaseResponse> call2 = apiService.getAnswer(map);
-        call2.enqueue(new Callback<BaseResponse>() {
-            @Override
-            public void onResponse(Call<BaseResponse> call2, retrofit2.Response<BaseResponse> response) {
-                int statusCode = response.code();
-                if (statusCode == 200) {
-                    //success
-                    String s = response.body().getMessage().toString();
-                    Log.i("duypq3", "getAnswer:success=" + s);
-                    COUNT_DOWNT_CALL_ANSWER = 0;
-                    receiveTextFromServer(response.body().getMessage()[0].getText(), name_user, mid);
-                } else {
-                    //not success
-                    Log.i("duypq3", "getAnswer:not success");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BaseResponse> call, Throwable t) {
-                Log.i("duypq3", "getAnswer:onFailure=" + COUNT_DOWNT_CALL_ANSWER);
-                COUNT_DOWNT_CALL_ANSWER++;
-                if (COUNT_DOWNT_CALL_ANSWER == MAX_CALL_ANSWER)
-                    receiveTextFromServer(getString(R.string.error_get_answer), name_user, mid);
-                else {
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Do something after 5s = 1000ms
-                            getAnswer(mid, name_user);
-                        }
-                    }, TIME_TO_CALL_API_AGAIN);
-
-                }
+                receiveTextFromServer(getString(R.string.error_send_message), "", null, name_user, null);
             }
         });
 
@@ -584,6 +548,58 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             public void onFailure(Call<RateMessageResponse> call, Throwable t) {
                 Log.i("duypq3", "getAnswer:onFailure " + t.toString());
                 Toast.makeText(getApplicationContext(), "Có lỗi xảy ra", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void getAnswer(final String mid, final String name_user) {
+        Log.i("duypq3", "getAnswer:mid=" + mid);
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", name_user);
+        map.put("mid", mid);
+
+        Call<BaseResponse> call2 = apiService.getAnswer(map);
+        call2.enqueue(new Callback<BaseResponse>() {
+            @Override
+            public void onResponse(Call<BaseResponse> call2, retrofit2.Response<BaseResponse> response) {
+                int statusCode = response.code();
+                if (statusCode == 200) {
+                    //success
+                    String s = response.body().toString();
+                    Log.i("duypq3", "getAnswer:success=" + s);
+                    COUNT_DOWNT_CALL_ANSWER = 0;
+
+                    Log.v("trungbd", chatView.getMessageList().toString());
+                    chatView.removeMessage(chatView.getMessageList().get(0));
+                    Log.v("trungbd", chatView.getMessageList().toString());
+                    receiveTextFromServer(response.body().getMessage()[0].getText(), response.body().getMessage()[0].getUrl(), response.body(), name_user, mid);
+                } else {
+                    //not success
+                    Log.i("duypq3", "getAnswer:not success");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseResponse> call, Throwable t) {
+                Log.i("duypq3", "getAnswer:onFailure=  " + COUNT_DOWNT_CALL_ANSWER + "   " + t.toString());
+                COUNT_DOWNT_CALL_ANSWER++;
+                if (COUNT_DOWNT_CALL_ANSWER == MAX_CALL_ANSWER) {
+                    chatView.removeMessage(chatView.getMessageList().get(0));
+                    receiveTextFromServer(getString(R.string.error_get_answer), "", null, name_user, mid);
+                    COUNT_DOWNT_CALL_ANSWER = 0;
+                } else {
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Do something after 5s = 1000ms
+                            getAnswer(mid, name_user);
+                        }
+                    }, TIME_TO_CALL_API_AGAIN);
+
+                }
             }
         });
 

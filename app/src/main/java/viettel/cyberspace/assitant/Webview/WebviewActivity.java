@@ -1,5 +1,6 @@
 package viettel.cyberspace.assitant.Webview;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -24,12 +25,16 @@ public class WebviewActivity extends AppCompatActivity {
     WebView webView;
     TextView tvContent;
     TextView tvUrl;
+    String weblink;
     ProgressBar progressBarLoading;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_webview);
+        Intent intent = getIntent();
+        weblink = intent.getStringExtra("weblink");
+        Log.v("trungbd", weblink);
         webView = (WebView) findViewById(R.id.webView);
         tvContent = findViewById(R.id.tvContent);
         tvUrl = findViewById(R.id.tvUrl);
@@ -54,7 +59,7 @@ public class WebviewActivity extends AppCompatActivity {
         });
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webView.loadUrl("http:/google.com");
+        webView.loadUrl(weblink);
     }
 
     @Override

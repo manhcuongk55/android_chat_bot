@@ -5,6 +5,8 @@ import android.net.Uri;
 
 import java.util.List;
 
+import viettel.cyberspace.assitant.model.Answer;
+
 /**
  * Created by shrikanthravi on 16/02/18.
  */
@@ -43,6 +45,9 @@ public class Message {
     protected int indexPosition;
     protected String mid;
     protected String rateMessage;
+    protected boolean isAnswer;
+    protected String webUrl;
+    private Answer[] message;
 
     public enum MessageType {
         LeftSimpleMessage,
@@ -63,8 +68,24 @@ public class Message {
 
     }
 
+    public Answer[] getMessage() {
+        return message;
+    }
+
+    public void setMessage(Answer[] message) {
+        this.message = message;
+    }
+
     public String getRateMessage() {
         return rateMessage;
+    }
+
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl;
     }
 
     public void setRateMessage(String rateMessage) {
@@ -173,6 +194,22 @@ public class Message {
 
     public void setMid(String mid) {
         this.mid = mid;
+    }
+
+    public boolean isAnswer() {
+        return isAnswer;
+    }
+
+    public void setAnswer(boolean answer) {
+        isAnswer = answer;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "body='" + body + '\'' +
+                ", isAnswer=" + isAnswer +
+                '}';
     }
 }
 

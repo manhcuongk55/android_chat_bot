@@ -31,4 +31,13 @@ public class BaseResponse {
     public long getAnswerCode() {
         return answerCode;
     }
+
+    @Override
+    public String toString() {
+        return "BaseResponse{" +
+                "answerCode=" + answerCode +
+                ", message=" + Arrays.toString(message) +
+                ", status=" + status +
+                '}';
+    }
 }
