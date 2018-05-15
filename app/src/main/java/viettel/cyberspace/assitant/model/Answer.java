@@ -7,16 +7,27 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Answer {
+
+    @SerializedName("voice")
+    public String voice;
+
     @SerializedName("images")
     public String images;
-    @SerializedName("text")
-    public String text;
-    @SerializedName("html")
-    public String html;
+
     @SerializedName("mid")
     public String mid;
+
+    @SerializedName("html")
+    public String html;
+
+    @SerializedName("text")
+    public String text;
+
     @SerializedName("title")
     public String title;
+
+    @SerializedName("url")
+    public String url;
 
     public String getImages() {
         return images;
@@ -38,14 +49,24 @@ public class Answer {
         return title;
     }
 
+    public String getVoice() {
+        return voice;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
     @Override
     public String toString() {
         return "Answer{" +
-                "images='" + images + '\'' +
-                ", text='" + text + '\'' +
-                ", html='" + html + '\'' +
+                "voice='" + voice + '\'' +
+                ", images='" + images + '\'' +
                 ", mid='" + mid + '\'' +
+                ", html='" + html + '\'' +
+                ", text='" + text + '\'' +
                 ", title='" + title + '\'' +
+                ", url='" + url + '\'' +
                 '}';
     }
 }

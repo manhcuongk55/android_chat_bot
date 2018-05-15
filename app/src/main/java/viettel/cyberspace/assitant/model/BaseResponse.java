@@ -7,10 +7,15 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class BaseResponse {
-    @SerializedName("status")
-    private long status;
+
+    @SerializedName("answerCode")
+    private long answerCode;
+
     @SerializedName("messageList")
     private Answer[] message;
+
+    @SerializedName("status")
+    private long status;
 
     public Answer[] getMessage() {
         return message;
@@ -20,4 +25,7 @@ public class BaseResponse {
         return status;
     }
 
+    public long getAnswerCode() {
+        return answerCode;
+    }
 }
