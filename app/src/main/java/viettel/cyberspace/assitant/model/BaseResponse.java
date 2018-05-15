@@ -9,12 +9,16 @@ import java.util.Arrays;
  */
 
 public class BaseResponse {
-    @SerializedName("status")
-    private long status;
+
+
     @SerializedName("answerCode")
-    private int answerCode;
+    private long answerCode;
+
     @SerializedName("messageList")
     private Answer[] message;
+
+    @SerializedName("status")
+    private long status;
 
     public Answer[] getMessage() {
         return message;
@@ -24,27 +28,7 @@ public class BaseResponse {
         return status;
     }
 
-    public void setStatus(long status) {
-        this.status = status;
-    }
-
-    public int getAnswerCode() {
+    public long getAnswerCode() {
         return answerCode;
-    }
-
-    public void setAnswerCode(int answerCode) {
-        this.answerCode = answerCode;
-    }
-
-    public void setMessage(Answer[] message) {
-        this.message = message;
-    }
-
-    @Override
-    public String toString() {
-        return "BaseResponse{" +
-                "status=" + status +
-                ", message=" + Arrays.toString(message) +
-                '}';
     }
 }

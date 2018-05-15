@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -67,6 +68,9 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     TextView tvVoice;
 
     DrawerLayout drawer;
+
+    public int COUNT_DOWNT_CALL_ANSWER;
+    public final int MAX_CALL_ANSWER = 5;
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
 
     private static final String NAME_USER_REQUEST = "fafa";
@@ -501,7 +505,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onFailure(Call<ResponseMessage> call, Throwable t) {
                 Log.i("duypq3", "sendMessage:onFailure");
-                receiveTextFromServer(getString(R.string.error_network), name_user, null);
+                receiveTextFromServer(getString(R.string.error_send_message), name_user, null);
             }
         });
 
@@ -522,8 +526,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 if (statusCode == 200) {
                     //success
                     String s = response.body().getMessage().toString();
-                    Log.i("duypq3", "getAnswer:success=" + response.body().toString());
-
+                    Log.i("duypq3", "getAnswer:success=" + s);
+                    COUNT_DOWNT_CALL_ANSWER = 0;
                     receiveTextFromServer(response.body().getMessage()[0].getText(), name_user, mid);
                 } else {
                     //not success
@@ -533,8 +537,21 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
             @Override
             public void onFailure(Call<BaseResponse> call, Throwable t) {
-                Log.i("duypq3", "getAnswer:onFailure " + t.toString());
-                receiveTextFromServer(getString(R.string.error_network), name_user, mid);
+                Log.i("duypq3", "getAnswer:onFailure=" + COUNT_DOWNT_CALL_ANSWER);
+                COUNT_DOWNT_CALL_ANSWER++;
+                if (COUNT_DOWNT_CALL_ANSWER == MAX_CALL_ANSWER)
+                    receiveTextFromServer(getString(R.string.error_get_answer), name_user, mid);
+                else {
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Do something after 5s = 1000ms
+                            getAnswer(mid, name_user);
+                        }
+                    }, 1000);
+
+                }
             }
         });
 

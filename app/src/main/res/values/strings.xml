@@ -23,11 +23,10 @@
     <string name="load_file">Load file</string>
 
 
-    <string name="error_send_message">Có vấn đề về kết nối mạng !</string>
-    <string name="error_get_answer">Có vấn đề về kết nối mạng !</string>
+    <string name="error_send_message">Có vấn đề về gửi câu hỏi!</string>
+    <string name="error_get_answer">Có vấn đề về lấy câu trả lời !</string>
     <string name="error_network">Có vấn đề về kết nối mạng !</string>
     <string name="api_key">1516bdd5d52442cb998d0467a8a03b69</string>
     <string name="add_subscription_key_tip_title">Subscription Key is Needed</string>
     <string name="add_subscription_key_tip">Please put your subscription key to source file \"app/res/values/strings.xml\" to enable Face API calls.</string>
-    <string name="tts_text">Anh Duy đẹp trai quá, ahihi, thằng cường ăn shit</string>
 </resources>
