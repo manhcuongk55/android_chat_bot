@@ -103,6 +103,8 @@ dependencies {
     compile 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
+    compile 'me.everything:overscroll-decor-android:1.0.4'
     // gRPC
     compile "io.grpc:grpc-okhttp:$grpcVersion"
     compile "io.grpc:grpc-protobuf-lite:$grpcVersion"

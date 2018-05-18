@@ -87,7 +87,7 @@
                         android:layout_height="10dp"
                         android:layout_alignRight="@id/answerContent"
                         android:layout_below="@id/answerContent"
-                        android:visibility="visible"></View>
+                        android:visibility="gone"></View>
 
                     <View
                         android:id="@+id/layoutBottomTextview1"
@@ -96,14 +96,6 @@
                         android:layout_below="@id/answerContent"
                         android:visibility="gone"></View>
 
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/moreAnswer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/layoutBottomTextview1"
-                        android:visibility="gone">
-
-                    </android.support.v7.widget.RecyclerView>
 
                     <include
                         android:id="@+id/layoutFeedBackContent"
@@ -118,6 +110,14 @@
                     </include>
 
                     <include
+                        android:id="@+id/layoutGuichuyengia"
+                        layout="@layout/layout_gui_chuyengia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_alignBottom="@id/layoutBottomTextview1"
+                        android:visibility="gone"></include>
+
+                    <include
                         android:id="@+id/layoutFeedback"
                         layout="@layout/layout_feedback_answer"
                         android:layout_width="match_parent"
@@ -125,6 +125,7 @@
                         android:layout_alignBottom="@id/layoutBottomTextview1"
                         android:layout_centerHorizontal="true"
                         android:visibility="gone"></include>
+
                 </RelativeLayout>
             </LinearLayout>
 
@@ -144,4 +145,13 @@
             android:textSize="12sp" />
     </com.silencedut.expandablelayout.ExpandableLayout>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/moreAnswer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/leftEL"
+        android:layout_marginLeft="60dp"
+        android:visibility="gone">
+
+    </android.support.v7.widget.RecyclerView>
 </RelativeLayout>

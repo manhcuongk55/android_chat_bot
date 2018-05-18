@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
         public void onServiceConnected(ComponentName componentName, IBinder binder) {
             mSpeechService = SpeechService.from(binder);
             mSpeechService.addListener(mSpeechServiceListener);
-            mStatus.setVisibility(View.VISIBLE);
+//            mStatus.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mStatus.setTextColor(hearingVoice ? mColorHearing : mColorNotHearing);
+//                mStatus.setTextColor(hearingVoice ? mColorHearing : mColorNotHearing);
             }
         });
     }

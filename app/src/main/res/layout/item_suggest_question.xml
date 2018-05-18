@@ -15,9 +15,10 @@
         android:id="@+id/textSuggestion"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:background="@android:color/white"
+        android:background="#0079fa"
         android:gravity="center_vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="Quá trình học tập" />
+        android:text="Quá trình học tập"
+        android:textColor="@android:color/white" />
 </android.support.v7.widget.CardView>

@@ -3,34 +3,22 @@ package chatview.data;
 
 import android.net.Uri;
 
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+
 import java.util.List;
 
 import viettel.cyberspace.assitant.model.Answer;
+import viettel.cyberspace.assitant.model.BaseResponse;
 
 /**
  * Created by shrikanthravi on 16/02/18.
  */
 
-
+@Table(name = "Message")
 public class Message {
 
-
-    protected String LeftSimpleMessage = "LEFT";
-    protected String RightSimpleMessage = "RIGHT";
-    protected String LeftSingleImage = "LeftImage";
-    protected String RightSingleImage = "RightImage";
-
-    //Can hold upto 11 images.
-    protected String LeftMultipleImages = "LeftImages";
-    protected String RightMultipleImages = "RightImages";
-
-    //Single Video
-    protected String LeftVideo = "LeftVideo";
-    protected String RightVideo = "RightVideo";
-
-    protected String LeftAudio = "LeftAudio";
-    protected String RightAudio = "RightAudio";
-
+    protected boolean isQuestion;
     protected long id;
     protected MessageType messageType;
     protected String type;
@@ -45,9 +33,12 @@ public class Message {
     protected int indexPosition;
     protected String mid;
     protected String rateMessage;
+    protected boolean isSendMaster;
     protected boolean isAnswer;
     protected String webUrl;
-    private Answer[] message;
+    private BaseResponse baseResponse;
+    private long timeStamp;
+    private String question;
 
     public enum MessageType {
         LeftSimpleMessage,
@@ -68,12 +59,48 @@ public class Message {
 
     }
 
-    public Answer[] getMessage() {
-        return message;
+    public void saveMessageHistory() {
+        MessageHistory messageHistory = new MessageHistory();
+        messageHistory.setBody(body);
+        messageHistory.setAnswer(isAnswer);
+        messageHistory.setMessageType(messageType.toString());
+        messageHistory.setRateMessage(rateMessage);
+        messageHistory.setUserName(userName);
+        messageHistory.setTime(time);
+        messageHistory.setStatus(status);
+        messageHistory.setMid(mid);
+        messageHistory.setSendMaster(isSendMaster);
+        messageHistory.getId();
+        messageHistory.setMessageId(id);
+        messageHistory.setBaseResponsefromObject(baseResponse);
+        messageHistory.setTimeStamp(timeStamp);
+        messageHistory.setQuestion(question);
+        messageHistory.save();
     }
 
-    public void setMessage(Answer[] message) {
-        this.message = message;
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public BaseResponse getBaseResponse() {
+        return baseResponse;
+    }
+
+    public void setBaseResponse(BaseResponse baseResponse) {
+        this.baseResponse = baseResponse;
     }
 
     public String getRateMessage() {
@@ -202,6 +229,23 @@ public class Message {
 
     public void setAnswer(boolean answer) {
         isAnswer = answer;
+    }
+
+    public boolean isSendMaster() {
+        return isSendMaster;
+    }
+
+    public void setSendMaster(boolean sendMaster) {
+        isSendMaster = sendMaster;
+    }
+
+
+    public boolean isQuestion() {
+        return isQuestion;
+    }
+
+    public void setQuestion(boolean question) {
+        isQuestion = question;
     }
 
     @Override

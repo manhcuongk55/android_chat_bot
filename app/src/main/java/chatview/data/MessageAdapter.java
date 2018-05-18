@@ -52,6 +52,8 @@ import chatview.activities.ImageFFActivity;
 import chatview.activities.VideoFFActivity;
 import chatview.utils.FontChanger;
 import viettel.cyberspace.assitant.Webview.WebviewActivity;
+import viettel.cyberspace.assitant.model.Answer;
+import viettel.cyberspace.assitant.model.BaseResponse;
 
 import static android.content.ContentValues.TAG;
 
@@ -106,6 +108,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public interface RateMessageListener {
         void rateMessage(String rate, String mId, int position);
+
+        void sendMaster(String mId, String message, int position);
     }
 
     RateMessageListener rateMessageListener;
@@ -281,10 +285,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public CardView leftBubbleIconCV;
         View layoutFeedback;
         RelativeLayout layoutContentLike, layoutContentSairoi, layoutContentGuichuyengia, answerContent;
-        LinearLayout layoutLike;
+        LinearLayout layoutLike, layoutGuiChuyenGiaClick;
         LinearLayout layoutSairoi;
-        LinearLayout layoutGuichuyengia;
-        View layoutFeedBackContent, layoutBottomTextview1, layoutAnswering, layoutAnswerText;
+        View layoutFeedBackContent, layoutBottomTextview1, layoutAnswering, layoutAnswerText, layoutBottomTextview, layoutGuichuyengia;
         RecyclerView moreAnswer;
 
         public LeftTextViewHolder(View view) {
@@ -303,32 +306,20 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             layoutLike = view.findViewById(R.id.layoutLike);
             layoutSairoi = view.findViewById(R.id.layoutSairoi);
             layoutGuichuyengia = view.findViewById(R.id.layoutGuichuyengia);
+            layoutGuiChuyenGiaClick = view.findViewById(R.id.layoutGuiChuyenGiaClick);
             answerContent = view.findViewById(R.id.answerContent);
             layoutBottomTextview1 = view.findViewById(R.id.layoutBottomTextview1);
+            layoutBottomTextview = view.findViewById(R.id.layoutBottomTextview);
             layoutAnswering = view.findViewById(R.id.layoutAnswering);
             layoutAnswerText = view.findViewById(R.id.layoutAnswerText);
             moreAnswer = view.findViewById(R.id.moreAnswer);
             layoutLike.setOnClickListener(this);
             layoutSairoi.setOnClickListener(this);
-            layoutGuichuyengia.setOnClickListener(this);
-//            setBackgroundColor(leftBubbleLayoutColor);
-//            setTextColor(leftBubbleTextColor);
+            layoutGuiChuyenGiaClick.setOnClickListener(this);
             setTimeTextColor(timeTextColor);
             setSenderNameTextColor(senderNameTextColor);
             showSenderName(showSenderName);
             showLeftBubbleIcon(showLeftBubbleIcon);
-//            setTextSize(textSize);
-
-            FontChanger fontChanger = new FontChanger(typeface);
-            fontChanger.replaceFonts((ViewGroup) view);
-            answerContent.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    layoutBottomTextview1.setVisibility(View.VISIBLE);
-                    layoutFeedback.setVisibility(View.VISIBLE);
-                    return true;
-                }
-            });
         }
 
         public void setBackgroundColor(int color) {
@@ -364,23 +355,28 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             switch (view.getId()) {
                 case R.id.layoutLike:
                     layoutFeedback.setVisibility(View.GONE);
-                    layoutBottomTextview1.setVisibility(View.GONE);
+                    if (layoutGuichuyengia.getVisibility() == View.GONE)
+                        layoutBottomTextview1.setVisibility(View.GONE);
 //                    setFeddbackContent(R.id.layoutLike);
                     rate = "like";
+                    rateMessageListener.rateMessage(rate, messageList.get(getAdapterPosition()).getMid(), getAdapterPosition());
                     break;
                 case R.id.layoutSairoi:
                     layoutFeedback.setVisibility(View.GONE);
-                    layoutBottomTextview1.setVisibility(View.GONE);
+                    if (layoutGuichuyengia.getVisibility() == View.GONE)
+                        layoutBottomTextview1.setVisibility(View.GONE);
 //                    setFeddbackContent(R.id.layoutSairoi);
                     rate = "dislike";
+                    rateMessageListener.rateMessage(rate, messageList.get(getAdapterPosition()).getMid(), getAdapterPosition());
                     break;
-                case R.id.layoutGuichuyengia:
-                    layoutFeedback.setVisibility(View.GONE);
+                case R.id.layoutGuiChuyenGiaClick:
+                    layoutGuichuyengia.setVisibility(View.GONE);
                     layoutBottomTextview1.setVisibility(View.GONE);
+                    Log.v("trungbd", "gui chuyen gia");
+                    rateMessageListener.sendMaster(messageList.get(getAdapterPosition()).getMid(), messageList.get(getAdapterPosition()).getQuestion(), getAdapterPosition());
 //                    setFeddbackContent(R.id.layoutGuichuyengia);
                     break;
             }
-            rateMessageListener.rateMessage(rate, messageList.get(getAdapterPosition()).getMid(), getAdapterPosition());
         }
 
         public void setFeddbackContent(int layoutID) {
@@ -1278,51 +1274,59 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
         final Message message = messageList.get(position);
+        BaseResponse baseResponse = message.getBaseResponse();
         messageList.get(position).setIndexPosition(position);
 
 
         if (holder instanceof LeftTextViewHolder) {
             final LeftTextViewHolder holder1 = (LeftTextViewHolder) holder;
-
+            holder1.layoutFeedback.setVisibility(View.GONE);
+            holder1.layoutBottomTextview.setVisibility(View.GONE);
+            holder1.layoutBottomTextview1.setVisibility(View.GONE);
+            holder1.layoutGuichuyengia.setVisibility(View.GONE);
+            holder1.layoutFeedBackContent.setVisibility(View.GONE);
+            holder1.moreAnswer.setVisibility(View.GONE);
+            holder1.layoutAnswering.setVisibility(View.GONE);
+            holder1.layoutContentSairoi.setVisibility(View.GONE);
+            holder1.layoutContentLike.setVisibility(View.GONE);
+            holder1.layoutContentGuichuyengia.setVisibility(View.GONE);
             if (message.isAnswer()) {
                 holder1.layoutAnswering.setVisibility(View.VISIBLE);
                 holder1.layoutAnswerText.setVisibility(View.GONE);
-                holder1.layoutFeedBackContent.setVisibility(View.GONE);
-                holder1.moreAnswer.setVisibility(View.GONE);
             } else {
-                holder1.layoutAnswering.setVisibility(View.GONE);
                 holder1.layoutAnswerText.setVisibility(View.VISIBLE);
                 holder1.leftTV.setText(message.getBody());
                 holder1.leftTimeTV.setText(message.getTime());
                 String rate = message.getRateMessage();
                 if (rate != null) {
                     if (rate.equals("")) {
-                        holder1.layoutFeedBackContent.setVisibility(View.GONE);
                     } else if (rate.equals("like")) {
                         holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
+                        holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
                         holder1.layoutContentLike.setVisibility(View.VISIBLE);
-                        holder1.layoutContentSairoi.setVisibility(View.GONE);
                     } else if (rate.equals("dislike")) {
-                        holder1.layoutContentLike.setVisibility(View.GONE);
                         holder1.layoutContentSairoi.setVisibility(View.VISIBLE);
                         holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
+                        holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
                     }
-                } else {
-                    holder1.layoutFeedBackContent.setVisibility(View.GONE);
+                }
+                boolean isSendMaster = message.isSendMaster();
+                if (isSendMaster) {
+                    holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
+                    holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
+                    holder1.layoutContentGuichuyengia.setVisibility(View.VISIBLE);
                 }
                 holder1.layoutAnswerText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (holder1.layoutFeedback.getVisibility() == View.VISIBLE) {
-                            holder1.layoutBottomTextview1.setVisibility(View.GONE);
+                            if (holder1.layoutGuichuyengia.getVisibility() == View.GONE)
+                                holder1.layoutBottomTextview1.setVisibility(View.GONE);
                             holder1.layoutFeedback.setVisibility(View.GONE);
                             return;
                         }
                         if (message.getWebUrl() == null) return;
                         if (!message.getWebUrl().equals("")) {
-/*                            Intent intent = new Intent(context, WebviewActivity.class);
-                            intent.putExtra("weblink", message.getWebUrl());
-                            context.startActivity(intent);*/
                             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(message.getWebUrl()));
                             context.startActivity(browserIntent);
                         }
@@ -1338,38 +1342,51 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 });
             }
-            if (message.getMessage() != null) {
-                if (message.getMessage().length > 1) {
-                    List<String> domains = new ArrayList<>();
-                    final List<String> weblinks = new ArrayList<>();
-                    for (int i = 0; i < message.getMessage().length; i++) {
-                        String url = message.getMessage()[i].getUrl();
-                        weblinks.add(url);
-                        try {
-                            domains.add(getDomainName(url));
-                        } catch (URISyntaxException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_SUGGESTION, domains, new ListQuestionAdapter.OnItemClick() {
-                        @Override
-                        public void onClick(int position) {
-                            if (weblinks.get(position) == null) return;
-                            if (!weblinks.get(position).equals("")) {
-/*                                Intent intent = new Intent(context, WebviewActivity.class);
-                                intent.putExtra("weblink", weblinks.get(position));
-                                context.startActivity(intent);*/
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(weblinks.get(position)));
-                                context.startActivity(browserIntent);
+            if (baseResponse != null) {
+                int answersCode = (int) baseResponse.getAnswerCode();
+                Log.v("trungbd", "" + answersCode);
+                switch (answersCode) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        holder1.layoutBottomTextview1.setVisibility(View.VISIBLE);
+                        holder1.layoutGuichuyengia.setVisibility(View.VISIBLE);
+                        break;
+                }
+                final List<Answer> answers = baseResponse.getMessage();
+                if (answers != null) {
+                    if (answers.size() > 1) {
+                        for (int i = 0; i < answers.size(); i++) {
+                            String url = answers.get(i).getUrl();
+                            try {
+                                answers.get(i).setDomain(getDomainName(url));
+                            } catch (URISyntaxException e) {
+                                e.printStackTrace();
                             }
                         }
-                    });
-                    LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-                    holder1.moreAnswer.setLayoutManager(mLinearLayoutManager);
-                    holder1.moreAnswer.setAdapter(listQuestionAdapter);
-                    holder1.moreAnswer.setVisibility(View.VISIBLE);
-                } else {
-                    holder1.moreAnswer.setVisibility(View.GONE);
+                        ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_SUGGESTION, answers, new ListQuestionAdapter.OnItemClick() {
+                            @Override
+                            public void onClick(int position) {
+                                for (int i = 0; i < answers.size(); i++) {
+                                    if (i == position) {
+                                        answers.get(i).setIsfocus(true);
+                                    } else answers.get(i).setIsfocus(false);
+                                }
+                                notifyDataSetChanged();
+/*                                if (answers.get(position).getUrl() == null) return;
+                                if (!answers.get(position).getUrl().equals("")) {
+                                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(answers.get(position).getUrl()));
+                                    context.startActivity(browserIntent);
+                                }*/
+                            }
+                        });
+                        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+                        holder1.moreAnswer.setLayoutManager(mLinearLayoutManager);
+                        holder1.moreAnswer.setAdapter(listQuestionAdapter);
+                        holder1.moreAnswer.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         } else {
@@ -1377,10 +1394,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 final RightTextViewHolder holder1 = (RightTextViewHolder) holder;
                 holder1.rightTV.setText(message.getBody());
                 holder1.rightTimeTV.setText(message.getTime());
-/*                if (message.getUserIcon() != null) {
-                    Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
-                }
-                holder1.senderNameTV.setText(message.getUserName());*/
             } else {
                 if (holder instanceof LeftImageViewHolder) {
                     final LeftImageViewHolder holder1 = (LeftImageViewHolder) holder;

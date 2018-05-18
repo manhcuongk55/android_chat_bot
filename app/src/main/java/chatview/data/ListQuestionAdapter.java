@@ -1,6 +1,7 @@
 package chatview.data;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import com.google.cloud.android.speech.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import viettel.cyberspace.assitant.model.Answer;
+
 
 /**
  * Created by brwsr on 09/05/2018.
@@ -24,7 +27,7 @@ public class ListQuestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public static int TYPE_LIST_QUESTION = 1;
     public static int TYPE_LIST_SUGGESTION = 2;
     int type;
-    List<String> suggestion = new ArrayList<>();
+    List<Answer> suggestion = new ArrayList<>();
 
     public interface OnItemClick {
         void onClick(int position);
@@ -32,7 +35,7 @@ public class ListQuestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     OnItemClick onItemClick;
 
-    public ListQuestionAdapter(Context context, int type, List<String> suggestion, OnItemClick onItemClick) {
+    public ListQuestionAdapter(Context context, int type, List<Answer> suggestion, OnItemClick onItemClick) {
         this.context = context;
         this.type = type;
         this.suggestion = suggestion;
@@ -58,7 +61,15 @@ public class ListQuestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ListSuggestionViewHolder) {
             ListSuggestionViewHolder holder1 = (ListSuggestionViewHolder) holder;
-            holder1.textSuggestion.setText(suggestion.get(position));
+            holder1.textSuggestion.setText(suggestion.get(position).getDomain());
+            if (suggestion.get(position).isIsfocus()) {
+                holder1.textSuggestion.setBackgroundColor(context.getResources().getColor(R.color.dtbutton_color_belize_hole));
+                holder1.textSuggestion.setTextColor(Color.WHITE);
+            } else {
+                holder1.textSuggestion.setBackgroundColor(Color.WHITE);
+                holder1.textSuggestion.setTextColor(Color.GRAY);
+            }
+
         }
     }
 

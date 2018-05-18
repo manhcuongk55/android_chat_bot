@@ -29,6 +29,7 @@ import java.util.List;
 import chatview.data.Message;
 import chatview.data.MessageAdapter;
 import jp.wasabeef.recyclerview.animators.ScaleInBottomAnimator;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 /**
  * Created by shrikanthravi on 20/02/18.
@@ -40,8 +41,16 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
         messageAdapter.notifyDataSetChanged();
     }
 
+
+    public void sendMasterSuccess(int position) {
+        messageList.get(position).setSendMaster(true);
+        messageAdapter.notifyDataSetChanged();
+    }
+
     public interface RateMessageListener {
         void rateMessage(String rate, String mId, int position);
+
+        void sendMaster(String mId, String message, int position);
     }
 
     RateMessageListener rateMessageListener;
@@ -138,6 +147,7 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
         WrapContentLinearLayoutManager layoutManager = new WrapContentLinearLayoutManager(context, LinearLayoutManager.VERTICAL, true);
         layoutManager.setStackFromEnd(true);
         chatRV.setLayoutManager(layoutManager);
+        OverScrollDecoratorHelper.setUpOverScroll(chatRV, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         chatRV.setItemAnimator(new ScaleInBottomAnimator(new OvershootInterpolator(1f)));
         chatRV.setAdapter(messageAdapter);
         messageET.clearFocus();
@@ -244,6 +254,13 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
         return false;
     }
 
+    public void onDestroy() {
+        Log.v("onDestroy", "messageList  " + messageList.toString());
+        for (int i = 0; i < messageList.size(); i++) {
+            messageList.get(i).saveMessageHistory();
+        }
+    }
+
     protected void setAttributes(TypedArray attrs) {
 
         //set Attributes from xml
@@ -266,6 +283,12 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
     @Override
     public void rateMessage(String rate, String mId, int position) {
         rateMessageListener.rateMessage(rate, mId, position);
+    }
+
+    @Override
+    public void sendMaster(String mId, String message, int position) {
+        Log.v("trungbd", "gui chuyen gia1");
+        rateMessageListener.sendMaster(mId, message, position);
     }
 
 
@@ -371,6 +394,14 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
     public void addMessage(Message message) {
 
         messageList.add(0, message);
+        messageAdapter.notifyItemInserted(0);
+        chatRV.smoothScrollToPosition(0);
+        mLayoutRoot.invalidate();
+    }
+
+    public void addListMessage(List<Message> messages) {
+
+        messageList.addAll(0, messages);
         messageAdapter.notifyItemInserted(0);
         chatRV.smoothScrollToPosition(0);
         mLayoutRoot.invalidate();

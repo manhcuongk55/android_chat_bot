@@ -5,10 +5,12 @@ import android.text.TextUtils;
 
 import org.json.JSONException;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class TextUtil {
     public static final String EMPTY_STRING = "";
@@ -90,6 +92,19 @@ public class TextUtil {
             }
         }
         return result;
+    }
+
+    public static String formatDateTime(Long time) {
+
+        if (time == null)
+            return "";
+
+        if (time < 1000000000000L)
+            time *= 1000;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH'h'mm dd/MM/yyyy");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+7"));
+        return sdf.format(time);
     }
 
 }

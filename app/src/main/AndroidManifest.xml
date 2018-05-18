@@ -28,6 +28,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Speech"
         tools:ignore="GoogleAppIndexingWarning">
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="chatbot" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="1" />
+
         <activity android:name=".MainActivity">
 
             <!-- <intent-filter> -->

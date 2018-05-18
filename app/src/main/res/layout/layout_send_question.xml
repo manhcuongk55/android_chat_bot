@@ -10,19 +10,22 @@
         android:padding="20dp">
 
         <TextView
+            android:id="@+id/tvquestion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Câu hỏi: Lịch sử Việt Nam là gì? Nước Việt Nam ra đời như thế nào"
             android:textSize="16sp" />
 
         <EditText
+            android:id="@+id/etAnswer"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:layout_marginTop="5dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/border_shape_edittext"
             android:gravity="top"
             android:hint="Nhập câu trả lời..."
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:textColor="@android:color/black" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -36,6 +39,7 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/btCancel"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/border_shape_gray"
@@ -45,6 +49,7 @@
                     android:textColor="@android:color/white" />
 
                 <Button
+                    android:id="@+id/btSend"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"

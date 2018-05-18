@@ -1,13 +1,14 @@
 package viettel.cyberspace.assitant.model;
 
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by utit on 21/12/2017.
  */
-
 public class Answer {
-
     @SerializedName("voice")
     public String voice;
 
@@ -28,6 +29,10 @@ public class Answer {
 
     @SerializedName("url")
     public String url;
+
+    public String domain;
+
+    public boolean isfocus;
 
     public String getImages() {
         return images;
@@ -55,6 +60,22 @@ public class Answer {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public boolean isIsfocus() {
+        return isfocus;
+    }
+
+    public void setIsfocus(boolean isfocus) {
+        this.isfocus = isfocus;
     }
 
     @Override

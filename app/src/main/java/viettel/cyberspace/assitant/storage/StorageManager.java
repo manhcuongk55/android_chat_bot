@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import viettel.cyberspace.assitant.model.User;
 import viettel.cyberspace.assitant.utils.TextUtil;
 
 
@@ -26,6 +29,24 @@ public class StorageManager {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(key, value);
         return editor.commit();
+    }
+
+
+    public static void saveUser(Context context, User user) {
+        SharedPreferences preferences = getSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+        editor.putString("user", json);
+        editor.commit();
+    }
+
+    public static User getUser(Context context) {
+        SharedPreferences preferences = getSharedPreferences(context);
+        Gson gson = new Gson();
+        String json = preferences.getString("user", "");
+        User user = gson.fromJson(json, User.class);
+        return user;
     }
 
     public static String getStringValue(Context context, String key) {

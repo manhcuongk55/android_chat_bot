@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
+import com.activeandroid.query.Select;
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.google.cloud.android.speech.MessageDialogFragment;
 import com.google.cloud.android.speech.R;
@@ -43,14 +46,20 @@ import java.util.HashMap;
 import java.util.List;
 
 import chatview.data.Message;
+import chatview.data.MessageHistory;
 import chatview.widget.ChatView;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import viettel.cyberspace.assitant.model.BaseResponse;
 import viettel.cyberspace.assitant.model.RateMessageResponse;
 import viettel.cyberspace.assitant.model.ResponseMessage;
+import viettel.cyberspace.assitant.model.ResponseQuestionExperts;
+import viettel.cyberspace.assitant.model.ResponseQuestionMaster;
+import viettel.cyberspace.assitant.model.User;
 import viettel.cyberspace.assitant.rest.ApiClient;
 import viettel.cyberspace.assitant.rest.ApiInterface;
+import viettel.cyberspace.assitant.storage.StorageManager;
 
 public class ChatBotActivity extends AppCompatActivity implements MessageDialogFragment.Listener,
         NavigationView.OnNavigationItemSelectedListener, ChatView.RateMessageListener {
@@ -64,7 +73,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     MaterialRippleLayout micMRL;
     MaterialRippleLayout micMRLWithKeyBoard;
     MaterialRippleLayout avi;
-    MaterialRippleLayout aviWithKeyBoard;
+    MaterialRippleLayout aviWithKeyBoard, notification, user_info;
     TextView tvVoice;
 
     DrawerLayout drawer;
@@ -74,7 +83,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     public final int TIME_TO_CALL_API_AGAIN = 1000;
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
 
-    private static final String NAME_USER_REQUEST = "fafa";
+    private static String NAME_USER_REQUEST;
 
     private static final String STATE_RESULTS = "results";
 
@@ -92,6 +101,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         @Override
         public void onVoiceStart() {
             if (mSpeechService != null) {
+                Log.v("trungbd", "onVoiceStart");
                 mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
             }
         }
@@ -99,6 +109,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         @Override
         public void onVoice(byte[] data, int size) {
             if (mSpeechService != null) {
+                Log.v("trungbd", "onVoice");
                 mSpeechService.recognize(data, size);
             }
         }
@@ -106,7 +117,15 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         @Override
         public void onVoiceEnd() {
             if (mSpeechService != null) {
+                Log.v("trungbd", "onVoiceEnd");
                 mSpeechService.finishRecognizing();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setEnableVoidButton(true);
+                        stopVoiceRecorder();
+                    }
+                });
             }
         }
 
@@ -132,20 +151,42 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActiveAndroid.initialize(this);
         setContentView(R.layout.activity_main);
         apiService =
                 ApiClient.getClient().create(ApiInterface.class);
         chatView = findViewById(R.id.chatView);
         chatView.setRateMessageListener(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+/*        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);*/
         //Initialization start
         mSelected = new ArrayList<>();
-        getSupportActionBar().setTitle("Virtual Assistant");
+//        getSupportActionBar().setTitle("Virtual Assistant");
         micMRL = findViewById(R.id.micMRL2);
         micMRLWithKeyBoard = findViewById(R.id.micMRL);
         avi = findViewById(R.id.avi2);
         aviWithKeyBoard = findViewById(R.id.avi);
+        notification = findViewById(R.id.notification);
+        user_info = findViewById(R.id.user_info);
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fm = getSupportFragmentManager();
+                NotificationFragment notificationFragment = new NotificationFragment();
+                notificationFragment.show(fm, "NotificationFragment");
+            }
+        });
+        user_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (drawer.isDrawerOpen(Gravity.RIGHT)) {
+                    drawer.closeDrawer(Gravity.RIGHT);
+                } else {
+                    drawer.openDrawer(Gravity.RIGHT);
+                }
+                chatView.onBackpress();
+            }
+        });
         aviWithKeyBoard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -240,12 +281,16 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         chatView.setOnClickSendButtonListener(new ChatView.OnClickSendButtonListener() {
             @Override
             public void onSendButtonClick(String body) {
-                Log.v("trungbd", body);
+                if (body.equals("")) {
+                    Toast.makeText(getApplicationContext(), "Vui lòng nhập câu hỏi", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Message message = new Message();
                 message.setBody(body);
                 message.setMessageType(Message.MessageType.RightSimpleImage);
                 message.setTime(getTime());
                 message.setUserName("Groot");
+                message.setTimeStamp(System.currentTimeMillis());
                 message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
                 chatView.addMessage(message);
                 sendMessage(body, NAME_USER_REQUEST);
@@ -265,13 +310,44 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             }
         }
 
+        List<MessageHistory> messageHistories = getMessageHistory();
+        List<Message> messages = new ArrayList<>();
+        for (MessageHistory messageHistory : messageHistories) {
+            messages.add(messageHistory.toMessage());
+        }
+        chatView.addListMessage(messages);
+
+        User user = StorageManager.getUser(this);
+        if (user != null) {
+            NAME_USER_REQUEST = StorageManager.getStringValue(getApplicationContext(), "account", "");
+            if (user.getUser_type().equals("Experts"))
+                getExpertsQuestion();
+        }
+
     }
 
+    public static List<MessageHistory> getMessageHistory() {
+        return new Select()
+                .from(MessageHistory.class)
+                .orderBy("timeStamp DESC")
+                .execute();
+    }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        // Stop listening to voice
+    protected void onDestroy() {
+        super.onDestroy();
+        chatView.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         stopVoiceRecorder();
 
         // Stop Cloud Speech API
@@ -279,6 +355,13 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             mSpeechService.removeListener(mSpeechServiceListener);
         unbindService(mServiceConnection);
         mSpeechService = null;
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Stop listening to voice
 
     }
 
@@ -303,12 +386,11 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.user_information:
-                if (drawer.isDrawerOpen(Gravity.RIGHT)) {
-                    drawer.closeDrawer(Gravity.RIGHT);
-                } else {
-                    drawer.openDrawer(Gravity.RIGHT);
-                }
-                chatView.onBackpress();
+
+                return true;
+
+            case R.id.notification:
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -401,6 +483,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         Message message = new Message();
         message.setMessageType(Message.MessageType.RightSimpleImage);
         message.setTime(getTime());
+        message.setTimeStamp(System.currentTimeMillis());
         message.setBody(text);
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
         chatView.addMessage(message);
@@ -408,27 +491,22 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         sendMessage(text, NAME_USER_REQUEST);
     }
 
-    public void receiveTextFromServer(String text, String url, BaseResponse baseResponse, String nameuser, String mid) {
+    public void receiveTextFromServer(String text, String url, BaseResponse baseResponse, String nameuser, String mid, String question) {
         Message message = new Message();
         message.setMessageType(Message.MessageType.LeftSimpleMessage);
         message.setTime(getTime());
         message.setBody(text);
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
         message.setMid(mid);
-        if (baseResponse != null)
-            message.setMessage(baseResponse.getMessage());
+        if (baseResponse != null) {
+            message.setBaseResponse(baseResponse);
+        }
+        message.setTimeStamp(System.currentTimeMillis());
         message.setWebUrl(url);
+        message.setQuestion(question);
         message.setAnswer(false);
         chatView.addMessage(message);
-/*
-        Message message1 = new Message();
-        message1.setMessageType(Message.MessageType.ListSuggestion);
-        message1.setTime(getTime());
-        message1.setBody(text);
-        message1.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
-        message1.setMid(mid);
-        message1.setAnswer(false);
-        chatView.addMessage(message1);*/
+
         playVoice(text);
     }
 
@@ -437,7 +515,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     protected void onResume() {
         super.onResume();
         // Prepare Cloud Speech API
-        bindService(new Intent(this, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
+//        bindService(new Intent(this, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
     }
 
     private void startVoiceRecorder() {
@@ -482,7 +560,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         return true;
     }
 
-    private void sendMessage(String messa, final String name_user) {
+    private void sendMessage(final String messa, final String name_user) {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -491,6 +569,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         map.put("message", messa);
         map.put("timestamp", timestamp.toString());
         map.put("type", "text");
+        map.put("token", StorageManager.getUser(getApplicationContext()).getToken());
+        map.put("userId", StorageManager.getUser(getApplicationContext()).getUserId() + "");
 
         Call<ResponseMessage> call = apiService.sendMessage(map);
         call.enqueue(new Callback<ResponseMessage>() {
@@ -506,7 +586,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     messageAnswering.setMessageType(Message.MessageType.LeftSimpleMessage);
                     messageAnswering.setAnswer(true);
                     chatView.addMessage(messageAnswering);
-                    getAnswer(s, name_user);
+                    getAnswer(s, name_user, messa);
                 } else {
                     //not success
                     Log.i("duypq3", "sendMessage:not success");
@@ -516,10 +596,39 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onFailure(Call<ResponseMessage> call, Throwable t) {
                 Log.i("duypq3", "sendMessage:onFailure");
-                receiveTextFromServer(getString(R.string.error_send_message), "", null, name_user, null);
+                receiveTextFromServer(getString(R.string.error_send_message), "", null, name_user, null, "");
             }
         });
 
+    }
+
+
+    public void getExpertsQuestion() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", NAME_USER_REQUEST);
+        map.put("token", StorageManager.getUser(getApplicationContext()).getToken());
+        map.put("userId", StorageManager.getUser(getApplicationContext()).getUserId() + "");
+        Call<ResponseQuestionExperts> call = apiService.getExpertsQuestion(map);
+        call.enqueue(new Callback<ResponseQuestionExperts>() {
+            @Override
+            public void onResponse(Call<ResponseQuestionExperts> call, Response<ResponseQuestionExperts> response) {
+                if (response.isSuccessful()) {
+                } else {
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseQuestionExperts> call, Throwable throwable) {
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Do something after 5s = 1000ms
+                        getExpertsQuestion();
+                    }
+                }, 10000);
+            }
+        });
     }
 
     public void setRate(final String rate, String mId, final int position) {
@@ -528,6 +637,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         map.put("username", NAME_USER_REQUEST);
         map.put("mid", mId);
         map.put("rate", rate);
+        map.put("token", StorageManager.getUser(getApplicationContext()).getToken());
+        map.put("userId", StorageManager.getUser(getApplicationContext()).getUserId() + "");
 
         Call<RateMessageResponse> call2 = apiService.rateMessage(map);
         call2.enqueue(new Callback<RateMessageResponse>() {
@@ -553,12 +664,44 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     }
 
-    private void getAnswer(final String mid, final String name_user) {
+
+    public void sendQuestionMaster(String mId, String message, final int position) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", NAME_USER_REQUEST);
+        map.put("mid", mId);
+        map.put("token", StorageManager.getUser(getApplicationContext()).getToken());
+        map.put("userId", StorageManager.getUser(getApplicationContext()).getUserId() + "");
+        map.put("message", message);
+
+        Call<ResponseQuestionMaster> call2 = apiService.sendQuestionMaster(map);
+        call2.enqueue(new Callback<ResponseQuestionMaster>() {
+            @Override
+            public void onResponse(Call<ResponseQuestionMaster> call2, retrofit2.Response<ResponseQuestionMaster> response) {
+                int statusCode = response.code();
+                if (statusCode == 200) {
+                    chatView.sendMasterSuccess(position);
+                    Toast.makeText(getApplicationContext(), "Đã gửi câu hỏi tới chuyên gia", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Có lỗi xảy ra", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseQuestionMaster> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Có lỗi xảy ra", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void getAnswer(final String mid, final String name_user, final String question) {
         Log.i("duypq3", "getAnswer:mid=" + mid);
 
         HashMap<String, String> map = new HashMap<>();
         map.put("username", name_user);
         map.put("mid", mid);
+        map.put("token", StorageManager.getUser(getApplicationContext()).getToken());
+        map.put("userId", StorageManager.getUser(getApplicationContext()).getUserId() + "");
 
         Call<BaseResponse> call2 = apiService.getAnswer(map);
         call2.enqueue(new Callback<BaseResponse>() {
@@ -574,7 +717,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     Log.v("trungbd", chatView.getMessageList().toString());
                     chatView.removeMessage(chatView.getMessageList().get(0));
                     Log.v("trungbd", chatView.getMessageList().toString());
-                    receiveTextFromServer(response.body().getMessage()[0].getText(), response.body().getMessage()[0].getUrl(), response.body(), name_user, mid);
+                    receiveTextFromServer(response.body().getMessage().get(0).getText(), response.body().getMessage().get(0).getUrl(), response.body(), name_user, mid, question);
                 } else {
                     //not success
                     Log.i("duypq3", "getAnswer:not success");
@@ -587,7 +730,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 COUNT_DOWNT_CALL_ANSWER++;
                 if (COUNT_DOWNT_CALL_ANSWER == MAX_CALL_ANSWER) {
                     chatView.removeMessage(chatView.getMessageList().get(0));
-                    receiveTextFromServer(getString(R.string.error_get_answer), "", null, name_user, mid);
+                    receiveTextFromServer(getString(R.string.error_get_answer), "", null, name_user, mid, question);
                     COUNT_DOWNT_CALL_ANSWER = 0;
                 } else {
                     final Handler handler = new Handler();
@@ -595,7 +738,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                         @Override
                         public void run() {
                             // Do something after 5s = 1000ms
-                            getAnswer(mid, name_user);
+                            getAnswer(mid, name_user, question);
                         }
                     }, TIME_TO_CALL_API_AGAIN);
 
@@ -632,5 +775,12 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     @Override
     public void rateMessage(String rate, String mId, int position) {
         setRate(rate, mId, position);
+    }
+
+    @Override
+    public void sendMaster(String mId, String message, int position) {
+        Log.v("trungbd", "gui chuyen gia2");
+        sendQuestionMaster(mId, message, position);
+
     }
 }
