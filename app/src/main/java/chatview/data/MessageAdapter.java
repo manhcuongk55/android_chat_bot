@@ -1354,10 +1354,17 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder1.layoutAnswerText.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        holder1.layoutBottomTextview1.setVisibility(View.VISIBLE);
-                        holder1.layoutFeedback.setVisibility(View.VISIBLE);
-                        checkFeedbackContentVisible = true;
-                        return true;
+                        if(!checkFeedbackContentVisible) {
+                            holder1.layoutBottomTextview1.setVisibility(View.VISIBLE);
+                            holder1.layoutFeedback.setVisibility(View.VISIBLE);
+                            checkFeedbackContentVisible = true;
+                            return true;
+                        } else {
+                            holder1.layoutBottomTextview1.setVisibility(View.GONE);
+                            holder1.layoutFeedback.setVisibility(View.GONE);
+                            checkFeedbackContentVisible = false;
+                            return true;
+                        }
                     }
 
                 });
