@@ -309,7 +309,8 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
     public void onDestroy() {
         Log.v("onDestroy", "messageList  " + messageList.toString());
         for (int i = 0; i < messageList.size(); i++) {
-            messageList.get(i).saveMessageHistory();
+            if (!messageList.get(i).isAnswer())
+                messageList.get(i).saveMessageHistory();
         }
     }
 
@@ -453,12 +454,16 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
         } else {
             if (message == ChatBotActivity.messageAnswering) {
                 messageList.add(0, ChatBotActivity.messageAnswering);
+                Log.v("trungbd", "add ChatBotActivity.messageAnswering");
             } else {
                 messageList.add(0, message);
             }
         }
-
-        messageAdapter.notifyItemInserted(0);
+        if (message == ChatBotActivity.messageAnswering) {
+            messageAdapter.notifyDataSetChanged();
+        } else {
+            messageAdapter.notifyItemInserted(0);
+        }
         chatRV.smoothScrollToPosition(0);
         mLayoutRoot.invalidate();
     }

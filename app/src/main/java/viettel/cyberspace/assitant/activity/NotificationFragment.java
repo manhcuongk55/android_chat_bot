@@ -148,7 +148,6 @@ public class NotificationFragment extends DialogFragment implements Notification
             rvNotification.setAdapter(notificationExpertAdapter);
         else rvNotification.setAdapter(notificationUserAdapter);
         TimerTask timerTask = new MyTimerTask();
-        //running timer task as daemon thread
         timer = new Timer(true);
         timer.scheduleAtFixedRate(timerTask, 0, 10 * 1000);
 

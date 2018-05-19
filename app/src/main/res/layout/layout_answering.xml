@@ -16,6 +16,6 @@
             android:layout_height="30dp"
             android:layout_centerInParent="true"
             app:indicatorColor="#b3b3b3"
-            app:indicatorName="BallPulseSyncIndicator" />
+            app:indicatorName="BallPulseIndicator" />
     </RelativeLayout>
 </LinearLayout>

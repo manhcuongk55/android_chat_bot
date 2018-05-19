@@ -501,7 +501,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             new SpeechService.Listener() {
                 @Override
                 public void onSpeechRecognized(final String text, final boolean isFinal) {
-                    Log.i("duypq3", "text=" + text + "  isFinal  = " + isFinal);
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -514,10 +513,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                                 micMRLWithKeyBoard.setAlpha(0.4f);
                                 tvVoice.setText(text);
 
-
                                 getTextFromVoice(text);
-                                //test
-                                //  receiveTextFromServer("Biet Rui");
 
                                 tvVoice.setText("");
                             } else {
@@ -527,7 +523,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     });
 
                     if (isFinal) {
-                        Long s1 = System.currentTimeMillis();
                         stopVoiceRecorder();
                         runOnUiThread(new Runnable() {
                             @Override
@@ -538,7 +533,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                                 micMRLWithKeyBoard.setAlpha(1.0f);
                             }
                         });
-                        Log.i("duypq4", "time1=" + (System.currentTimeMillis() - s1));
                     }
                 }
             };
@@ -726,6 +720,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 if (statusCode == 200) {
                     //success
                     chatView.rateMessageSuccess(position, rate);
+                    Toast.makeText(getApplicationContext(), "Nhận xét của bạn đã được gửi thành công. Cảm ơn bạn!", Toast.LENGTH_SHORT).show();
                 } else {
                     //not success
                     Log.i("duypq3", "getAnswer:not success");
