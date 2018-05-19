@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -247,19 +249,24 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         micMRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vibrate(50);
 
-                // Start listening to voices
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    setEnableVoidButton(false);
-                    startVoiceRecorder();
+                if (isNetworkConnected()) {
+                    // Start listening to voices
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        setEnableVoidButton(false);
+                        startVoiceRecorder();
 
-                } else if (ActivityCompat.shouldShowRequestPermissionRationale(ChatBotActivity.this,
-                        Manifest.permission.RECORD_AUDIO)) {
-                    showPermissionMessageDialog();
+                    } else if (ActivityCompat.shouldShowRequestPermissionRationale(ChatBotActivity.this,
+                            Manifest.permission.RECORD_AUDIO)) {
+                        showPermissionMessageDialog();
+                    } else {
+                        ActivityCompat.requestPermissions(ChatBotActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                REQUEST_RECORD_AUDIO_PERMISSION);
+                    }
                 } else {
-                    ActivityCompat.requestPermissions(ChatBotActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                            REQUEST_RECORD_AUDIO_PERMISSION);
+                    toastError();
                 }
             }
         });
@@ -268,17 +275,25 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onClick(View view) {
 
-                // Start listening to voices
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    setEnableVoidButton(false);
-                    startVoiceRecorder();
-                } else if (ActivityCompat.shouldShowRequestPermissionRationale(ChatBotActivity.this,
-                        Manifest.permission.RECORD_AUDIO)) {
-                    showPermissionMessageDialog();
+                vibrate(50);
+
+                if (isNetworkConnected()) {
+
+                    // Start listening to voices
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        setEnableVoidButton(false);
+                        startVoiceRecorder();
+                    } else if (ActivityCompat.shouldShowRequestPermissionRationale(ChatBotActivity.this,
+                            Manifest.permission.RECORD_AUDIO)) {
+                        showPermissionMessageDialog();
+                    } else {
+                        ActivityCompat.requestPermissions(ChatBotActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                REQUEST_RECORD_AUDIO_PERMISSION);
+                    }
+
                 } else {
-                    ActivityCompat.requestPermissions(ChatBotActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                            REQUEST_RECORD_AUDIO_PERMISSION);
+                    toastError();
                 }
             }
         });
@@ -587,6 +602,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         message.setAnswer(false);
         chatView.addMessage(message);
         playVoice(text);
+        vibrate(50);
     }
 
 
@@ -861,5 +877,20 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         Log.v("trungbd", "gui chuyen gia2");
         sendQuestionMaster(mId, message, position);
 
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
+    }
+
+    private void vibrate(int time) {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(time);
+    }
+
+    private void toastError() {
+        Toast.makeText(getApplicationContext(), "No Network Connected", Toast.LENGTH_SHORT).show();
     }
 }
