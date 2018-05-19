@@ -179,7 +179,7 @@ public class MessageHistory extends Model {
         message.setStatus(status);
         message.setMid(mid);
         message.setSendMaster(isSendMaster);
-        message.getId();
+        message.setId(getId());
         message.setId(messageId);
         message.setBaseResponse(getBaseResponseFromObject());
         message.setTimeStamp(timeStamp);

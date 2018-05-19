@@ -2,6 +2,7 @@ package viettel.cyberspace.assitant.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
@@ -32,12 +33,17 @@ import com.google.cloud.android.speech.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import chatview.data.ListQuestionAdapter;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import viettel.cyberspace.assitant.model.QuestionExperts;
+import viettel.cyberspace.assitant.model.ResponseAnswer;
+import viettel.cyberspace.assitant.model.ResponseGetExpertsAnswer;
 import viettel.cyberspace.assitant.model.ResponsePutExpertsAnswer;
 import viettel.cyberspace.assitant.model.ResponseQuestionExperts;
 import viettel.cyberspace.assitant.model.User;
@@ -54,10 +60,14 @@ public class NotificationFragment extends DialogFragment implements Notification
     RecyclerView rvNotification;
     SwipeRefreshLayout refresh_layout;
     ApiInterface apiService;
-    NotificationAdapter notificationAdapter;
+    NotificationAdapter notificationExpertAdapter;
+    NotificationAdapter notificationUserAdapter;
     List<QuestionExperts> questionExpertsList;
+    List<ResponseAnswer> responseAnswers;
     ProgressDialog progressDialog;
     MaterialRippleLayout back;
+    public static boolean isExpert = false;
+    Timer timer;
 
     @Nullable
     @Override
@@ -111,7 +121,7 @@ public class NotificationFragment extends DialogFragment implements Notification
                     if (user.getUser_type().equals("Experts"))
                         getExpertsQuestion();
                     else {
-                        refresh_layout.setRefreshing(false);
+                        getExpertAnswers();
                     }
                 } else {
                     refresh_layout.setRefreshing(false);
@@ -120,22 +130,75 @@ public class NotificationFragment extends DialogFragment implements Notification
         });
         User user = StorageManager.getUser(getContext());
         if (user != null) {
-            if (user.getUser_type().equals("Experts"))
+            if (user.getUser_type().equals("Experts")) {
+                isExpert = true;
                 getExpertsQuestion();
+            } else {
+                isExpert = false;
+                getExpertAnswers();
+            }
         }
         questionExpertsList = new ArrayList<>();
-        notificationAdapter = new NotificationAdapter(getContext(), questionExpertsList, this);
+        responseAnswers = new ArrayList<>();
+        notificationExpertAdapter = new NotificationAdapter(getContext(), questionExpertsList, this);
+        notificationUserAdapter = new NotificationAdapter(getContext(), responseAnswers, this, true);
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rvNotification.setLayoutManager(mLinearLayoutManager);
-        rvNotification.setAdapter(notificationAdapter);
+        if (isExpert)
+            rvNotification.setAdapter(notificationExpertAdapter);
+        else rvNotification.setAdapter(notificationUserAdapter);
+        TimerTask timerTask = new MyTimerTask();
+        //running timer task as daemon thread
+        timer = new Timer(true);
+        timer.scheduleAtFixedRate(timerTask, 0, 10 * 1000);
 
     }
 
-    public void getExpertsQuestion() {
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        timer.cancel();
+    }
+
+    private void getExpertAnswers() {
+        User user = StorageManager.getUser(getContext());
+        if (user == null) return;
         HashMap<String, String> map = new HashMap<>();
         map.put("username", StorageManager.getStringValue(getContext(), "account", ""));
-        map.put("token", StorageManager.getUser(getContext()).getToken());
-        map.put("userId", StorageManager.getUser(getContext()).getUserId() + "");
+        map.put("token", user.getToken());
+        map.put("userId", user.getUserId() + "");
+        Call<ResponseGetExpertsAnswer> call = apiService.getExpertsAnswer(map);
+        call.enqueue(new Callback<ResponseGetExpertsAnswer>() {
+            @Override
+            public void onResponse(Call<ResponseGetExpertsAnswer> call, Response<ResponseGetExpertsAnswer> response) {
+                refresh_layout.setRefreshing(false);
+                if (response.isSuccessful()) {
+                    if (response.isSuccessful()) {
+                        responseAnswers.clear();
+                        responseAnswers.addAll(response.body().getAnswerList());
+                        notificationUserAdapter.notifyDataSetChanged();
+                    } else {
+                    }
+                } else {
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseGetExpertsAnswer> call, Throwable throwable) {
+                refresh_layout.setRefreshing(false);
+
+            }
+        });
+    }
+
+    public void getExpertsQuestion() {
+        User user = StorageManager.getUser(getContext());
+        if (user == null) return;
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", StorageManager.getStringValue(getContext(), "account", ""));
+        map.put("token", user.getToken());
+        map.put("userId", user.getUserId() + "");
         Call<ResponseQuestionExperts> call = apiService.getExpertsQuestion(map);
         call.enqueue(new Callback<ResponseQuestionExperts>() {
             @Override
@@ -144,45 +207,72 @@ public class NotificationFragment extends DialogFragment implements Notification
                 if (response.isSuccessful()) {
                     questionExpertsList.clear();
                     questionExpertsList.addAll(response.body().getQuestionList());
-                    notificationAdapter.notifyDataSetChanged();
+                    notificationExpertAdapter.notifyDataSetChanged();
                 } else {
                 }
+
             }
 
             @Override
             public void onFailure(Call<ResponseQuestionExperts> call, Throwable throwable) {
                 refresh_layout.setRefreshing(false);
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Do something after 5s = 1000ms
-                        getExpertsQuestion();
-                    }
-                }, 10000);
             }
         });
     }
 
+
+    public class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            if (isExpert) {
+                getExpertsQuestion();
+            } else {
+                getExpertAnswers();
+            }
+        }
+    }
+
     @Override
-    public void onItemClick(int position) {
-        openPopupAnswer(position);
+    public void onItemClick(int position, boolean isUser) {
+        openPopupAnswer(position, isUser);
     }
 
     AlertDialog alertDialog = null;
 
-    private void openPopupAnswer(final int position) {
+    private void openPopupAnswer(final int position, final boolean isUser) {
         View dialogView;
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.layout_send_question, null);
         TextView tvquestion = dialogView.findViewById(R.id.tvquestion);
+        TextView tvAnswer = dialogView.findViewById(R.id.tvAnswer);
         final EditText etAnswer = dialogView.findViewById(R.id.etAnswer);
         Button btCancel = dialogView.findViewById(R.id.btCancel);
         Button btSend = dialogView.findViewById(R.id.btSend);
-        String question = "<font color='#01C7FE'>Câu hỏi: </font><font color='#000000'>" + questionExpertsList.get(position).getQuestion() + "</font>";
-
+        Button btDone = dialogView.findViewById(R.id.btDone);
+        String questionContent = "";
+        if (isUser) {
+            questionContent = responseAnswers.get(position).getQuestion();
+        } else {
+            questionContent = questionExpertsList.get(position).getQuestion();
+        }
+        String question = "<font color='#01C7FE'>Câu hỏi: </font><font color='#000000'>" + questionContent + "</font>";
         tvquestion.setText(Html.fromHtml(question), TextView.BufferType.SPANNABLE);
+        String answer = "<font color='#01C7FE'>Câu trả lời: </font>";
+        tvAnswer.setText(Html.fromHtml(answer), TextView.BufferType.SPANNABLE);
+        if (isUser) {
+            btCancel.setVisibility(View.GONE);
+            btSend.setVisibility(View.GONE);
+            btDone.setVisibility(View.VISIBLE);
+            tvAnswer.setVisibility(View.VISIBLE);
+            etAnswer.setText(responseAnswers.get(position).getAnswer());
+        } else {
+            btCancel.setVisibility(View.VISIBLE);
+            btSend.setVisibility(View.VISIBLE);
+            btDone.setVisibility(View.GONE);
+            tvAnswer.setVisibility(View.GONE);
+        }
         btSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -196,6 +286,12 @@ public class NotificationFragment extends DialogFragment implements Notification
             }
         });
         btCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        btDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();

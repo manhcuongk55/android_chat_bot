@@ -83,5 +83,41 @@
                 android:text="Sai rồi"
                 android:textSize="10sp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutGuiChuyenGiaClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/layoutSairoi"
+            android:clickable="true"
+            android:padding="3dp">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical">
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/circle_textview_green"></View>
+
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/guichuyengia" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:text="Gửi chuyên gia"
+                android:textSize="10sp" />
+        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

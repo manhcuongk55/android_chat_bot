@@ -15,6 +15,7 @@ import java.util.zip.Inflater;
 
 import chatview.data.MessageAdapter;
 import viettel.cyberspace.assitant.model.QuestionExperts;
+import viettel.cyberspace.assitant.model.ResponseAnswer;
 
 import static viettel.cyberspace.assitant.utils.TextUtil.formatDateTime;
 
@@ -25,10 +26,12 @@ import static viettel.cyberspace.assitant.utils.TextUtil.formatDateTime;
 public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     List<QuestionExperts> questionExpertsList;
+    List<ResponseAnswer> responseAnswers;
     Context mContext;
+    boolean isUser;
 
     public interface NotificationListener {
-        public void onItemClick(int position);
+        public void onItemClick(int position, boolean isUser);
 
     }
 
@@ -40,34 +43,51 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.notificationListener = notificationListener;
     }
 
+    public NotificationAdapter(Context context, List<ResponseAnswer> responseAnswers, NotificationListener notificationListener, boolean isUser) {
+        this.responseAnswers = responseAnswers;
+        this.mContext = context;
+        this.notificationListener = notificationListener;
+        this.isUser = isUser;
+    }
+
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_notification, parent, false);
-        return new NotificationViewHolder(view);
+        return new NotificationExpertViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        NotificationViewHolder holder1 = (NotificationViewHolder) holder;
-        QuestionExperts questionExperts = questionExpertsList.get(position);
-        holder1.from.setText(questionExperts.getUsername());
-        holder1.time.setText(formatDateTime(questionExperts.getCreatedTime()));
-        holder1.question.setText(questionExperts.getQuestion());
+        NotificationExpertViewHolder holder1 = (NotificationExpertViewHolder) holder;
+        if (!isUser) {
+            QuestionExperts questionExperts = questionExpertsList.get(position);
+            holder1.from.setText(questionExperts.getUsername());
+            holder1.time.setText(formatDateTime(questionExperts.getCreatedTime()));
+            holder1.question.setText(questionExperts.getQuestion());
+        } else {
+            ResponseAnswer responseAnswer = responseAnswers.get(position);
+            holder1.from.setText(responseAnswer.getExpertUsername());
+            holder1.time.setText(formatDateTime(responseAnswer.getCreatedTime()));
+            holder1.question.setText(responseAnswer.getQuestion());
+        }
     }
 
     @Override
     public int getItemCount() {
-        return questionExpertsList.size();
+        if (isUser) return responseAnswers.size();
+        else
+            return questionExpertsList.size();
     }
 
-    public class NotificationViewHolder extends RecyclerView.ViewHolder {
+    public class NotificationExpertViewHolder extends RecyclerView.ViewHolder {
         TextView from;
         TextView time;
         TextView question;
 
-        public NotificationViewHolder(View itemView) {
+        public NotificationExpertViewHolder(View itemView) {
             super(itemView);
             from = itemView.findViewById(R.id.from);
             time = itemView.findViewById(R.id.time);
@@ -75,9 +95,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    notificationListener.onItemClick(getAdapterPosition());
+                    notificationListener.onItemClick(getAdapterPosition(), isUser);
                 }
             });
         }
     }
+
 }

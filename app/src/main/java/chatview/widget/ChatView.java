@@ -19,6 +19,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.activeandroid.query.Select;
+import com.activeandroid.query.Update;
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.github.zagum.expandicon.ExpandIconView;
 import com.google.cloud.android.speech.R;
@@ -28,8 +30,13 @@ import java.util.List;
 
 import chatview.data.Message;
 import chatview.data.MessageAdapter;
+import chatview.data.MessageHistory;
 import jp.wasabeef.recyclerview.animators.ScaleInBottomAnimator;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+import viettel.cyberspace.assitant.activity.ChatBotActivity;
+
+import static viettel.cyberspace.assitant.activity.ChatBotActivity.LIMIT_QUERY_HISTORY;
+import static viettel.cyberspace.assitant.activity.ChatBotActivity.currentTimeStamp;
 
 /**
  * Created by shrikanthravi on 20/02/18.
@@ -116,6 +123,7 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
 
     }
 
+    boolean isLoading = false;
 
     protected void init(Context context) {
 
@@ -144,12 +152,40 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
         messageList = new ArrayList<>();
         messageAdapter = new MessageAdapter(messageList, context, chatRV);
         messageAdapter.setRateMessageListener(this);
-        WrapContentLinearLayoutManager layoutManager = new WrapContentLinearLayoutManager(context, LinearLayoutManager.VERTICAL, true);
+        final WrapContentLinearLayoutManager layoutManager = new WrapContentLinearLayoutManager(context, LinearLayoutManager.VERTICAL, true);
         layoutManager.setStackFromEnd(true);
         chatRV.setLayoutManager(layoutManager);
         OverScrollDecoratorHelper.setUpOverScroll(chatRV, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         chatRV.setItemAnimator(new ScaleInBottomAnimator(new OvershootInterpolator(1f)));
         chatRV.setAdapter(messageAdapter);
+        chatRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (!isLoading && layoutManager.getItemCount() < layoutManager.findLastVisibleItemPosition() + 2) {
+                    isLoading = true;
+                    Log.v("trungbd", "onScrolled");
+
+                    List<MessageHistory> messageHistories = getMessageHistory();
+                    if (messageHistories != null && messageHistories.size() > 0) {
+                        for (int i = 0; i < messageHistories.size(); i++) {
+                            Log.v("onScrolled   ", messageHistories.get(i).getBody() + "     " + messageHistories.get(i).getTimeStamp());
+                        }
+                        currentTimeStamp = messageHistories.get(messageHistories.size() - 1).getTimeStamp();
+                        List<Message> messages = new ArrayList<>();
+                        for (MessageHistory messageHistory : messageHistories) {
+                            messages.add(messageHistory.toMessage());
+                        }
+                        addListMessage(messages);
+                    }
+                }
+            }
+        });
         messageET.clearFocus();
         messageET.addTextChangedListener(new TextWatcher() {
             @Override
@@ -241,6 +277,22 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
         });*/
 
 
+    }
+
+    public void updateDB(Message message, String field, String value) {
+        new Update(MessageHistory.class)
+                .set(field + " = " + value)
+                .where("Id = ?", message.getId())
+                .execute();
+    }
+
+    public static List<MessageHistory> getMessageHistory() {
+        return new Select()
+                .from(MessageHistory.class)
+                .orderBy("timeStamp DESC")
+                .where("timeStamp < ?", currentTimeStamp)
+                .limit(LIMIT_QUERY_HISTORY)
+                .execute();
     }
 
     public boolean onBackpress() {
@@ -392,8 +444,20 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
 
     //Use this method to add a message to chatview
     public void addMessage(Message message) {
+        if (messageList.contains(ChatBotActivity.messageAnswering)) {
+            if (message != ChatBotActivity.messageAnswering) {
+                messageList.remove(ChatBotActivity.messageAnswering);
+                messageList.add(0, message);
+                messageList.add(0, ChatBotActivity.messageAnswering);
+            }
+        } else {
+            if (message == ChatBotActivity.messageAnswering) {
+                messageList.add(0, ChatBotActivity.messageAnswering);
+            } else {
+                messageList.add(0, message);
+            }
+        }
 
-        messageList.add(0, message);
         messageAdapter.notifyItemInserted(0);
         chatRV.smoothScrollToPosition(0);
         mLayoutRoot.invalidate();
@@ -401,15 +465,20 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
 
     public void addListMessage(List<Message> messages) {
 
-        messageList.addAll(0, messages);
-        messageAdapter.notifyItemInserted(0);
-        chatRV.smoothScrollToPosition(0);
+        messageList.addAll(messages);
+        messageAdapter.notifyDataSetChanged();
         mLayoutRoot.invalidate();
+        isLoading = false;
+    }
+
+    public void scrollto(int position) {
+        chatRV.smoothScrollToPosition(position);
     }
 
     //Use this method to remove a message from chatview
     public void removeMessage(Message message) {
-        messageList.remove(message);
+        if (message == ChatBotActivity.messageAnswering)
+            messageList.remove(message);
         messageAdapter.notifyDataSetChanged();
     }
 

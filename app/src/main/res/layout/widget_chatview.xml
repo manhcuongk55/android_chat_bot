@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     android:background="#ffffff">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/chatRV"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="70dp">
-
-    </android.support.v7.widget.RecyclerView>
 
     <LinearLayout
         android:id="@+id/sendVoice"
@@ -23,21 +15,13 @@
         android:background="@android:color/transparent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvVoice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text=""
-            android:textColor="@color/colorAccent" />
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#E0E0E0"></View>
 
         <RelativeLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -367,4 +351,23 @@
         </android.support.v7.widget.CardView>
     </LinearLayout>
 
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/chatRV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/sendVoice"
+        android:clipToPadding="false"
+        android:paddingBottom="10dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/tvVoice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/sendVoice"
+        android:gravity="center_horizontal"
+        android:text=""
+        android:textColor="@android:color/holo_red_light" />
 </RelativeLayout>

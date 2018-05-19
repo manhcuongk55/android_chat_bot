@@ -51,6 +51,7 @@ import java.util.List;
 import chatview.activities.ImageFFActivity;
 import chatview.activities.VideoFFActivity;
 import chatview.utils.FontChanger;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import viettel.cyberspace.assitant.Webview.WebviewActivity;
 import viettel.cyberspace.assitant.model.Answer;
 import viettel.cyberspace.assitant.model.BaseResponse;
@@ -70,6 +71,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     MessageFilter filter;
     ImageLoader imageLoader;
     Typeface typeface;
+    boolean checkFeedbackContentVisible = false;
 
     public static MediaPlayer mediaPlayer;
 
@@ -287,7 +289,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         RelativeLayout layoutContentLike, layoutContentSairoi, layoutContentGuichuyengia, answerContent;
         LinearLayout layoutLike, layoutGuiChuyenGiaClick;
         LinearLayout layoutSairoi;
-        View layoutFeedBackContent, layoutBottomTextview1, layoutAnswering, layoutAnswerText, layoutBottomTextview, layoutGuichuyengia;
+        View layoutFeedBackContent, layoutBottomTextview1, layoutAnswering, layoutAnswerText, layoutBottomTextview;
         RecyclerView moreAnswer;
 
         public LeftTextViewHolder(View view) {
@@ -305,7 +307,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             layoutContentGuichuyengia = view.findViewById(R.id.layoutContentGuichuyengia);
             layoutLike = view.findViewById(R.id.layoutLike);
             layoutSairoi = view.findViewById(R.id.layoutSairoi);
-            layoutGuichuyengia = view.findViewById(R.id.layoutGuichuyengia);
+//            layoutGuichuyengia = view.findViewById(R.id.layoutGuichuyengia);
             layoutGuiChuyenGiaClick = view.findViewById(R.id.layoutGuiChuyenGiaClick);
             answerContent = view.findViewById(R.id.answerContent);
             layoutBottomTextview1 = view.findViewById(R.id.layoutBottomTextview1);
@@ -316,6 +318,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             layoutLike.setOnClickListener(this);
             layoutSairoi.setOnClickListener(this);
             layoutGuiChuyenGiaClick.setOnClickListener(this);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (checkFeedbackContentVisible) {
+                        notifyDataSetChanged();
+                    }
+                }
+            });
             setTimeTextColor(timeTextColor);
             setSenderNameTextColor(senderNameTextColor);
             showSenderName(showSenderName);
@@ -355,24 +365,19 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             switch (view.getId()) {
                 case R.id.layoutLike:
                     layoutFeedback.setVisibility(View.GONE);
-                    if (layoutGuichuyengia.getVisibility() == View.GONE)
-                        layoutBottomTextview1.setVisibility(View.GONE);
-//                    setFeddbackContent(R.id.layoutLike);
+                    layoutBottomTextview1.setVisibility(View.GONE);
                     rate = "like";
                     rateMessageListener.rateMessage(rate, messageList.get(getAdapterPosition()).getMid(), getAdapterPosition());
                     break;
                 case R.id.layoutSairoi:
                     layoutFeedback.setVisibility(View.GONE);
-                    if (layoutGuichuyengia.getVisibility() == View.GONE)
-                        layoutBottomTextview1.setVisibility(View.GONE);
-//                    setFeddbackContent(R.id.layoutSairoi);
+                    layoutBottomTextview1.setVisibility(View.GONE);
                     rate = "dislike";
                     rateMessageListener.rateMessage(rate, messageList.get(getAdapterPosition()).getMid(), getAdapterPosition());
                     break;
                 case R.id.layoutGuiChuyenGiaClick:
-                    layoutGuichuyengia.setVisibility(View.GONE);
+                    layoutFeedback.setVisibility(View.GONE);
                     layoutBottomTextview1.setVisibility(View.GONE);
-                    Log.v("trungbd", "gui chuyen gia");
                     rateMessageListener.sendMaster(messageList.get(getAdapterPosition()).getMid(), messageList.get(getAdapterPosition()).getQuestion(), getAdapterPosition());
 //                    setFeddbackContent(R.id.layoutGuichuyengia);
                     break;
@@ -391,7 +396,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 case R.id.layoutSairoi:
                     layoutContentSairoi.setVisibility(View.VISIBLE);
                     break;
-                case R.id.layoutGuichuyengia:
+                case R.id.layoutGuiChuyenGiaClick:
                     layoutContentGuichuyengia.setVisibility(View.VISIBLE);
                     break;
             }
@@ -1263,6 +1268,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    public boolean onBackpress() {
+        if (checkFeedbackContentVisible) {
+            notifyDataSetChanged();
+            return true;
+        }
+        return false;
+    }
+
     public static String getDomainName(String url) throws URISyntaxException {
         URI uri = new URI(url);
         String domain = uri.getHost();
@@ -1283,19 +1296,31 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder1.layoutFeedback.setVisibility(View.GONE);
             holder1.layoutBottomTextview.setVisibility(View.GONE);
             holder1.layoutBottomTextview1.setVisibility(View.GONE);
-            holder1.layoutGuichuyengia.setVisibility(View.GONE);
             holder1.layoutFeedBackContent.setVisibility(View.GONE);
             holder1.moreAnswer.setVisibility(View.GONE);
             holder1.layoutAnswering.setVisibility(View.GONE);
             holder1.layoutContentSairoi.setVisibility(View.GONE);
             holder1.layoutContentLike.setVisibility(View.GONE);
             holder1.layoutContentGuichuyengia.setVisibility(View.GONE);
+            holder1.layoutGuiChuyenGiaClick.setVisibility(View.GONE);
             if (message.isAnswer()) {
                 holder1.layoutAnswering.setVisibility(View.VISIBLE);
                 holder1.layoutAnswerText.setVisibility(View.GONE);
             } else {
                 holder1.layoutAnswerText.setVisibility(View.VISIBLE);
                 holder1.leftTV.setText(message.getBody());
+                message.setWebUrl(message.getWebUrl());
+                if (baseResponse != null) {
+                    if (baseResponse.getMessage() != null) {
+                        for (int i = 0; i < message.getBaseResponse().getMessage().size(); i++) {
+                            if (message.getBaseResponse().getMessage().get(i).isIsfocus()) {
+                                holder1.leftTV.setText(message.getBaseResponse().getMessage().get(i).getText());
+                                message.setWebUrl(message.getBaseResponse().getMessage().get(i).getUrl());
+                            }
+                        }
+                    }
+                }
+
                 holder1.leftTimeTV.setText(message.getTime());
                 String rate = message.getRateMessage();
                 if (rate != null) {
@@ -1310,19 +1335,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
                     }
                 }
-                boolean isSendMaster = message.isSendMaster();
-                if (isSendMaster) {
-                    holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
-                    holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
-                    holder1.layoutContentGuichuyengia.setVisibility(View.VISIBLE);
-                }
                 holder1.layoutAnswerText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (holder1.layoutFeedback.getVisibility() == View.VISIBLE) {
-                            if (holder1.layoutGuichuyengia.getVisibility() == View.GONE)
-                                holder1.layoutBottomTextview1.setVisibility(View.GONE);
+                            holder1.layoutBottomTextview1.setVisibility(View.GONE);
                             holder1.layoutFeedback.setVisibility(View.GONE);
+                            checkFeedbackContentVisible = false;
                             return;
                         }
                         if (message.getWebUrl() == null) return;
@@ -1337,6 +1356,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     public boolean onLongClick(View view) {
                         holder1.layoutBottomTextview1.setVisibility(View.VISIBLE);
                         holder1.layoutFeedback.setVisibility(View.VISIBLE);
+                        checkFeedbackContentVisible = true;
                         return true;
                     }
 
@@ -1345,16 +1365,17 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (baseResponse != null) {
                 int answersCode = (int) baseResponse.getAnswerCode();
                 Log.v("trungbd", "" + answersCode);
-                switch (answersCode) {
-                    case 0:
-                        break;
-                    case 1:
-                        break;
-                    case 2:
-                        holder1.layoutBottomTextview1.setVisibility(View.VISIBLE);
-                        holder1.layoutGuichuyengia.setVisibility(View.VISIBLE);
-                        break;
+                if (answersCode == 2) {
+                    holder1.layoutGuiChuyenGiaClick.setVisibility(View.VISIBLE);
                 }
+                boolean isSendMaster = message.isSendMaster();
+                if (isSendMaster) {
+                    holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
+                    holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
+                    holder1.layoutContentGuichuyengia.setVisibility(View.VISIBLE);
+                    holder1.layoutGuiChuyenGiaClick.setVisibility(View.GONE);
+                }
+
                 final List<Answer> answers = baseResponse.getMessage();
                 if (answers != null) {
                     if (answers.size() > 1) {
@@ -1375,15 +1396,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     } else answers.get(i).setIsfocus(false);
                                 }
                                 notifyDataSetChanged();
-/*                                if (answers.get(position).getUrl() == null) return;
-                                if (!answers.get(position).getUrl().equals("")) {
-                                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(answers.get(position).getUrl()));
-                                    context.startActivity(browserIntent);
-                                }*/
+                                holder1.leftTV.setText(answers.get(position).getText());
+                                message.setWebUrl(answers.get(position).getUrl());
                             }
                         });
                         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
                         holder1.moreAnswer.setLayoutManager(mLinearLayoutManager);
+                        OverScrollDecoratorHelper.setUpOverScroll(holder1.moreAnswer, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
                         holder1.moreAnswer.setAdapter(listQuestionAdapter);
                         holder1.moreAnswer.setVisibility(View.VISIBLE);
                     }

@@ -14,6 +14,7 @@
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 
+
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/user_info"
         android:layout_width="wrap_content"
@@ -33,6 +34,7 @@
             android:layout_gravity="center"
             android:src="@drawable/info" />
     </com.balysv.materialripple.MaterialRippleLayout>
+
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/notification"
@@ -62,5 +64,48 @@
                 android:layout_alignParentRight="true"
                 android:background="@drawable/circle_textview_normal" />
         </RelativeLayout>
+    </com.balysv.materialripple.MaterialRippleLayout>
+
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/volume_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@id/notification"
+        android:minHeight="30dp"
+        android:minWidth="30dp"
+        app:mrl_rippleOverlay="true"
+        app:mrl_rippleRoundedCorners="30dp">
+
+        <ImageView
+            android:id="@+id/imageVolume"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/volume_on"
+            android:tint="#34A8F3" />
+    </com.balysv.materialripple.MaterialRippleLayout>
+
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/user_info"
+        android:minHeight="30dp"
+        android:minWidth="30dp"
+        app:mrl_rippleOverlay="true"
+        app:mrl_rippleRoundedCorners="30dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/logout"
+            android:tint="#34A8F3" />
     </com.balysv.materialripple.MaterialRippleLayout>
 </RelativeLayout>

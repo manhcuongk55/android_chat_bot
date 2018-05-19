@@ -2,10 +2,12 @@ package viettel.cyberspace.assitant.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -74,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+
 
     private void Login(String account, String password) {
         ApiInterface apiService =

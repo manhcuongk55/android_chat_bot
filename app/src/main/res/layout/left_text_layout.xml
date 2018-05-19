@@ -109,13 +109,13 @@
 
                     </include>
 
-                    <include
-                        android:id="@+id/layoutGuichuyengia"
-                        layout="@layout/layout_gui_chuyengia"
-                        android:layout_width="wrap_content"
-                        android:layout_height="30dp"
-                        android:layout_alignBottom="@id/layoutBottomTextview1"
-                        android:visibility="gone"></include>
+                    <!--                    <include
+                                            android:id="@+id/layoutGuichuyengia"
+                                            layout="@layout/layout_gui_chuyengia"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="30dp"
+                                            android:layout_alignBottom="@id/layoutBottomTextview1"
+                                            android:visibility="gone"></include>-->
 
                     <include
                         android:id="@+id/layoutFeedback"
@@ -150,7 +150,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/leftEL"
-        android:layout_marginLeft="60dp"
+        android:layout_marginLeft="20dp"
         android:visibility="gone">
 
     </android.support.v7.widget.RecyclerView>

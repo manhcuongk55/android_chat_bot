@@ -16,6 +16,7 @@ import retrofit2.http.Query;
 import viettel.cyberspace.assitant.model.BaseResponse;
 import viettel.cyberspace.assitant.model.RateMessageResponse;
 import viettel.cyberspace.assitant.model.Response;
+import viettel.cyberspace.assitant.model.ResponseGetExpertsAnswer;
 import viettel.cyberspace.assitant.model.ResponseMessage;
 import viettel.cyberspace.assitant.model.ResponsePutExpertsAnswer;
 import viettel.cyberspace.assitant.model.ResponseQuestionExperts;
@@ -58,4 +59,10 @@ public interface ApiInterface {
     @Headers("Content-Type: application/json")
     @POST("/va/put-experts-answer")
     Call<ResponsePutExpertsAnswer> putExpertsAnswer(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @POST("/va/get-experts-answer")
+    Call<ResponseGetExpertsAnswer> getExpertsAnswer(@Body HashMap<String, String> body);
+
+
 }

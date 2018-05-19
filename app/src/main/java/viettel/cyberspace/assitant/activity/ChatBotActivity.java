@@ -3,9 +3,12 @@ package viettel.cyberspace.assitant.activity;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +65,8 @@ import viettel.cyberspace.assitant.rest.ApiClient;
 import viettel.cyberspace.assitant.rest.ApiInterface;
 import viettel.cyberspace.assitant.storage.StorageManager;
 
+import static chatview.widget.ChatView.getMessageHistory;
+
 public class ChatBotActivity extends AppCompatActivity implements MessageDialogFragment.Listener,
         NavigationView.OnNavigationItemSelectedListener, ChatView.RateMessageListener {
 
@@ -73,10 +79,17 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     MaterialRippleLayout micMRL;
     MaterialRippleLayout micMRLWithKeyBoard;
     MaterialRippleLayout avi;
-    MaterialRippleLayout aviWithKeyBoard, notification, user_info;
+    MaterialRippleLayout aviWithKeyBoard, notification, user_info, volume_change, logout;
+    ImageView imageVolume;
     TextView tvVoice;
-
+    boolean volume = true;
     DrawerLayout drawer;
+    TextView tvUserName;
+    TextView tvUserRule;
+    public static
+    int LIMIT_QUERY_HISTORY = 20;
+    public static long currentTimeStamp = Long.MAX_VALUE;
+    LinearLayout layoutLogout;
 
     public int COUNT_DOWNT_CALL_ANSWER;
     public final int MAX_CALL_ANSWER = 20;
@@ -153,6 +166,9 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         super.onCreate(savedInstanceState);
         ActiveAndroid.initialize(this);
         setContentView(R.layout.activity_main);
+
+        messageAnswering.setMessageType(Message.MessageType.LeftSimpleMessage);
+        messageAnswering.setAnswer(true);
         apiService =
                 ApiClient.getClient().create(ApiInterface.class);
         chatView = findViewById(R.id.chatView);
@@ -168,6 +184,9 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         aviWithKeyBoard = findViewById(R.id.avi);
         notification = findViewById(R.id.notification);
         user_info = findViewById(R.id.user_info);
+        volume_change = findViewById(R.id.volume_change);
+        imageVolume = findViewById(R.id.imageVolume);
+        logout = findViewById(R.id.logout);
         notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -185,6 +204,28 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     drawer.openDrawer(Gravity.RIGHT);
                 }
                 chatView.onBackpress();
+            }
+        });
+        if (volume) {
+            imageVolume.setImageDrawable(getResources().getDrawable(R.drawable.volume_on));
+        } else imageVolume.setImageDrawable(getResources().getDrawable(R.drawable.volume_off));
+        volume_change.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (volume) {
+                    volume = false;
+                    imageVolume.setImageDrawable(getResources().getDrawable(R.drawable.volume_off));
+                } else {
+                    volume = true;
+                    imageVolume.setImageDrawable(getResources().getDrawable(R.drawable.volume_on));
+                }
+                changeVolume(volume);
+            }
+        });
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                logout();
             }
         });
         aviWithKeyBoard.setOnClickListener(new View.OnClickListener() {
@@ -266,18 +307,11 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         });
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-/*        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        View header = navigationView.getHeaderView(0);
+        tvUserName = header.findViewById(R.id.tvUserName);
+        tvUserRule = header.findViewById(R.id.tvUserRule);
+        layoutLogout = header.findViewById(R.id.layoutLogout);
 
-            @Override
-            public void onClick(View v) {
-                if (drawer.isDrawerOpen(Gravity.RIGHT)) {
-                    drawer.closeDrawer(Gravity.RIGHT);
-                } else {
-                    drawer.openDrawer(Gravity.RIGHT);
-                }
-            }
-        });*/
-        //Send button click listerer
         chatView.setOnClickSendButtonListener(new ChatView.OnClickSendButtonListener() {
             @Override
             public void onSendButtonClick(String body) {
@@ -309,34 +343,79 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 m_syn = new Synthesizer(getString(R.string.api_key));
             }
         }
-
         List<MessageHistory> messageHistories = getMessageHistory();
-        List<Message> messages = new ArrayList<>();
-        for (MessageHistory messageHistory : messageHistories) {
-            messages.add(messageHistory.toMessage());
+        if (messageHistories != null && messageHistories.size() > 0) {
+            for (int i = 0; i < messageHistories.size(); i++) {
+                Log.v("MessageHistory   ", messageHistories.get(i).getBody() + "     " + messageHistories.get(i).getTimeStamp());
+            }
+            currentTimeStamp = messageHistories.get(messageHistories.size() - 1).getTimeStamp();
+            Log.v("currentTimeStamp   ", currentTimeStamp + "");
+            List<Message> messages = new ArrayList<>();
+            for (MessageHistory messageHistory : messageHistories) {
+                messages.add(messageHistory.toMessage());
+            }
+
+            chatView.addListMessage(messages);
+            chatView.scrollto(0);
         }
-        chatView.addListMessage(messages);
 
         User user = StorageManager.getUser(this);
         if (user != null) {
+            tvUserName.setText(StorageManager.getStringValue(getApplicationContext(), "account", ""));
+            tvUserRule.setText(user.getUser_type());
             NAME_USER_REQUEST = StorageManager.getStringValue(getApplicationContext(), "account", "");
             if (user.getUser_type().equals("Experts"))
                 getExpertsQuestion();
         }
-
+        layoutLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawer.closeDrawer(Gravity.RIGHT);
+                logout();
+            }
+        });
     }
 
-    public static List<MessageHistory> getMessageHistory() {
-        return new Select()
-                .from(MessageHistory.class)
-                .orderBy("timeStamp DESC")
-                .execute();
+    public void logout() {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setMessage("Bạn có muốn đăng xuất không?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Đăng xuất", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                StorageManager.saveUser(getApplicationContext(), null);
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                finish();
+
+            }
+        });
+        builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        android.support.v7.app.AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
+
+
+    private void changeVolume(boolean volume) {
+        AudioManager amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        if (volume) {
+            amanager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        } else {
+            amanager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+        }
+    }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         chatView.onDestroy();
+        currentTimeStamp = Long.MAX_VALUE;
     }
 
     @Override
@@ -487,7 +566,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         message.setBody(text);
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
         chatView.addMessage(message);
-
         sendMessage(text, NAME_USER_REQUEST);
     }
 
@@ -499,6 +577,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
         message.setMid(mid);
         if (baseResponse != null) {
+            if (baseResponse.getMessage() != null && baseResponse.getMessage().size() > 0)
+                baseResponse.getMessage().get(0).setIsfocus(true);
             message.setBaseResponse(baseResponse);
         }
         message.setTimeStamp(System.currentTimeMillis());
@@ -506,7 +586,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         message.setQuestion(question);
         message.setAnswer(false);
         chatView.addMessage(message);
-
         playVoice(text);
     }
 
@@ -560,6 +639,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         return true;
     }
 
+    public static Message messageAnswering = new Message();
+
     private void sendMessage(final String messa, final String name_user) {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -582,9 +663,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     Log.i("duypq3", "sendMessage:success");
                     String s = response.body().getMid();
                     Log.i("duypq3", "sendMessage:success=" + s);
-                    Message messageAnswering = new Message();
-                    messageAnswering.setMessageType(Message.MessageType.LeftSimpleMessage);
-                    messageAnswering.setAnswer(true);
                     chatView.addMessage(messageAnswering);
                     getAnswer(s, name_user, messa);
                 } else {
@@ -715,11 +793,12 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     COUNT_DOWNT_CALL_ANSWER = 0;
 
                     Log.v("trungbd", chatView.getMessageList().toString());
-                    chatView.removeMessage(chatView.getMessageList().get(0));
+                    chatView.removeMessage(messageAnswering);
                     Log.v("trungbd", chatView.getMessageList().toString());
                     receiveTextFromServer(response.body().getMessage().get(0).getText(), response.body().getMessage().get(0).getUrl(), response.body(), name_user, mid, question);
                 } else {
                     //not success
+                    chatView.removeMessage(messageAnswering);
                     Log.i("duypq3", "getAnswer:not success");
                 }
             }
@@ -729,7 +808,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 Log.i("duypq3", "getAnswer:onFailure=  " + COUNT_DOWNT_CALL_ANSWER + "   " + t.toString());
                 COUNT_DOWNT_CALL_ANSWER++;
                 if (COUNT_DOWNT_CALL_ANSWER == MAX_CALL_ANSWER) {
-                    chatView.removeMessage(chatView.getMessageList().get(0));
+                    chatView.removeMessage(messageAnswering);
                     receiveTextFromServer(getString(R.string.error_get_answer), "", null, name_user, mid, question);
                     COUNT_DOWNT_CALL_ANSWER = 0;
                 } else {

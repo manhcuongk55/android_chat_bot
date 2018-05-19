@@ -16,6 +16,14 @@
             android:text="Câu hỏi: Lịch sử Việt Nam là gì? Nước Việt Nam ra đời như thế nào"
             android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/tvAnswer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Câu trả lời:"
+            android:textSize="16sp" />
+
         <EditText
             android:id="@+id/etAnswer"
             android:layout_width="match_parent"
@@ -59,6 +67,18 @@
                     android:text="Gửi đi"
                     android:textColor="@android:color/white" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btDone"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/border_shape_blue"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="Xong"
+                android:textColor="@android:color/white" />
         </RelativeLayout>
     </LinearLayout>
 

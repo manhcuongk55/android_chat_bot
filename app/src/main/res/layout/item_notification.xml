@@ -41,7 +41,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="Bùi Đình Trung"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -60,7 +61,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:text="Nước Việt Nam được ra đời như thế nào, lịch sử Việt Nam được hình thành trong bao nhiêu năm"
-                android:textColor="#00c8ff"
+                android:textColor="#00a9ff"
                 android:textSize="15sp" />
 
 
