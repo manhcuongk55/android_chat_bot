@@ -22,6 +22,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -29,6 +30,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,6 +53,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import chatview.data.Message;
 import chatview.data.MessageHistory;
@@ -58,7 +63,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import viettel.cyberspace.assitant.model.BaseResponse;
+import viettel.cyberspace.assitant.model.QuestionExperts;
 import viettel.cyberspace.assitant.model.RateMessageResponse;
+import viettel.cyberspace.assitant.model.ResponseAnswer;
+import viettel.cyberspace.assitant.model.ResponseGetExpertsAnswer;
 import viettel.cyberspace.assitant.model.ResponseMessage;
 import viettel.cyberspace.assitant.model.ResponseQuestionExperts;
 import viettel.cyberspace.assitant.model.ResponseQuestionMaster;
@@ -68,9 +76,10 @@ import viettel.cyberspace.assitant.rest.ApiInterface;
 import viettel.cyberspace.assitant.storage.StorageManager;
 
 import static chatview.widget.ChatView.getMessageHistory;
+import static com.activeandroid.Cache.getContext;
 
 public class ChatBotActivity extends AppCompatActivity implements MessageDialogFragment.Listener,
-        NavigationView.OnNavigationItemSelectedListener, ChatView.RateMessageListener {
+        NavigationView.OnNavigationItemSelectedListener, ChatView.RateMessageListener, NotificationFragment.NotificationListener {
 
 
     ChatView chatView;
@@ -109,8 +118,17 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     ApiInterface apiService;
 
     private Synthesizer m_syn;
+    Animation myAnim;
+
+
+    public boolean isRecording = false;
 
     private VoiceRecorder mVoiceRecorder;
+
+    List<QuestionExperts> questionExpertsList;
+    List<ResponseAnswer> responseAnswerList;
+
+
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
 
         @Override
@@ -161,13 +179,16 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         }
 
     };
-
+    NotificationFragment notificationFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActiveAndroid.initialize(this);
         setContentView(R.layout.activity_main);
+        questionExpertsList = new ArrayList<>();
+        responseAnswerList = new ArrayList<>();
+        myAnim = AnimationUtils.loadAnimation(this, R.anim.buttom_check);
 
         messageAnswering.setMessageType(Message.MessageType.LeftSimpleMessage);
         messageAnswering.setAnswer(true);
@@ -193,7 +214,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onClick(View view) {
                 FragmentManager fm = getSupportFragmentManager();
-                NotificationFragment notificationFragment = new NotificationFragment();
+                notificationFragment = new NotificationFragment(isExpert, ChatBotActivity.this);
                 notificationFragment.show(fm, "NotificationFragment");
             }
         });
@@ -245,18 +266,22 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             }
         });
         tvVoice = findViewById(R.id.tvVoice);
-
         micMRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 vibrate(50);
-
                 if (isNetworkConnected()) {
                     // Start listening to voices
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
                             == PackageManager.PERMISSION_GRANTED) {
-                        setEnableVoidButton(false);
-                        startVoiceRecorder();
+                        if (!isRecording) {
+                            isRecording = true;
+                            setEnableVoidButton(false);
+                            startVoiceRecorder();
+                        } else {
+                            setEnableVoidButton(true);
+                            stopVoiceRecorder();
+                        }
 
                     } else if (ActivityCompat.shouldShowRequestPermissionRationale(ChatBotActivity.this,
                             Manifest.permission.RECORD_AUDIO)) {
@@ -282,8 +307,14 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     // Start listening to voices
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
                             == PackageManager.PERMISSION_GRANTED) {
-                        setEnableVoidButton(false);
-                        startVoiceRecorder();
+                        if (!isRecording) {
+                            isRecording = true;
+                            setEnableVoidButton(false);
+                            startVoiceRecorder();
+                        } else {
+                            setEnableVoidButton(true);
+                            stopVoiceRecorder();
+                        }
                     } else if (ActivityCompat.shouldShowRequestPermissionRationale(ChatBotActivity.this,
                             Manifest.permission.RECORD_AUDIO)) {
                         showPermissionMessageDialog();
@@ -389,7 +420,173 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 logout();
             }
         });
+
+        questionExpertsList = StorageManager.getQuestionExperts(getContext());
+        responseAnswerList = StorageManager.getResponseAnswers(getContext());
+        initGetNotification();
     }
+
+    public static boolean isExpert = false;
+    Timer timer;
+
+    public void initGetNotification() {
+        User user = StorageManager.getUser(getContext());
+        if (user != null) {
+            if (user.getUser_type().equals("Experts")) {
+                isExpert = true;
+                getExpertsQuestion();
+            } else {
+                isExpert = false;
+                getExpertAnswers();
+            }
+        }
+
+        TimerTask timerTask = new MyTimerTask();
+        timer = new Timer(true);
+        timer.scheduleAtFixedRate(timerTask, 0, 10 * 1000);
+    }
+
+    @Override
+    public void getQuestion() {
+        getExpertsQuestion();
+    }
+
+    @Override
+    public void getAnswer() {
+        getExpertAnswers();
+    }
+
+    public class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            if (isExpert) {
+                getExpertsQuestion();
+            } else {
+                getExpertAnswers();
+            }
+        }
+    }
+
+    public void getExpertsQuestion() {
+        User user = StorageManager.getUser(getContext());
+        if (user == null) return;
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", StorageManager.getStringValue(getContext(), "account", ""));
+        map.put("token", user.getToken());
+        map.put("userId", user.getUserId() + "");
+        Call<ResponseQuestionExperts> call = apiService.getExpertsQuestion(map);
+        call.enqueue(new Callback<ResponseQuestionExperts>() {
+            @Override
+            public void onResponse(Call<ResponseQuestionExperts> call, Response<ResponseQuestionExperts> response) {
+                if (response.isSuccessful()) {
+                    List<QuestionExperts> questionExpertsResponse = response.body().getQuestionList();
+                    List<QuestionExperts> questionExpertsNew = new ArrayList<>();
+                    for (QuestionExperts questionExperts : questionExpertsResponse) {
+                        if (!checkIfQuestionContain(questionExpertsList, questionExperts)) {
+                            questionExpertsNew.add(questionExperts);
+                        }
+                    }
+
+                    Log.v("trungbd", "New question   " + questionExpertsNew.toString());
+                    if (questionExpertsNew.size() > 0) {
+                        questionExpertsList.addAll(questionExpertsNew);
+                        StorageManager.saveQuestionExperts(getContext(), questionExpertsList);
+                        notificationQuestion(questionExpertsNew);
+                    }
+                    if (notificationFragment != null)
+                        notificationFragment.updateViewExpertQuestion(response.body().getQuestionList());
+
+                } else {
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseQuestionExperts> call, Throwable throwable) {
+            }
+        });
+    }
+
+    public void notificationAnswer(List<ResponseAnswer> responseAnswerList) {
+        for (ResponseAnswer responseAnswer : responseAnswerList) {
+            Message message = new Message();
+            message.setAnswerFromChuyengia(true);
+            message.setResponseAnswer(responseAnswer);
+            message.setMessageType(Message.MessageType.LeftSimpleMessage);
+            message.setTime(getTime());
+            message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+            message.setTimeStamp(System.currentTimeMillis());
+            message.setAnswer(false);
+            chatView.addMessage(message);
+            playVoice(responseAnswer.getAnswer());
+        }
+    }
+
+    public void notificationQuestion(List<QuestionExperts> questionExpertsList) {
+
+    }
+
+    public boolean checkIfQuestionContain(List<QuestionExperts> questionExpertsList, QuestionExperts questionExperts) {
+        for (QuestionExperts questionExperts1 : questionExpertsList) {
+            if (questionExperts1.getMid().equals(questionExperts.getMid())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkIfAnswerContain(List<ResponseAnswer> responseAnswerList, ResponseAnswer responseAnswer) {
+        for (ResponseAnswer responseAnswer1 : responseAnswerList) {
+            if (responseAnswer1.getAnswerId().equals(responseAnswer.getAnswerId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private void getExpertAnswers() {
+        User user = StorageManager.getUser(getContext());
+        if (user == null) return;
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", StorageManager.getStringValue(getContext(), "account", ""));
+        map.put("token", user.getToken());
+        map.put("userId", user.getUserId() + "");
+        Call<ResponseGetExpertsAnswer> call = apiService.getExpertsAnswer(map);
+        call.enqueue(new Callback<ResponseGetExpertsAnswer>() {
+            @Override
+            public void onResponse(Call<ResponseGetExpertsAnswer> call, Response<ResponseGetExpertsAnswer> response) {
+                if (response.isSuccessful()) {
+                    List<ResponseAnswer> responseAnswersResponse = response.body().getAnswerList();
+                    List<ResponseAnswer> responseAnswersNew = new ArrayList<>();
+                    for (ResponseAnswer responseAnswer : responseAnswersResponse) {
+                        if (!checkIfAnswerContain(responseAnswerList, responseAnswer)) {
+                            responseAnswersNew.add(responseAnswer);
+                        }
+                    }
+
+                    Log.v("trungbd", "New answer   " + responseAnswersNew.toString());
+                    if (responseAnswersNew.size() > 0) {
+                        responseAnswerList.addAll(responseAnswersNew);
+                        StorageManager.saveResponseAnswer(getContext(), responseAnswerList);
+                        notificationAnswer(responseAnswersNew);
+                    }
+                    if (notificationFragment != null)
+                        notificationFragment.updateViewExpertAnswer(response.body().getAnswerList());
+                } else {
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseGetExpertsAnswer> call, Throwable throwable) {
+
+            }
+        });
+    }
+
 
     public void logout() {
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
@@ -429,6 +626,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        timer.cancel();
         chatView.onDestroy();
         currentTimeStamp = Long.MAX_VALUE;
     }
@@ -554,13 +752,10 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     public void setEnableVoidButton(boolean isEnable) {
         if (isEnable) {
-            micMRL.setVisibility(View.VISIBLE);
-            micMRLWithKeyBoard.setVisibility(View.VISIBLE);
             avi.setVisibility(View.GONE);
             aviWithKeyBoard.setVisibility(View.GONE);
+            isRecording = false;
         } else {
-            micMRL.setVisibility(View.GONE);
-            micMRLWithKeyBoard.setVisibility(View.GONE);
             avi.setVisibility(View.VISIBLE);
             aviWithKeyBoard.setVisibility(View.VISIBLE);
         }
@@ -690,34 +885,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     }
 
-
-    public void getExpertsQuestion() {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("username", NAME_USER_REQUEST);
-        map.put("token", StorageManager.getUser(getApplicationContext()).getToken());
-        map.put("userId", StorageManager.getUser(getApplicationContext()).getUserId() + "");
-        Call<ResponseQuestionExperts> call = apiService.getExpertsQuestion(map);
-        call.enqueue(new Callback<ResponseQuestionExperts>() {
-            @Override
-            public void onResponse(Call<ResponseQuestionExperts> call, Response<ResponseQuestionExperts> response) {
-                if (response.isSuccessful()) {
-                } else {
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseQuestionExperts> call, Throwable throwable) {
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Do something after 5s = 1000ms
-                        getExpertsQuestion();
-                    }
-                }, 10000);
-            }
-        });
-    }
 
     public void setRate(final String rate, String mId, final int position) {
 

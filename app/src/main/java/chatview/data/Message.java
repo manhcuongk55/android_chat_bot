@@ -10,6 +10,7 @@ import java.util.List;
 
 import viettel.cyberspace.assitant.model.Answer;
 import viettel.cyberspace.assitant.model.BaseResponse;
+import viettel.cyberspace.assitant.model.ResponseAnswer;
 
 /**
  * Created by shrikanthravi on 16/02/18.
@@ -19,6 +20,8 @@ import viettel.cyberspace.assitant.model.BaseResponse;
 public class Message {
 
     protected boolean isQuestion;
+
+    protected boolean isAnswerFromChuyengia;
     protected long id;
     protected MessageType messageType;
     protected String type;
@@ -37,6 +40,7 @@ public class Message {
     protected boolean isAnswer;
     protected String webUrl;
     private BaseResponse baseResponse;
+    private ResponseAnswer responseAnswer;
     private long timeStamp;
     private String question;
 
@@ -73,6 +77,8 @@ public class Message {
         messageHistory.getId();
         messageHistory.setMessageId(id);
         messageHistory.setBaseResponsefromObject(baseResponse);
+        messageHistory.setResponseAnswerFromObject(responseAnswer);
+        messageHistory.setAnswerFromChuyengia(isAnswerFromChuyengia);
         messageHistory.setTimeStamp(timeStamp);
         messageHistory.setQuestion(question);
         messageHistory.save();
@@ -247,6 +253,24 @@ public class Message {
     public void setQuestion(boolean question) {
         isQuestion = question;
     }
+
+
+    public boolean isAnswerFromChuyengia() {
+        return isAnswerFromChuyengia;
+    }
+
+    public void setAnswerFromChuyengia(boolean answerFromChuyengia) {
+        isAnswerFromChuyengia = answerFromChuyengia;
+    }
+
+    public ResponseAnswer getResponseAnswer() {
+        return responseAnswer;
+    }
+
+    public void setResponseAnswer(ResponseAnswer responseAnswer) {
+        this.responseAnswer = responseAnswer;
+    }
+
 
     @Override
     public String toString() {

@@ -1,5 +1,6 @@
 package viettel.cyberspace.assitant.activity;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -55,6 +56,7 @@ import viettel.cyberspace.assitant.storage.StorageManager;
  * Created by brwsr on 17/05/2018.
  */
 
+@SuppressLint("ValidFragment")
 public class NotificationFragment extends DialogFragment implements NotificationAdapter.NotificationListener {
     private View rootView;
     RecyclerView rvNotification;
@@ -66,8 +68,23 @@ public class NotificationFragment extends DialogFragment implements Notification
     List<ResponseAnswer> responseAnswers;
     ProgressDialog progressDialog;
     MaterialRippleLayout back;
-    public static boolean isExpert = false;
+    public boolean isExpert = false;
     Timer timer;
+
+    public interface NotificationListener {
+        void getQuestion();
+
+        void getAnswer();
+
+    }
+
+    NotificationListener notificationListener;
+
+    @SuppressLint("ValidFragment")
+    public NotificationFragment(boolean isExpert, NotificationListener notificationListener) {
+        this.isExpert = isExpert;
+        this.notificationListener = notificationListener;
+    }
 
     @Nullable
     @Override
@@ -118,17 +135,17 @@ public class NotificationFragment extends DialogFragment implements Notification
             public void onRefresh() {
                 User user = StorageManager.getUser(getContext());
                 if (user != null) {
-                    if (user.getUser_type().equals("Experts"))
-                        getExpertsQuestion();
-                    else {
-                        getExpertAnswers();
+                    if (isExpert) {
+                        notificationListener.getQuestion();
+                    } else {
+                        notificationListener.getAnswer();
                     }
                 } else {
                     refresh_layout.setRefreshing(false);
                 }
             }
         });
-        User user = StorageManager.getUser(getContext());
+/*        User user = StorageManager.getUser(getContext());
         if (user != null) {
             if (user.getUser_type().equals("Experts")) {
                 isExpert = true;
@@ -137,7 +154,8 @@ public class NotificationFragment extends DialogFragment implements Notification
                 isExpert = false;
                 getExpertAnswers();
             }
-        }
+        }*/
+
         questionExpertsList = new ArrayList<>();
         responseAnswers = new ArrayList<>();
         notificationExpertAdapter = new NotificationAdapter(getContext(), questionExpertsList, this);
@@ -147,16 +165,37 @@ public class NotificationFragment extends DialogFragment implements Notification
         if (isExpert)
             rvNotification.setAdapter(notificationExpertAdapter);
         else rvNotification.setAdapter(notificationUserAdapter);
-        TimerTask timerTask = new MyTimerTask();
+        if (isExpert) {
+            notificationListener.getQuestion();
+        } else {
+            notificationListener.getAnswer();
+        }
+/*        TimerTask timerTask = new MyTimerTask();
         timer = new Timer(true);
-        timer.scheduleAtFixedRate(timerTask, 0, 10 * 1000);
-
+        timer.scheduleAtFixedRate(timerTask, 0, 10 * 1000);*/
     }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        timer.cancel();
+    }
+
+    // in case user is Expert
+    public void updateViewExpertQuestion(List<QuestionExperts> questionExperts) {
+        Log.v("trungbd", " updateViewExpertQuestion    " + questionExperts.toString());
+        questionExpertsList.clear();
+        questionExpertsList.addAll(questionExperts);
+        notificationExpertAdapter.notifyDataSetChanged();
+        refresh_layout.setRefreshing(false);
+    }
+
+    // in case user is normal user
+    public void updateViewExpertAnswer(List<ResponseAnswer> responseAnswersList) {
+        Log.v("trungbd", " updateViewExpertAnswer    " + responseAnswersList.toString());
+        responseAnswers.clear();
+        responseAnswers.addAll(responseAnswersList);
+        notificationUserAdapter.notifyDataSetChanged();
+        refresh_layout.setRefreshing(false);
     }
 
     private void getExpertAnswers() {

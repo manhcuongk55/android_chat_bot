@@ -31,6 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.balysv.materialripple.MaterialRippleLayout;
 import com.google.cloud.android.speech.R;
 import com.lopei.collageview.CollageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -281,16 +282,17 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     protected class LeftTextViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public TextView leftTV, leftTimeTV;
+        public TextView leftTV, leftTimeTV, questionFromChuyenGia, answerFromChuyenGia;
         public ExpandableLayout leftEL;
         public ImageView lefttMessageStatusIV, leftBubbleIconIV;
         public CardView leftBubbleIconCV;
         View layoutFeedback;
-        RelativeLayout layoutContentLike, layoutContentSairoi, layoutContentGuichuyengia, answerContent;
+        RelativeLayout layoutContentLike, layoutContentSairoi, layoutContentGuichuyengia, layoutContentAddFeedback, answerContent;
         LinearLayout layoutLike, layoutGuiChuyenGiaClick;
         LinearLayout layoutSairoi;
-        View layoutFeedBackContent, layoutBottomTextview1, layoutAnswering, layoutAnswerText, layoutBottomTextview;
+        View layoutFeedBackContent, layoutBottomTextview1, layoutAnswering, layoutAnswerText, layoutBottomTextview, layoutAnswerFromChuyenGia;
         RecyclerView moreAnswer;
+        MaterialRippleLayout gotoLink;
 
         public LeftTextViewHolder(View view) {
             super(view);
@@ -305,6 +307,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             layoutContentLike = view.findViewById(R.id.layoutContentLike);
             layoutContentSairoi = view.findViewById(R.id.layoutContentSairoi);
             layoutContentGuichuyengia = view.findViewById(R.id.layoutContentGuichuyengia);
+            layoutContentAddFeedback = view.findViewById(R.id.layoutContentAddFeedback);
             layoutLike = view.findViewById(R.id.layoutLike);
             layoutSairoi = view.findViewById(R.id.layoutSairoi);
 //            layoutGuichuyengia = view.findViewById(R.id.layoutGuichuyengia);
@@ -312,9 +315,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             answerContent = view.findViewById(R.id.answerContent);
             layoutBottomTextview1 = view.findViewById(R.id.layoutBottomTextview1);
             layoutBottomTextview = view.findViewById(R.id.layoutBottomTextview);
+            layoutAnswerFromChuyenGia = view.findViewById(R.id.layoutAnswerFromChuyenGia);
+            answerFromChuyenGia = view.findViewById(R.id.answerFromChuyenGia);
+            questionFromChuyenGia = view.findViewById(R.id.questionFromChuyenGia);
             layoutAnswering = view.findViewById(R.id.layoutAnswering);
             layoutAnswerText = view.findViewById(R.id.layoutAnswerText);
             moreAnswer = view.findViewById(R.id.moreAnswer);
+            gotoLink = view.findViewById(R.id.gotoLink);
             layoutLike.setOnClickListener(this);
             layoutSairoi.setOnClickListener(this);
             layoutGuiChuyenGiaClick.setOnClickListener(this);
@@ -1277,6 +1284,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public static String getDomainName(String url) throws URISyntaxException {
+        if (url == null || url.equals("")) return null;
         URI uri = new URI(url);
         String domain = uri.getHost();
         return domain.startsWith("www.") ? domain.substring(4) : domain;
@@ -1293,6 +1301,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         if (holder instanceof LeftTextViewHolder) {
             final LeftTextViewHolder holder1 = (LeftTextViewHolder) holder;
+            holder1.gotoLink.setVisibility(View.GONE);
             holder1.layoutFeedback.setVisibility(View.GONE);
             holder1.layoutBottomTextview.setVisibility(View.GONE);
             holder1.layoutBottomTextview1.setVisibility(View.GONE);
@@ -1303,11 +1312,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder1.layoutContentLike.setVisibility(View.GONE);
             holder1.layoutContentGuichuyengia.setVisibility(View.GONE);
             holder1.layoutGuiChuyenGiaClick.setVisibility(View.GONE);
+            holder1.leftTV.setBackground(context.getResources().getDrawable(R.drawable.left_tv_bg));
             if (message.isAnswer()) {
                 holder1.layoutAnswering.setVisibility(View.VISIBLE);
                 holder1.layoutAnswerText.setVisibility(View.GONE);
             } else {
                 holder1.layoutAnswerText.setVisibility(View.VISIBLE);
+                holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
+                holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
                 holder1.leftTV.setText(message.getBody());
                 message.setWebUrl(message.getWebUrl());
                 if (baseResponse != null) {
@@ -1316,10 +1328,32 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             if (message.getBaseResponse().getMessage().get(i).isIsfocus()) {
                                 holder1.leftTV.setText(message.getBaseResponse().getMessage().get(i).getText());
                                 message.setWebUrl(message.getBaseResponse().getMessage().get(i).getUrl());
+                                if (message.getWebUrl() != null && !message.getWebUrl().equals("")) {
+                                    Drawable background = context.getResources().getDrawable(R.drawable.left_tv_bg);
+                                    switch (i) {
+                                        case 0:
+                                            background = context.getResources().getDrawable(R.drawable.left_tv_bg_0);
+                                            break;
+                                        case 1:
+                                            background = context.getResources().getDrawable(R.drawable.left_tv_bg_1);
+                                            break;
+                                        case 2:
+                                            background = context.getResources().getDrawable(R.drawable.left_tv_bg_2);
+                                            break;
+                                        case 3:
+                                            background = context.getResources().getDrawable(R.drawable.left_tv_bg_3);
+                                            break;
+                                    }
+                                    holder1.leftTV.setBackground(background);
+                                }
                             }
                         }
                     }
                 }
+                if (message.getWebUrl() != null && !message.getWebUrl().equals("")) {
+                    holder1.gotoLink.setVisibility(View.VISIBLE);
+                }
+
 
                 holder1.leftTimeTV.setText(message.getTime());
                 String rate = message.getRateMessage();
@@ -1344,22 +1378,32 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             checkFeedbackContentVisible = false;
                             return;
                         }
+                    }
+                });
+                holder1.layoutFeedBackContent.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (holder1.layoutFeedback.getVisibility() == View.VISIBLE) {
+                            holder1.layoutBottomTextview1.setVisibility(View.GONE);
+                            holder1.layoutFeedback.setVisibility(View.GONE);
+                            checkFeedbackContentVisible = false;
+                            return;
+                        }
+                        holder1.layoutBottomTextview1.setVisibility(View.VISIBLE);
+                        holder1.layoutFeedback.setVisibility(View.VISIBLE);
+                        checkFeedbackContentVisible = true;
+                    }
+
+                });
+                holder1.gotoLink.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
                         if (message.getWebUrl() == null) return;
                         if (!message.getWebUrl().equals("")) {
                             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(message.getWebUrl()));
                             context.startActivity(browserIntent);
                         }
                     }
-                });
-                holder1.layoutAnswerText.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        holder1.layoutBottomTextview1.setVisibility(View.VISIBLE);
-                        holder1.layoutFeedback.setVisibility(View.VISIBLE);
-                        checkFeedbackContentVisible = true;
-                        return true;
-                    }
-
                 });
             }
             if (baseResponse != null) {
@@ -1378,7 +1422,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 final List<Answer> answers = baseResponse.getMessage();
                 if (answers != null) {
-                    if (answers.size() > 1) {
+                    if (answers.size() > 0) {
                         for (int i = 0; i < answers.size(); i++) {
                             String url = answers.get(i).getUrl();
                             try {
@@ -1397,6 +1441,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 }
                                 notifyDataSetChanged();
                                 holder1.leftTV.setText(answers.get(position).getText());
+                                int background = context.getResources().getIdentifier("left_tv_bg_" + position, "drawable", context.getPackageName());
+                                holder1.leftTV.setBackgroundResource(background);
+
                                 message.setWebUrl(answers.get(position).getUrl());
                             }
                         });

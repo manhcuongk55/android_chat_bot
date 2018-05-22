@@ -6,6 +6,7 @@ import com.activeandroid.annotation.Table;
 import com.google.gson.Gson;
 
 import viettel.cyberspace.assitant.model.BaseResponse;
+import viettel.cyberspace.assitant.model.ResponseAnswer;
 import viettel.cyberspace.assitant.model.User;
 
 /**
@@ -36,7 +37,10 @@ public class MessageHistory extends Model {
     private boolean isAnswer;
     @Column(name = "baseResponse")
     private String baseResponse;
-
+    @Column(name = "isAnswerFromChuyengia")
+    private boolean isAnswerFromChuyengia;
+    @Column(name = "responseAnswer")
+    private String responseAnswer;
     @Column(name = "question")
     private String question;
 
@@ -162,10 +166,44 @@ public class MessageHistory extends Model {
         this.baseResponse = json;
     }
 
+    public boolean isAnswerFromChuyengia() {
+        return isAnswerFromChuyengia;
+    }
+
+    public void setAnswerFromChuyengia(boolean answerFromChuyengia) {
+        isAnswerFromChuyengia = answerFromChuyengia;
+    }
+
+    public String getResponseAnswer() {
+        return responseAnswer;
+    }
+
+    public void setResponseAnswer(String responseAnswer) {
+        this.responseAnswer = responseAnswer;
+    }
+
+    public void setResponseAnswerFromObject(ResponseAnswer responseAnswer) {
+        Gson gson = new Gson();
+        String json;
+        if (responseAnswer != null)
+            json = gson.toJson(responseAnswer);
+        else {
+            json = "";
+        }
+        this.responseAnswer = json;
+    }
+
+
     public BaseResponse getBaseResponseFromObject() {
         Gson gson = new Gson();
         BaseResponse baseResponse = gson.fromJson(this.baseResponse, BaseResponse.class);
         return baseResponse;
+    }
+
+    public ResponseAnswer getResponseAnswerFromObject() {
+        Gson gson = new Gson();
+        ResponseAnswer responseAnswer = gson.fromJson(this.responseAnswer, ResponseAnswer.class);
+        return responseAnswer;
     }
 
     public Message toMessage() {
@@ -182,6 +220,8 @@ public class MessageHistory extends Model {
         message.setId(getId());
         message.setId(messageId);
         message.setBaseResponse(getBaseResponseFromObject());
+        message.setResponseAnswer(getResponseAnswerFromObject());
+        message.setAnswerFromChuyengia(isAnswerFromChuyengia);
         message.setTimeStamp(timeStamp);
         message.setQuestion(question);
         return message;

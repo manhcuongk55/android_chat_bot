@@ -28,7 +28,7 @@
             <android.support.v7.widget.CardView
                 android:id="@+id/hideKeyBoardLayout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:visibility="visible"
                 app:cardBackgroundColor="@android:color/white"
                 app:cardCornerRadius="0dp"
@@ -39,8 +39,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:minHeight="40dp"
-                    android:minWidth="40dp"
+                    android:layout_marginLeft="5dp"
+                    android:minHeight="30dp"
+                    android:minWidth="30dp"
                     app:mrl_rippleOverlay="true"
                     app:mrl_rippleRoundedCorners="30dp">
 
@@ -58,10 +59,33 @@
                     android:layout_gravity="center">
 
                     <com.balysv.materialripple.MaterialRippleLayout
+                        android:id="@+id/avi2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:minHeight="80dp"
+                        android:minWidth="80dp"
+                        android:visibility="gone"
+                        app:mrl_rippleOverlay="true"
+                        app:mrl_rippleRoundedCorners="30dp">
+
+                        <com.wang.avi.AVLoadingIndicatorView
+                            style="@style/AVLoadingIndicatorView"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_gravity="center"
+                            app:indicatorColor="#42ebf4"
+                            app:indicatorName="BallScaleMultipleIndicator" />
+                    </com.balysv.materialripple.MaterialRippleLayout>
+
+                    <com.balysv.materialripple.MaterialRippleLayout
                         android:id="@+id/micMRL2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_centerInParent="true"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
                         android:minHeight="40dp"
                         android:minWidth="40dp"
                         app:mrl_rippleOverlay="true"
@@ -70,30 +94,11 @@
                         <ImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:src="@drawable/mic_icon"
-                            android:tint="@android:color/black" />
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/mic" />
                     </com.balysv.materialripple.MaterialRippleLayout>
 
-                    <com.balysv.materialripple.MaterialRippleLayout
-                        android:id="@+id/avi2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_gravity="center"
-                        android:minHeight="40dp"
-                        android:minWidth="40dp"
-                        android:visibility="gone"
-                        app:mrl_rippleOverlay="true"
-                        app:mrl_rippleRoundedCorners="30dp">
 
-                        <com.wang.avi.AVLoadingIndicatorView
-                            style="@style/AVLoadingIndicatorView"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            app:indicatorColor="#42ebf4"
-                            app:indicatorName="LineScalePulseOutRapidIndicator" />
-                    </com.balysv.materialripple.MaterialRippleLayout>
                 </RelativeLayout>
 
             </android.support.v7.widget.CardView>
@@ -101,7 +106,7 @@
             <LinearLayout
                 android:id="@+id/showKeyBoardLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:background="@android:color/white"
                 android:minHeight="50dp"
                 android:orientation="horizontal"
@@ -111,28 +116,7 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center">
-
-                    <com.balysv.materialripple.MaterialRippleLayout
-                        android:id="@+id/micMRL"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="2dp"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_marginTop="2dp"
-                        app:mrl_rippleOverlay="true"
-                        app:mrl_rippleRoundedCorners="30dp">
-
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/mic_icon"
-                            android:tint="@android:color/black"
-                            android:visibility="visible" />
-                    </com.balysv.materialripple.MaterialRippleLayout>
+                    android:layout_gravity="center_vertical">
 
                     <com.balysv.materialripple.MaterialRippleLayout
                         android:id="@+id/avi"
@@ -150,12 +134,37 @@
 
                         <com.wang.avi.AVLoadingIndicatorView
                             style="@style/AVLoadingIndicatorView"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
                             android:layout_gravity="center"
                             app:indicatorColor="#42ebf4"
-                            app:indicatorName="LineScalePulseOutRapidIndicator" />
+                            app:indicatorName="BallScaleMultipleIndicator" />
                     </com.balysv.materialripple.MaterialRippleLayout>
+
+                    <com.balysv.materialripple.MaterialRippleLayout
+                        android:id="@+id/micMRL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginBottom="2dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginTop="2dp"
+                        android:minHeight="25dp"
+                        android:minWidth="25dp"
+                        app:mrl_rippleOverlay="true"
+                        app:mrl_rippleRoundedCorners="30dp">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_centerInParent="true"
+                            android:layout_gravity="center"
+                            android:src="@drawable/mic"
+                            android:visibility="visible" />
+                    </com.balysv.materialripple.MaterialRippleLayout>
+
+
                 </RelativeLayout>
 
 

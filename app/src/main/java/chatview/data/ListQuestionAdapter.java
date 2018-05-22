@@ -63,7 +63,22 @@ public class ListQuestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ListSuggestionViewHolder holder1 = (ListSuggestionViewHolder) holder;
             holder1.textSuggestion.setText(suggestion.get(position).getDomain());
             if (suggestion.get(position).isIsfocus()) {
-                holder1.textSuggestion.setBackgroundColor(context.getResources().getColor(R.color.dtbutton_color_belize_hole));
+                int color = context.getResources().getColor(R.color.color_answer_0);
+                switch (position) {
+                    case 0:
+                        color = context.getResources().getColor(R.color.color_answer_0);
+                        break;
+                    case 1:
+                        color = context.getResources().getColor(R.color.color_answer_1);
+                        break;
+                    case 2:
+                        color = context.getResources().getColor(R.color.color_answer_2);
+                        break;
+                    case 3:
+                        color = context.getResources().getColor(R.color.color_answer_3);
+                        break;
+                }
+                holder1.textSuggestion.setBackgroundColor(color);
                 holder1.textSuggestion.setTextColor(Color.WHITE);
             } else {
                 holder1.textSuggestion.setBackgroundColor(Color.WHITE);
@@ -75,7 +90,12 @@ public class ListQuestionAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        return suggestion.size();
+        int count = 0;
+        for (int i = 0; i < suggestion.size(); i++) {
+            if (suggestion.get(i).getDomain() != null)
+                count++;
+        }
+        return count;
     }
 
     public class ListQuestionViewHolder extends RecyclerView.ViewHolder {

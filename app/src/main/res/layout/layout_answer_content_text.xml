@@ -14,7 +14,7 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:paddingTop="10dp"
-        android:text="Hello"
+        android:text="Hello it's me how are you i'm fine thank you and you"
         android:textColor="@android:color/white"
         android:textSize="16sp" />
 </LinearLayout>

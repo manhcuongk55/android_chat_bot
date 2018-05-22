@@ -5,11 +5,17 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import viettel.cyberspace.assitant.model.QuestionExperts;
+import viettel.cyberspace.assitant.model.ResponseAnswer;
 import viettel.cyberspace.assitant.model.User;
+import viettel.cyberspace.assitant.utils.Const;
 import viettel.cyberspace.assitant.utils.TextUtil;
 
 
@@ -47,6 +53,46 @@ public class StorageManager {
         String json = preferences.getString("user", "");
         User user = gson.fromJson(json, User.class);
         return user;
+    }
+
+    public static void saveQuestionExperts(Context context, List<QuestionExperts> questionExperts) {
+        SharedPreferences preferences = getSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(questionExperts);
+        editor.putString(Const.PREF_EXPERT_QUESTION, json);
+        editor.commit();
+    }
+
+    public static List<QuestionExperts> getQuestionExperts(Context context) {
+        SharedPreferences preferences = getSharedPreferences(context);
+        Gson gson = new Gson();
+        String json = preferences.getString(Const.PREF_EXPERT_QUESTION, null);
+        Type type = new TypeToken<List<QuestionExperts>>() {
+        }.getType();
+        if (json != null)
+            return gson.fromJson(json, type);
+        else return new ArrayList<>();
+    }
+
+    public static void saveResponseAnswer(Context context, List<ResponseAnswer> responseAnswers) {
+        SharedPreferences preferences = getSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(responseAnswers);
+        editor.putString(Const.PREF_EXPERT_ANSWER, json);
+        editor.commit();
+    }
+
+    public static List<ResponseAnswer> getResponseAnswers(Context context) {
+        SharedPreferences preferences = getSharedPreferences(context);
+        Gson gson = new Gson();
+        String json = preferences.getString(Const.PREF_EXPERT_ANSWER, null);
+        Type type = new TypeToken<List<ResponseAnswer>>() {
+        }.getType();
+        if (json != null)
+            return gson.fromJson(json, type);
+        else return new ArrayList<>();
     }
 
     public static String getStringValue(Context context, String key) {

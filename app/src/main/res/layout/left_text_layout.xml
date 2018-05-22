@@ -79,7 +79,15 @@
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:visibility="gone"></include>
+
+                        <include
+                            android:id="@+id/layoutAnswerFromChuyenGia"
+                            layout="@layout/layout_answer_from_chuyengia"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"></include>
                     </RelativeLayout>
+
 
                     <View
                         android:id="@+id/layoutBottomTextview"
@@ -87,7 +95,7 @@
                         android:layout_height="10dp"
                         android:layout_alignRight="@id/answerContent"
                         android:layout_below="@id/answerContent"
-                        android:visibility="gone"></View>
+                        android:visibility="visible"></View>
 
                     <View
                         android:id="@+id/layoutBottomTextview1"
@@ -105,7 +113,7 @@
                         android:layout_alignBottom="@id/layoutBottomTextview"
                         android:layout_alignRight="@id/answerContent"
                         android:layout_marginRight="10dp"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                     </include>
 
@@ -154,4 +162,29 @@
         android:visibility="gone">
 
     </android.support.v7.widget.RecyclerView>
+
+    <View
+        android:id="@+id/view1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/leftEL"
+        android:layout_alignRight="@+id/leftEL">
+
+    </View>
+
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/gotoLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/view1"
+        app:mrl_rippleOverlay="true"
+        app:mrl_rippleRoundedCorners="30dp">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/gotolink" />
+    </com.balysv.materialripple.MaterialRippleLayout>
 </RelativeLayout>

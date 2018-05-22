@@ -122,4 +122,8 @@
     <color name="dtbutton_color_concrete">#95a5a6</color>
     <color name="dtbutton_color_asbestos">#7f8c8d</color>
     <color name="dtbutton_color_transparent">@android:color/transparent</color>
+    <color name="color_answer_0">#B5B0F7</color>
+    <color name="color_answer_1">#93EAF0</color>
+    <color name="color_answer_2">#FFBB94</color>
+    <color name="color_answer_3">#FCA3A3</color>
 </resources>
