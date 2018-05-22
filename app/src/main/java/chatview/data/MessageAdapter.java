@@ -56,6 +56,7 @@ import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import viettel.cyberspace.assitant.Webview.WebviewActivity;
 import viettel.cyberspace.assitant.model.Answer;
 import viettel.cyberspace.assitant.model.BaseResponse;
+import viettel.cyberspace.assitant.model.ResponseAnswer;
 
 import static android.content.ContentValues.TAG;
 
@@ -1312,10 +1313,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder1.layoutContentLike.setVisibility(View.GONE);
             holder1.layoutContentGuichuyengia.setVisibility(View.GONE);
             holder1.layoutGuiChuyenGiaClick.setVisibility(View.GONE);
+            holder1.layoutAnswerFromChuyenGia.setVisibility(View.GONE);
             holder1.leftTV.setBackground(context.getResources().getDrawable(R.drawable.left_tv_bg));
             if (message.isAnswer()) {
                 holder1.layoutAnswering.setVisibility(View.VISIBLE);
                 holder1.layoutAnswerText.setVisibility(View.GONE);
+            } else if (message.isAnswerFromChuyengia()) {
+                holder1.layoutAnswerFromChuyenGia.setVisibility(View.VISIBLE);
+                ResponseAnswer responseAnswer = message.getResponseAnswer();
+                if (responseAnswer != null) {
+                    holder1.questionFromChuyenGia.setText(responseAnswer.getQuestion());
+                    holder1.answerFromChuyenGia.setText(responseAnswer.getAnswer());
+                }
             } else {
                 holder1.layoutAnswerText.setVisibility(View.VISIBLE);
                 holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
@@ -1405,6 +1414,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     }
                 });
+
             }
             if (baseResponse != null) {
                 int answersCode = (int) baseResponse.getAnswerCode();
@@ -1455,7 +1465,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 }
             }
-        } else {
+        } else
+
+        {
             if (holder instanceof RightTextViewHolder) {
                 final RightTextViewHolder holder1 = (RightTextViewHolder) holder;
                 holder1.rightTV.setText(message.getBody());
@@ -1757,6 +1769,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
         }
+
     }
 
 
