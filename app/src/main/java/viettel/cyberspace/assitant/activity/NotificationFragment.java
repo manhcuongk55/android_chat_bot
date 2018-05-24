@@ -182,7 +182,6 @@ public class NotificationFragment extends DialogFragment implements Notification
 
     // in case user is Expert
     public void updateViewExpertQuestion(List<QuestionExperts> questionExperts) {
-        Log.v("trungbd", " updateViewExpertQuestion    " + questionExperts.toString());
         questionExpertsList.clear();
         questionExpertsList.addAll(questionExperts);
         notificationExpertAdapter.notifyDataSetChanged();
@@ -191,7 +190,6 @@ public class NotificationFragment extends DialogFragment implements Notification
 
     // in case user is normal user
     public void updateViewExpertAnswer(List<ResponseAnswer> responseAnswersList) {
-        Log.v("trungbd", " updateViewExpertAnswer    " + responseAnswersList.toString());
         responseAnswers.clear();
         responseAnswers.addAll(responseAnswersList);
         notificationUserAdapter.notifyDataSetChanged();

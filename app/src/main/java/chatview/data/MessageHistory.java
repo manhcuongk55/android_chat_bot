@@ -166,22 +166,6 @@ public class MessageHistory extends Model {
         this.baseResponse = json;
     }
 
-    public boolean isAnswerFromChuyengia() {
-        return isAnswerFromChuyengia;
-    }
-
-    public void setAnswerFromChuyengia(boolean answerFromChuyengia) {
-        isAnswerFromChuyengia = answerFromChuyengia;
-    }
-
-    public String getResponseAnswer() {
-        return responseAnswer;
-    }
-
-    public void setResponseAnswer(String responseAnswer) {
-        this.responseAnswer = responseAnswer;
-    }
-
     public void setResponseAnswerFromObject(ResponseAnswer responseAnswer) {
         Gson gson = new Gson();
         String json;
@@ -204,6 +188,22 @@ public class MessageHistory extends Model {
         Gson gson = new Gson();
         ResponseAnswer responseAnswer = gson.fromJson(this.responseAnswer, ResponseAnswer.class);
         return responseAnswer;
+    }
+
+    public boolean isAnswerFromChuyengia() {
+        return isAnswerFromChuyengia;
+    }
+
+    public void setAnswerFromChuyengia(boolean answerFromChuyengia) {
+        isAnswerFromChuyengia = answerFromChuyengia;
+    }
+
+    public String getResponseAnswer() {
+        return responseAnswer;
+    }
+
+    public void setResponseAnswer(String responseAnswer) {
+        this.responseAnswer = responseAnswer;
     }
 
     public Message toMessage() {

@@ -2,6 +2,8 @@ package viettel.cyberspace.assitant.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +11,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -51,6 +55,7 @@ import com.wang.avi.AVLoadingIndicatorView;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -119,7 +124,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     private Synthesizer m_syn;
     Animation myAnim;
-
+    TextView tvNotification;
 
     public boolean isRecording = false;
 
@@ -152,13 +157,14 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             if (mSpeechService != null) {
                 Log.v("trungbd", "onVoiceEnd");
                 mSpeechService.finishRecognizing();
+                stopVoiceRecorder();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         setEnableVoidButton(true);
-                        stopVoiceRecorder();
                     }
                 });
+
             }
         }
 
@@ -210,12 +216,14 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         volume_change = findViewById(R.id.volume_change);
         imageVolume = findViewById(R.id.imageVolume);
         logout = findViewById(R.id.logout);
+        tvNotification = findViewById(R.id.tvNotification);
         notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FragmentManager fm = getSupportFragmentManager();
                 notificationFragment = new NotificationFragment(isExpert, ChatBotActivity.this);
                 notificationFragment.show(fm, "NotificationFragment");
+                tvNotification.setVisibility(View.GONE);
             }
         });
         user_info.setOnClickListener(new View.OnClickListener() {
@@ -508,6 +516,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         });
     }
 
+    public static long[] vibrate = new long[]{0, 2000, 200, 2000, 0};
+
     public void notificationAnswer(List<ResponseAnswer> responseAnswerList) {
         for (ResponseAnswer responseAnswer : responseAnswerList) {
             Message message = new Message();
@@ -518,13 +528,38 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
             message.setTimeStamp(System.currentTimeMillis());
             message.setAnswer(false);
+            message.setMid(responseAnswer.getAnswerId());
             chatView.addMessage(message);
             playVoice(responseAnswer.getAnswer());
         }
+        tvNotification.setVisibility(View.VISIBLE);
+        pushNotification("Bạn nhận được câu trả lời từ chuyên gia");
     }
 
     public void notificationQuestion(List<QuestionExperts> questionExpertsList) {
+        tvNotification.setVisibility(View.VISIBLE);
+        pushNotification("Bạn nhận được 1 câu hỏi từ người dùng!");
+    }
 
+    public void pushNotification(String content) {
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Intent intent = new Intent(getContext(), ChatBotActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Viettel Assistant")
+                .setContentText(content)
+                .setAutoCancel(true)
+                .setSound(alarmSound)
+                .setVibrate(vibrate)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationManager.IMPORTANCE_HIGH);
+        NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        int m = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+        manager.notify(m, builder.build());
     }
 
     public boolean checkIfQuestionContain(List<QuestionExperts> questionExpertsList, QuestionExperts questionExperts) {

@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Virtual Assistant"
+        android:text="Viettel Assistant"
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 
@@ -59,10 +59,12 @@
                 android:src="@drawable/notification" />
 
             <TextView
+                android:id="@+id/tvNotification"
                 android:layout_width="7dp"
                 android:layout_height="7dp"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/circle_textview_normal" />
+                android:background="@drawable/circle_textview_normal"
+                android:visibility="gone" />
         </RelativeLayout>
     </com.balysv.materialripple.MaterialRippleLayout>
 

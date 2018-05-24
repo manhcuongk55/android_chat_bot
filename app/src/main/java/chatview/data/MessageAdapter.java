@@ -1306,6 +1306,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder1.layoutFeedback.setVisibility(View.GONE);
             holder1.layoutBottomTextview.setVisibility(View.GONE);
             holder1.layoutBottomTextview1.setVisibility(View.GONE);
+            holder1.layoutAnswerText.setVisibility(View.GONE);
             holder1.layoutFeedBackContent.setVisibility(View.GONE);
             holder1.moreAnswer.setVisibility(View.GONE);
             holder1.layoutAnswering.setVisibility(View.GONE);
@@ -1318,15 +1319,18 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (message.isAnswer()) {
                 holder1.layoutAnswering.setVisibility(View.VISIBLE);
                 holder1.layoutAnswerText.setVisibility(View.GONE);
-            } else if (message.isAnswerFromChuyengia()) {
-                holder1.layoutAnswerFromChuyenGia.setVisibility(View.VISIBLE);
-                ResponseAnswer responseAnswer = message.getResponseAnswer();
-                if (responseAnswer != null) {
-                    holder1.questionFromChuyenGia.setText(responseAnswer.getQuestion());
-                    holder1.answerFromChuyenGia.setText(responseAnswer.getAnswer());
-                }
+
             } else {
-                holder1.layoutAnswerText.setVisibility(View.VISIBLE);
+                if (message.isAnswerFromChuyengia()) {
+                    holder1.layoutAnswerFromChuyenGia.setVisibility(View.VISIBLE);
+                    ResponseAnswer responseAnswer = message.getResponseAnswer();
+                    if (responseAnswer != null) {
+                        holder1.questionFromChuyenGia.setText(responseAnswer.getQuestion());
+                        holder1.answerFromChuyenGia.setText(responseAnswer.getAnswer());
+                    }
+                } else {
+                    holder1.layoutAnswerText.setVisibility(View.VISIBLE);
+                }
                 holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
                 holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
                 holder1.leftTV.setText(message.getBody());
@@ -1794,6 +1798,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     // set adapter filtered list
+
     public void setList(List<Message> list) {
         this.filterList = list;
     }
