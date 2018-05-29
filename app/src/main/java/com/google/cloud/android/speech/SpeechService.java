@@ -224,7 +224,8 @@ public class SpeechService extends Service {
             language.append("-");
             language.append(country);
         }
-        return language.toString();
+        // return language.toString();
+        return "vi";
     }
 
     @Nullable
