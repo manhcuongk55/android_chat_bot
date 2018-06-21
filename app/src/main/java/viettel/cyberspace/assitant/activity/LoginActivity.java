@@ -57,8 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         account = findViewById(R.id.account);
 
         password = findViewById(R.id.password);
-        account.setText("hungpv39");
-        password.setText("Chuonggio213@!");
+        account.setText("experts_1");
+        password.setText("123456aA@");
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

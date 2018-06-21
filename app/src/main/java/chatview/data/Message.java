@@ -56,7 +56,8 @@ public class Message {
         LeftAudio,
         RightAudio,
         ListQuestion,
-        ListSuggestion
+        ListSuggestion,
+        LeftHtml
     }
 
     public Message() {

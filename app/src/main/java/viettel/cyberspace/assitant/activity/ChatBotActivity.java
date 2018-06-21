@@ -52,6 +52,8 @@ import com.microsoft.speech.tts.Synthesizer;
 import com.microsoft.speech.tts.Voice;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -381,6 +383,14 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 message.setTimeStamp(System.currentTimeMillis());
                 message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
                 chatView.addMessage(message);
+                //duypq test
+                if (body.equals("1")) {
+                    getHtmlData();
+                    return;
+                }
+
+
+                //duypq test
                 sendMessage(body, NAME_USER_REQUEST);
             }
         });
@@ -1089,5 +1099,46 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     private void toastError() {
         Toast.makeText(getApplicationContext(), "No Network Connected", Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void getHtmlData() {
+
+        Message message = new Message();
+        message.setMessageType(Message.MessageType.LeftHtml);
+        message.setTime(getTime());
+        message.setBody(LoadData("thoitiet.html"));
+        message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+//        message.setMid(mid);
+//        if (baseResponse != null) {
+//            if (baseResponse.getMessage() != null && baseResponse.getMessage().size() > 0)
+//                baseResponse.getMessage().get(0).setIsfocus(true);
+//            message.setBaseResponse(baseResponse);
+//        }
+        message.setTimeStamp(System.currentTimeMillis());
+//        message.setWebUrl(url);
+//        message.setQuestion(question);
+        message.setAnswer(false);
+        chatView.addMessage(message);
+        // playVoice(LoadData("thoitiet"));
+        vibrate(50);
+    }
+
+
+    public String LoadData(String fileName) {
+
+        String tContent = "";
+        try {
+
+            InputStream stream = getAssets().open(fileName);
+            int size = stream.available();
+            byte[] buffer = new byte[size];
+            stream.read(buffer);
+            stream.close();
+            tContent = new String(buffer);
+        } catch (Exception e) {
+
+        }
+        return tContent;
     }
 }

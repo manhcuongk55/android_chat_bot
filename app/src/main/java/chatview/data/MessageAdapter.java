@@ -18,6 +18,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -25,6 +26,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -176,6 +179,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 type = 12;
                 break;
             }
+
+            case LeftHtml: {
+                type = 13;
+                break;
+            }
         }
         if (type == 0) {
             throw new RuntimeException("Set Message Type ( Message Type is Null )");
@@ -255,6 +263,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                         if (viewType == 12) {
                                                             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_suggestion_layout, parent, false);
                                                             viewHolder = new ListSuggestionViewHolder(view);
+                                                        } else {
+                                                            if (viewType == 13) {
+                                                                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.left_html_layout, parent, false);
+                                                                viewHolder = new LeftHtmlViewHolder(view);
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -622,6 +635,72 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 rightBubbleIconCV.setVisibility(View.VISIBLE);
             } else {
                 rightBubbleIconCV.setVisibility(View.GONE);
+            }
+        }
+    }
+
+
+    protected class LeftHtmlViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView leftTimeTV, senderNameTV;
+        public ExpandableLayout leftEL;
+        public ImageView leftBubbleIconIV;
+        public CardView leftBubbleIconCV;
+        public CollageView leftCollageView;
+        public WebView webView;
+
+        public LeftHtmlViewHolder(View view) {
+            super(view);
+
+            leftTimeTV = view.findViewById(R.id.leftTimeTV);
+            leftEL = view.findViewById(R.id.leftEL);
+            leftCollageView = view.findViewById(R.id.leftCollageView);
+            senderNameTV = view.findViewById(R.id.senderNameTV);
+            leftBubbleIconIV = view.findViewById(R.id.leftBubbleIconIV);
+            leftBubbleIconCV = view.findViewById(R.id.leftBubbleIconCV);
+            webView = view.findViewById(R.id.leftWV);
+            setSenderNameTextColor(senderNameTextColor);
+            showSenderName(showSenderName);
+            showLeftBubbleIcon(showLeftBubbleIcon);
+//            view.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//
+//                    int pos = getLayoutPosition();
+//
+//                    return true;
+//                }
+//            });
+
+            WebSettings settings = webView.getSettings();
+            settings.setUseWideViewPort(true);
+            settings.setLoadWithOverviewMode(true);
+            settings.setJavaScriptEnabled(true);
+            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+            // wv.setBackgroundColor(0);
+            webView.setVerticalScrollBarEnabled(false);
+            webView.setHorizontalScrollBarEnabled(false);
+
+            webView.loadUrl("file:///android_asset/thoitiet.html");
+        }
+
+        public void setSenderNameTextColor(int color) {
+            senderNameTV.setTextColor(color);
+        }
+
+        public void showSenderName(boolean b) {
+            if (b) {
+                senderNameTV.setVisibility(View.VISIBLE);
+            } else {
+                senderNameTV.setVisibility(View.GONE);
+            }
+        }
+
+        public void showLeftBubbleIcon(boolean b) {
+            if (b) {
+                leftBubbleIconCV.setVisibility(View.VISIBLE);
+            } else {
+                leftBubbleIconCV.setVisibility(View.GONE);
             }
         }
     }
@@ -1333,7 +1412,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
                 holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
                 holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
-                holder1.leftTV.setText(message.getBody());
+//                holder1.leftTV.setText(message.getBody());
+                holder1.leftTV.setText(Html.fromHtml(message.getBody()), TextView.BufferType.SPANNABLE);
                 message.setWebUrl(message.getWebUrl());
                 if (baseResponse != null) {
                     if (baseResponse.getMessage() != null) {
