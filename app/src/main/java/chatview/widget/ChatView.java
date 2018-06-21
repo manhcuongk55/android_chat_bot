@@ -191,19 +191,19 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 chatRV.scrollToPosition(0);
-                messageAdapter.notifyDataSetChanged();
+                //  messageAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                // messageAdapter.notifyDataSetChanged();
             }
         });
         messageET.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
                 chatRV.scrollToPosition(0);
-                messageAdapter.notifyDataSetChanged();
+                // messageAdapter.notifyDataSetChanged();
             }
         });
 
@@ -454,11 +454,9 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
                 messageList.add(0, message);
             }
         }
-        if (message == ChatBotActivity.messageAnswering) {
-            messageAdapter.notifyDataSetChanged();
-        } else {
-            messageAdapter.notifyItemInserted(0);
-        }
+
+        messageAdapter.notifyItemInserted(0);
+
         chatRV.smoothScrollToPosition(0);
         mLayoutRoot.invalidate();
     }
@@ -477,9 +475,11 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
 
     //Use this method to remove a message from chatview
     public void removeMessage(Message message) {
-        if (message == ChatBotActivity.messageAnswering)
+        if (message == ChatBotActivity.messageAnswering) {
             messageList.remove(message);
-        messageAdapter.notifyDataSetChanged();
+            // messageAdapter.notifyDataSetChanged();
+            messageAdapter.notifyItemRemoved(0);
+        }
     }
 
     //Use this method to clear all messages

@@ -44,7 +44,7 @@ class MessageFilter extends Filter {
     @Override
     protected void publishResults(CharSequence constraint, FilterResults results) {
         adapter.setList(filteredMessageList);
-        adapter.notifyDataSetChanged();
+      //  adapter.notifyDataSetChanged();
     }
 
 

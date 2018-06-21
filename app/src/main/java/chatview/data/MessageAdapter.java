@@ -1372,7 +1372,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public boolean onBackpress() {
         if (checkFeedbackContentVisible) {
-            notifyDataSetChanged();
+           // notifyDataSetChanged();
             return true;
         }
         return false;
@@ -1551,7 +1551,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         answers.get(i).setIsfocus(true);
                                     } else answers.get(i).setIsfocus(false);
                                 }
-                                notifyDataSetChanged();
+                              //  notifyDataSetChanged();
                                 if (answers.get(position).getText() != null)
                                     holder1.leftTV.setText(Html.fromHtml(answers.get(position).getText()), TextView.BufferType.SPANNABLE);
                                 int background = context.getResources().getIdentifier("left_tv_bg_" + position, "drawable", context.getPackageName());

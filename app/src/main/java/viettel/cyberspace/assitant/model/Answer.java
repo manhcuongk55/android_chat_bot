@@ -30,6 +30,9 @@ public class Answer {
     @SerializedName("url")
     public String url;
 
+    @SerializedName("type")
+    public int type;
+
     public String domain;
 
     public boolean isfocus;
@@ -78,6 +81,14 @@ public class Answer {
         this.isfocus = isfocus;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "Answer{" +
@@ -88,6 +99,9 @@ public class Answer {
                 ", text='" + text + '\'' +
                 ", title='" + title + '\'' +
                 ", url='" + url + '\'' +
+                ", type=" + type +
+                ", domain='" + domain + '\'' +
+                ", isfocus=" + isfocus +
                 '}';
     }
 }
