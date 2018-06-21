@@ -688,13 +688,17 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //            });
 
             WebSettings settings = webView.getSettings();
-            settings.setUseWideViewPort(true);
+            //settings.setUseWideViewPort(true);
+            settings.setDomStorageEnabled(true);
             settings.setLoadWithOverviewMode(true);
             settings.setJavaScriptEnabled(true);
-            settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+
+            webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+
+            //settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
             // wv.setBackgroundColor(0);
-            webView.setVerticalScrollBarEnabled(false);
-            webView.setHorizontalScrollBarEnabled(false);
+//            webView.setVerticalScrollBarEnabled(false);
+//            webView.setHorizontalScrollBarEnabled(false);
 
 
         }
@@ -1372,7 +1376,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public boolean onBackpress() {
         if (checkFeedbackContentVisible) {
-           // notifyDataSetChanged();
+            // notifyDataSetChanged();
             return true;
         }
         return false;
@@ -1551,7 +1555,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         answers.get(i).setIsfocus(true);
                                     } else answers.get(i).setIsfocus(false);
                                 }
-                              //  notifyDataSetChanged();
+                                //  notifyDataSetChanged();
                                 if (answers.get(position).getText() != null)
                                     holder1.leftTV.setText(Html.fromHtml(answers.get(position).getText()), TextView.BufferType.SPANNABLE);
                                 int background = context.getResources().getIdentifier("left_tv_bg_" + position, "drawable", context.getPackageName());

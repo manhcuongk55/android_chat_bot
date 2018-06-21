@@ -5,6 +5,6 @@
 
     <WebView
         android:id="@+id/leftWV"
-        android:layout_width="350dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"></WebView>
 </LinearLayout>
