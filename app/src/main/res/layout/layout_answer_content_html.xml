@@ -4,8 +4,7 @@
     android:layout_height="match_parent">
 
     <WebView
-
         android:id="@+id/leftWV"
-        android:layout_width="300dp"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"></WebView>
 </LinearLayout>

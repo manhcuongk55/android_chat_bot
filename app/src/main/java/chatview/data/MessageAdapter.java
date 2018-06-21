@@ -70,6 +70,22 @@ import static android.content.ContentValues.TAG;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    public static final int LeftSimpleMessage = 1;
+    public static final int RightSimpleImage = 2;
+    public static final int LeftSingleImage = 3;
+    public static final int RightSingleImage = 4;
+    public static final int LeftMultipleImages = 5;
+    public static final int RightMultipleImages = 6;
+    public static final int LeftVideo = 7;
+    public static final int RightVideo = 8;
+    public static final int LeftAudio = 9;
+    public static final int RightAudio = 10;
+    public static final int ListQuestion = 11;
+    public static final int ListSuggestion = 12;
+    public static final int LeftHtml = 13;
+    public static final int TYPING = 20;
+
+
     private List<Message> messageList;
     private List<Message> filterList;
     Context context;
@@ -198,93 +214,91 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         RecyclerView.ViewHolder viewHolder = null;
 
 
-        if (viewType == 1) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.left_text_layout, parent, false);
-            viewHolder = new LeftTextViewHolder(view);
-        } else {
-            if (viewType == 2) {
+        switch (viewType) {
+            case LeftSimpleMessage: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.left_text_layout, parent, false);
+                viewHolder = new LeftTextViewHolder(view);
+                break;
+            }
+            case RightSimpleImage: {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.right_text_layout, parent, false);
                 viewHolder = new RightTextViewHolder(view);
-            } else {
-                if (viewType == 3) {
-                    View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.left_image_layout, parent, false);
-                    viewHolder = new LeftImageViewHolder(view);
-                } else {
-                    if (viewType == 4) {
-                        View view = LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.right_image_layout, parent, false);
-                        viewHolder = new RightImageViewHolder(view);
-                    } else {
-                        if (viewType == 5) {
-                            View view = LayoutInflater.from(parent.getContext())
-                                    .inflate(R.layout.left_images_layout, parent, false);
-                            viewHolder = new LeftImagesViewHolder(view);
-                        } else {
-                            if (viewType == 6) {
-                                View view = LayoutInflater.from(parent.getContext())
-                                        .inflate(R.layout.right_images_layout, parent, false);
-                                viewHolder = new RightImagesViewHolder(view);
-                            } else {
-                                if (viewType == 20) {
-                                    View view = LayoutInflater.from(parent.getContext())
-                                            .inflate(R.layout.left_typing_layout, parent, false);
-                                    viewHolder = new LeftTypingViewHolder(view);
-                                } else {
-                                    if (viewType == 7) {
-                                        View view = LayoutInflater.from(parent.getContext())
-                                                .inflate(R.layout.left_video_layout, parent, false);
+                break;
+            }
+            case LeftSingleImage: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.left_image_layout, parent, false);
+                viewHolder = new LeftImageViewHolder(view);
+                break;
+            }
+            case RightSingleImage: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.right_image_layout, parent, false);
+                viewHolder = new RightImageViewHolder(view);
+                break;
+            }
+            case LeftMultipleImages: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.left_images_layout, parent, false);
+                viewHolder = new LeftImagesViewHolder(view);
+                break;
+            }
+            case RightMultipleImages: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.right_images_layout, parent, false);
+                viewHolder = new RightImagesViewHolder(view);
+                break;
+            }
+            case LeftVideo: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.left_video_layout, parent, false);
 
-                                        viewHolder = new LeftVideoViewHolder(view);
-
-                                    } else {
-                                        if (viewType == 8) {
-
-                                            View view = LayoutInflater.from(parent.getContext())
-                                                    .inflate(R.layout.right_video_layout, parent, false);
-                                            viewHolder = new RightVideoViewHolder(view);
-                                        } else {
-                                            if (viewType == 9) {
-                                                View view = LayoutInflater.from(parent.getContext())
-                                                        .inflate(R.layout.left_audio_layout, parent, false);
-                                                viewHolder = new LeftAudioViewHolder(view);
-                                            } else {
-                                                if (viewType == 10) {
-                                                    View view = LayoutInflater.from(parent.getContext())
-                                                            .inflate(R.layout.right_audio_layout, parent, false);
-                                                    viewHolder = new RightAudioViewHolder(view);
-                                                } else {
-                                                    if (viewType == 11) {
-                                                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_question_layout, parent, false);
-                                                        viewHolder = new ListQuestionViewHolder(view);
-                                                    } else {
-                                                        if (viewType == 12) {
-                                                            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_suggestion_layout, parent, false);
-                                                            viewHolder = new ListSuggestionViewHolder(view);
-                                                        } else {
-                                                            if (viewType == 13) {
-                                                                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.left_html_layout, parent, false);
-                                                                viewHolder = new LeftHtmlViewHolder(view);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                        }
-
-
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
+                viewHolder = new LeftVideoViewHolder(view);
+                break;
+            }
+            case RightVideo: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.right_video_layout, parent, false);
+                viewHolder = new RightVideoViewHolder(view);
+                break;
+            }
+            case LeftAudio: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.left_audio_layout, parent, false);
+                viewHolder = new LeftAudioViewHolder(view);
+                break;
+            }
+            case RightAudio: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.right_audio_layout, parent, false);
+                viewHolder = new RightAudioViewHolder(view);
+                break;
+            }
+            case ListQuestion: {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_question_layout, parent, false);
+                viewHolder = new ListQuestionViewHolder(view);
+                break;
+            }
+            case ListSuggestion: {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_suggestion_layout, parent, false);
+                viewHolder = new ListSuggestionViewHolder(view);
+                break;
             }
 
+            case LeftHtml: {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.left_html_layout, parent, false);
+                viewHolder = new LeftHtmlViewHolder(view);
+                break;
+            }
+
+            case TYPING: {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.left_typing_layout, parent, false);
+                viewHolder = new LeftTypingViewHolder(view);
+                break;
+            }
         }
 
 
@@ -682,7 +696,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             webView.setVerticalScrollBarEnabled(false);
             webView.setHorizontalScrollBarEnabled(false);
 
-            webView.loadUrl("file:///android_asset/thoitiet.html");
+
         }
 
         public void setSenderNameTextColor(int color) {
@@ -1564,311 +1578,286 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 }
             }
-        } else
+        } else if (holder instanceof RightTextViewHolder) {
+            final RightTextViewHolder holder1 = (RightTextViewHolder) holder;
+            holder1.rightTV.setText(message.getBody());
+            holder1.rightTimeTV.setText(message.getTime());
+        } else if (holder instanceof LeftImageViewHolder) {
+            final LeftImageViewHolder holder1 = (LeftImageViewHolder) holder;
 
-        {
-            if (holder instanceof RightTextViewHolder) {
-                final RightTextViewHolder holder1 = (RightTextViewHolder) holder;
-                holder1.rightTV.setText(message.getBody());
-                holder1.rightTimeTV.setText(message.getTime());
-            } else {
-                if (holder instanceof LeftImageViewHolder) {
-                    final LeftImageViewHolder holder1 = (LeftImageViewHolder) holder;
-
-                    if (message.getUserIcon() != null) {
-                        Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
-                    }
-                    holder1.senderNameTV.setText(message.getUserName());
-                    if (message.getImageList().get(0) != null && !message.getImageList().get(0).equals("")) {
-                        final File image = DiskCacheUtils.findInCache(message.getImageList().get(0).toString(), imageLoader.getDiskCache());
-                        if (image != null && image.exists()) {
-                            Picasso.with(context).load(image).into(holder1.leftIV);
-                        } else {
-                            imageLoader.loadImage(message.getImageList().get(0).toString(), new ImageLoadingListener() {
-                                @Override
-                                public void onLoadingStarted(String s, View view) {
-                                    holder1.leftIV.setImageBitmap(null);
-                                }
-
-                                @Override
-                                public void onLoadingFailed(String s, View view, FailReason failReason) {
-
-                                }
-
-                                @Override
-                                public void onLoadingComplete(String s, View view, final Bitmap bitmap) {
-                                    Picasso.with(context).load(s).into(holder1.leftIV);
-
-                                }
-
-                                @Override
-                                public void onLoadingCancelled(String s, View view) {
-
-                                }
-                            });
-                        }
-                    } else {
-                        holder1.leftIV.setImageBitmap(null);
-                    }
-
-                    holder1.leftTimeTV.setText(message.getTime());
-
-                    holder1.leftIV.setTransitionName("photoTransition");
-                    holder1.leftIV.setOnClickListener(new View.OnClickListener() {
+            if (message.getUserIcon() != null) {
+                Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
+            }
+            holder1.senderNameTV.setText(message.getUserName());
+            if (message.getImageList().get(0) != null && !message.getImageList().get(0).equals("")) {
+                final File image = DiskCacheUtils.findInCache(message.getImageList().get(0).toString(), imageLoader.getDiskCache());
+                if (image != null && image.exists()) {
+                    Picasso.with(context).load(image).into(holder1.leftIV);
+                } else {
+                    imageLoader.loadImage(message.getImageList().get(0).toString(), new ImageLoadingListener() {
                         @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(context, ImageFFActivity.class);
-                            intent.putExtra("photoURI", message.getImageList().get(0).toString());
-                            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder1.leftIV, holder1.leftIV.getTransitionName());
-                            context.startActivity(intent, optionsCompat.toBundle());
+                        public void onLoadingStarted(String s, View view) {
+                            holder1.leftIV.setImageBitmap(null);
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String s, View view, FailReason failReason) {
+
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String s, View view, final Bitmap bitmap) {
+                            Picasso.with(context).load(s).into(holder1.leftIV);
+
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String s, View view) {
+
                         }
                     });
+                }
+            } else {
+                holder1.leftIV.setImageBitmap(null);
+            }
+
+            holder1.leftTimeTV.setText(message.getTime());
+
+            holder1.leftIV.setTransitionName("photoTransition");
+            holder1.leftIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, ImageFFActivity.class);
+                    intent.putExtra("photoURI", message.getImageList().get(0).toString());
+                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder1.leftIV, holder1.leftIV.getTransitionName());
+                    context.startActivity(intent, optionsCompat.toBundle());
+                }
+            });
+        } else if (holder instanceof RightImageViewHolder) {
+            final RightImageViewHolder holder1 = (RightImageViewHolder) holder;
+
+            if (message.getUserIcon() != null) {
+                Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
+            }
+            holder1.senderNameTV.setText(message.getUserName());
+
+            if (message.getImageList().get(0) != null && !message.getImageList().get(0).equals("")) {
+                final File image = DiskCacheUtils.findInCache(message.getImageList().get(0).toString(), imageLoader.getDiskCache());
+                if (image != null && image.exists()) {
+                    Picasso.with(context).load(image).into(holder1.rightIV);
                 } else {
-                    if (holder instanceof RightImageViewHolder) {
-                        final RightImageViewHolder holder1 = (RightImageViewHolder) holder;
-
-                        if (message.getUserIcon() != null) {
-                            Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
-                        }
-                        holder1.senderNameTV.setText(message.getUserName());
-
-                        if (message.getImageList().get(0) != null && !message.getImageList().get(0).equals("")) {
-                            final File image = DiskCacheUtils.findInCache(message.getImageList().get(0).toString(), imageLoader.getDiskCache());
-                            if (image != null && image.exists()) {
-                                Picasso.with(context).load(image).into(holder1.rightIV);
-                            } else {
-                                imageLoader.loadImage(message.getImageList().get(0).toString(), new ImageLoadingListener() {
-                                    @Override
-                                    public void onLoadingStarted(String s, View view) {
-                                        holder1.rightIV.setImageBitmap(null);
-                                    }
-
-                                    @Override
-                                    public void onLoadingFailed(String s, View view, FailReason failReason) {
-
-                                    }
-
-                                    @Override
-                                    public void onLoadingComplete(String s, View view, final Bitmap bitmap) {
-                                        Picasso.with(context).load(s).into(holder1.rightIV);
-
-                                    }
-
-                                    @Override
-                                    public void onLoadingCancelled(String s, View view) {
-
-                                    }
-                                });
-                            }
-                        } else {
+                    imageLoader.loadImage(message.getImageList().get(0).toString(), new ImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String s, View view) {
                             holder1.rightIV.setImageBitmap(null);
                         }
-                        holder1.rightIV.setTransitionName("photoTransition");
-                        holder1.rightIV.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent(context, ImageFFActivity.class);
-                                intent.putExtra("photoURI", message.getImageList().get(0).toString());
-                                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder1.rightIV, holder1.rightIV.getTransitionName());
-                                context.startActivity(intent, optionsCompat.toBundle());
-                            }
-                        });
-                        holder1.rightTimeTV.setText(message.getTime());
 
-                    } else {
-                        if (holder instanceof LeftImagesViewHolder) {
-                            final LeftImagesViewHolder holder1 = (LeftImagesViewHolder) holder;
+                        @Override
+                        public void onLoadingFailed(String s, View view, FailReason failReason) {
 
-                            if (message.getUserIcon() != null) {
-                                Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
-                            }
-                            holder1.senderNameTV.setText(message.getUserName());
-
-                            List<String> imageList = new ArrayList<>();
-                            for (int i = 0; i < message.getImageList().size(); i++) {
-                                imageList.add(message.getImageList().get(i).toString());
-                            }
-                            holder1.leftTimeTV.setText(message.getTime());
-
-                            holder1.leftCollageView
-                                    .photoMargin(8)
-                                    .photoPadding(0)
-                                    .backgroundColor(leftBubbleLayoutColor)
-                                    .useFirstAsHeader(false) // makes first photo fit device widtdh and use full line
-                                    .defaultPhotosForLine(2) // sets default photos number for line of photos (can be changed by program at runtime)
-                                    .useCards(true)// adds cardview backgrounds to all photos
-                                    .loadPhotos(imageList);
-
-                            holder1.leftCollageView.setTransitionName("photoTransition");
-                            holder1.leftCollageView.setOnPhotoClickListener(new CollageView.OnPhotoClickListener() {
-                                @Override
-                                public void onPhotoClick(int i) {
-
-                                    Intent intent = new Intent(context, ImageFFActivity.class);
-                                    intent.putExtra("photoURI", message.getImageList().get(i).toString());
-                                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder1.leftCollageView, holder1.leftCollageView.getTransitionName());
-                                    context.startActivity(intent, optionsCompat.toBundle());
-                                }
-                            });
-                        } else {
-
-                            if (holder instanceof RightImagesViewHolder) {
-                                final RightImagesViewHolder holder1 = (RightImagesViewHolder) holder;
-
-                                if (message.getUserIcon() != null) {
-                                    Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
-                                }
-                                holder1.senderNameTV.setText(message.getUserName());
-                                List<String> imageList = new ArrayList<>();
-                                for (int i = 0; i < message.getImageList().size(); i++) {
-                                    imageList.add(message.getImageList().get(i).toString());
-                                }
-                                holder1.rightTimeTV.setText(message.getTime());
-                                holder1.rightCollageView
-                                        .photoMargin(8)
-                                        .photoPadding(0)
-                                        .backgroundColor(rightBubbleLayoutColor)
-                                        .useFirstAsHeader(false) // makes first photo fit device widtdh and use full line
-                                        .defaultPhotosForLine(2) // sets default photos number for line of photos (can be changed by program at runtime)
-                                        .useCards(true)// adds cardview backgrounds to all photos
-                                        .loadPhotos(imageList);
-
-                                holder1.rightCollageView.setTransitionName("photoTransition");
-                                holder1.rightCollageView.setOnPhotoClickListener(new CollageView.OnPhotoClickListener() {
-                                    @Override
-                                    public void onPhotoClick(int i) {
-
-                                        Intent intent = new Intent(context, ImageFFActivity.class);
-                                        intent.putExtra("photoURI", message.getImageList().get(i).toString());
-                                        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder1.rightCollageView, holder1.rightCollageView.getTransitionName());
-                                        context.startActivity(intent, optionsCompat.toBundle());
-                                    }
-
-                                });
-                            } else {
-
-                                if (holder instanceof LeftTypingViewHolder) {
-
-                                } else {
-                                    if (holder instanceof LeftVideoViewHolder) {
-                                        final LeftVideoViewHolder holder1 = (LeftVideoViewHolder) holder;
-                                        final VideoPlayer videoPlayer = new VideoPlayer(context);
-                                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                                        videoPlayer.setLayoutParams(params);
-                                        videoPlayer.setScaleType(VideoPlayer.ScaleType.CENTER_CROP);
-                                        //((LeftVideoViewHolder) holder).videoLL.getLayoutParams().height = getScreenWidth(context) * 9 /16;
-                                        //holder1.videoLL.removeAllViews();
-                                        holder1.videoLL.addView(videoPlayer);
-                                        videoPlayer.loadVideo(message.getVideoUri().toString(), message);
-                                        if (message.getUserIcon() != null) {
-                                            Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
-                                        }
-
-                                        videoPlayer.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                                                    mediaPlayer.pause();
-                                                }
-                                                videoPlayer.setTransitionName("videoFF");
-                                                Intent intent = new Intent(context, VideoFFActivity.class);
-                                                intent.putExtra("videoURI", message.getVideoUri().toString());
-                                                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, videoPlayer, videoPlayer.getTransitionName());
-                                                context.startActivity(intent, optionsCompat.toBundle());
-                                            }
-                                        });
-                                        holder1.senderNameTV.setText(message.getUserName());
-
-                                        holder1.leftTimeTV.setText(message.getTime());
-
-                                    } else {
-                                        if (holder instanceof RightVideoViewHolder) {
-                                            final RightVideoViewHolder holder1 = (RightVideoViewHolder) holder;
-                                            final VideoPlayer videoPlayer = new VideoPlayer(context);
-                                            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                                            videoPlayer.setScaleType(VideoPlayer.ScaleType.CENTER_CROP);
-                                            videoPlayer.setLayoutParams(params);
-                                            //((RightVideoViewHolder) holder).videoLL.getLayoutParams().height = getScreenWidth(context) * 9 /16;
-                                            //holder1.videoLL.removeAllViews();
-                                            holder1.videoLL.addView(videoPlayer);
-                                            videoPlayer.loadVideo(message.getVideoUri().toString(), message);
-                                            //adjustAspectRatio(videoPlayer,videoPlayer.getMp().getVideoWidth(),videoPlayer.getMp().getVideoHeight());
-
-                                            if (message.getUserIcon() != null) {
-                                                Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
-                                            }
-
-                                            videoPlayer.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                                                        mediaPlayer.pause();
-                                                    }
-                                                    videoPlayer.setTransitionName("videoFF");
-                                                    Intent intent = new Intent(context, VideoFFActivity.class);
-                                                    intent.putExtra("videoURI", message.getVideoUri().toString());
-                                                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, videoPlayer, videoPlayer.getTransitionName());
-                                                    context.startActivity(intent, optionsCompat.toBundle());
-                                                }
-                                            });
-                                            holder1.senderNameTV.setText(message.getUserName());
-
-                                            holder1.rightTimeTV.setText(message.getTime());
-                                        } else {
-                                            if (holder instanceof LeftAudioViewHolder) {
-                                                final LeftAudioViewHolder holder1 = (LeftAudioViewHolder) holder;
-
-                                                holder1.leftTimeTV.setText(message.getTime());
-
-                                                if (message.getUserIcon() != null) {
-                                                    Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
-                                                }
-                                                holder1.senderNameTV.setText(message.getUserName());
-
-                                                holder1.setMessage(message);
-
-                                            } else {
-                                                if (holder instanceof RightAudioViewHolder) {
-                                                    final RightAudioViewHolder holder1 = (RightAudioViewHolder) holder;
-
-                                                    holder1.rightTimeTV.setText(message.getTime());
-                                                    if (message.getUserIcon() != null) {
-                                                        Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
-                                                    }
-
-
-                                                    holder1.senderNameTV.setText(message.getUserName());
-
-                                                    holder1.setMessage(message);
-                                                } else {
-                                                    if (holder instanceof ListQuestionViewHolder) {
-                                                        final ListQuestionViewHolder holder1 = (ListQuestionViewHolder) holder;
-                                                        ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_QUESTION, null, null);
-                                                        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-                                                        holder1.rvListQuestion.setLayoutManager(mLinearLayoutManager);
-                                                        holder1.rvListQuestion.setAdapter(listQuestionAdapter);
-                                                    } else {
-                                                        if (holder instanceof ListSuggestionViewHolder) {
-                                                            final ListSuggestionViewHolder holder1 = (ListSuggestionViewHolder) holder;
-                                                            ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_SUGGESTION, null, null);
-                                                            LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-                                                            holder1.rvListSuggestion.setLayoutManager(mLinearLayoutManager);
-                                                            holder1.rvListSuggestion.setAdapter(listQuestionAdapter);
-                                                        }
-                                                    }
-                                                }
-
-                                            }
-                                        }
-                                    }
-                                }
-                            }
                         }
-                    }
-                }
-            }
-        }
 
+                        @Override
+                        public void onLoadingComplete(String s, View view, final Bitmap bitmap) {
+                            Picasso.with(context).load(s).into(holder1.rightIV);
+
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String s, View view) {
+
+                        }
+                    });
+                }
+            } else {
+                holder1.rightIV.setImageBitmap(null);
+            }
+            holder1.rightIV.setTransitionName("photoTransition");
+            holder1.rightIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, ImageFFActivity.class);
+                    intent.putExtra("photoURI", message.getImageList().get(0).toString());
+                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder1.rightIV, holder1.rightIV.getTransitionName());
+                    context.startActivity(intent, optionsCompat.toBundle());
+                }
+            });
+            holder1.rightTimeTV.setText(message.getTime());
+
+        } else if (holder instanceof LeftImagesViewHolder) {
+            final LeftImagesViewHolder holder1 = (LeftImagesViewHolder) holder;
+
+            if (message.getUserIcon() != null) {
+                Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
+            }
+            holder1.senderNameTV.setText(message.getUserName());
+
+            List<String> imageList = new ArrayList<>();
+            for (int i = 0; i < message.getImageList().size(); i++) {
+                imageList.add(message.getImageList().get(i).toString());
+            }
+            holder1.leftTimeTV.setText(message.getTime());
+
+            holder1.leftCollageView
+                    .photoMargin(8)
+                    .photoPadding(0)
+                    .backgroundColor(leftBubbleLayoutColor)
+                    .useFirstAsHeader(false) // makes first photo fit device widtdh and use full line
+                    .defaultPhotosForLine(2) // sets default photos number for line of photos (can be changed by program at runtime)
+                    .useCards(true)// adds cardview backgrounds to all photos
+                    .loadPhotos(imageList);
+
+            holder1.leftCollageView.setTransitionName("photoTransition");
+            holder1.leftCollageView.setOnPhotoClickListener(new CollageView.OnPhotoClickListener() {
+                @Override
+                public void onPhotoClick(int i) {
+
+                    Intent intent = new Intent(context, ImageFFActivity.class);
+                    intent.putExtra("photoURI", message.getImageList().get(i).toString());
+                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder1.leftCollageView, holder1.leftCollageView.getTransitionName());
+                    context.startActivity(intent, optionsCompat.toBundle());
+                }
+            });
+        } else if (holder instanceof RightImagesViewHolder) {
+            final RightImagesViewHolder holder1 = (RightImagesViewHolder) holder;
+
+            if (message.getUserIcon() != null) {
+                Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
+            }
+            holder1.senderNameTV.setText(message.getUserName());
+            List<String> imageList = new ArrayList<>();
+            for (int i = 0; i < message.getImageList().size(); i++) {
+                imageList.add(message.getImageList().get(i).toString());
+            }
+            holder1.rightTimeTV.setText(message.getTime());
+            holder1.rightCollageView
+                    .photoMargin(8)
+                    .photoPadding(0)
+                    .backgroundColor(rightBubbleLayoutColor)
+                    .useFirstAsHeader(false) // makes first photo fit device widtdh and use full line
+                    .defaultPhotosForLine(2) // sets default photos number for line of photos (can be changed by program at runtime)
+                    .useCards(true)// adds cardview backgrounds to all photos
+                    .loadPhotos(imageList);
+
+            holder1.rightCollageView.setTransitionName("photoTransition");
+            holder1.rightCollageView.setOnPhotoClickListener(new CollageView.OnPhotoClickListener() {
+                @Override
+                public void onPhotoClick(int i) {
+
+                    Intent intent = new Intent(context, ImageFFActivity.class);
+                    intent.putExtra("photoURI", message.getImageList().get(i).toString());
+                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, holder1.rightCollageView, holder1.rightCollageView.getTransitionName());
+                    context.startActivity(intent, optionsCompat.toBundle());
+                }
+
+            });
+        } else if (holder instanceof LeftTypingViewHolder) {
+
+        } else if (holder instanceof LeftVideoViewHolder) {
+            final LeftVideoViewHolder holder1 = (LeftVideoViewHolder) holder;
+            final VideoPlayer videoPlayer = new VideoPlayer(context);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            videoPlayer.setLayoutParams(params);
+            videoPlayer.setScaleType(VideoPlayer.ScaleType.CENTER_CROP);
+            //((LeftVideoViewHolder) holder).videoLL.getLayoutParams().height = getScreenWidth(context) * 9 /16;
+            //holder1.videoLL.removeAllViews();
+            holder1.videoLL.addView(videoPlayer);
+            videoPlayer.loadVideo(message.getVideoUri().toString(), message);
+            if (message.getUserIcon() != null) {
+                Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
+            }
+
+            videoPlayer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                    }
+                    videoPlayer.setTransitionName("videoFF");
+                    Intent intent = new Intent(context, VideoFFActivity.class);
+                    intent.putExtra("videoURI", message.getVideoUri().toString());
+                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, videoPlayer, videoPlayer.getTransitionName());
+                    context.startActivity(intent, optionsCompat.toBundle());
+                }
+            });
+            holder1.senderNameTV.setText(message.getUserName());
+
+            holder1.leftTimeTV.setText(message.getTime());
+
+        } else if (holder instanceof RightVideoViewHolder) {
+            final RightVideoViewHolder holder1 = (RightVideoViewHolder) holder;
+            final VideoPlayer videoPlayer = new VideoPlayer(context);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            videoPlayer.setScaleType(VideoPlayer.ScaleType.CENTER_CROP);
+            videoPlayer.setLayoutParams(params);
+            //((RightVideoViewHolder) holder).videoLL.getLayoutParams().height = getScreenWidth(context) * 9 /16;
+            //holder1.videoLL.removeAllViews();
+            holder1.videoLL.addView(videoPlayer);
+            videoPlayer.loadVideo(message.getVideoUri().toString(), message);
+            //adjustAspectRatio(videoPlayer,videoPlayer.getMp().getVideoWidth(),videoPlayer.getMp().getVideoHeight());
+
+            if (message.getUserIcon() != null) {
+                Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
+            }
+
+            videoPlayer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                    }
+                    videoPlayer.setTransitionName("videoFF");
+                    Intent intent = new Intent(context, VideoFFActivity.class);
+                    intent.putExtra("videoURI", message.getVideoUri().toString());
+                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, videoPlayer, videoPlayer.getTransitionName());
+                    context.startActivity(intent, optionsCompat.toBundle());
+                }
+            });
+            holder1.senderNameTV.setText(message.getUserName());
+
+            holder1.rightTimeTV.setText(message.getTime());
+        } else if (holder instanceof LeftAudioViewHolder) {
+            final LeftAudioViewHolder holder1 = (LeftAudioViewHolder) holder;
+
+            holder1.leftTimeTV.setText(message.getTime());
+
+            if (message.getUserIcon() != null) {
+                Picasso.with(context).load(message.getUserIcon()).into(holder1.leftBubbleIconIV);
+            }
+            holder1.senderNameTV.setText(message.getUserName());
+            holder1.setMessage(message);
+
+        } else if (holder instanceof RightAudioViewHolder) {
+            final RightAudioViewHolder holder1 = (RightAudioViewHolder) holder;
+
+            holder1.rightTimeTV.setText(message.getTime());
+            if (message.getUserIcon() != null) {
+                Picasso.with(context).load(message.getUserIcon()).into(holder1.rightBubbleIconIV);
+            }
+
+
+            holder1.senderNameTV.setText(message.getUserName());
+
+            holder1.setMessage(message);
+        } else if (holder instanceof ListQuestionViewHolder) {
+            final ListQuestionViewHolder holder1 = (ListQuestionViewHolder) holder;
+            ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_QUESTION, null, null);
+            LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+            holder1.rvListQuestion.setLayoutManager(mLinearLayoutManager);
+            holder1.rvListQuestion.setAdapter(listQuestionAdapter);
+        } else if (holder instanceof ListSuggestionViewHolder) {
+            final ListSuggestionViewHolder holder1 = (ListSuggestionViewHolder) holder;
+            ListQuestionAdapter listQuestionAdapter = new ListQuestionAdapter(context, ListQuestionAdapter.TYPE_LIST_SUGGESTION, null, null);
+            LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+            holder1.rvListSuggestion.setLayoutManager(mLinearLayoutManager);
+            holder1.rvListSuggestion.setAdapter(listQuestionAdapter);
+        } else if (holder instanceof LeftHtmlViewHolder) {
+            final LeftHtmlViewHolder holder1 = (LeftHtmlViewHolder) holder;
+            holder1.senderNameTV.setText(message.getUserName());
+            holder1.webView.loadDataWithBaseURL("", message.getBody(), "text/html", "UTF-8", "");
+            // holder1.webView.loadUrl(message.getBody());
+            // webView.loadUrl("file:///android_asset/thoitiet.html");
+        }
     }
 
 
@@ -1892,7 +1881,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return filterList.size();
     }
 
-    // set adapter filtered list
+// set adapter filtered list
 
     public void setList(List<Message> list) {
         this.filterList = list;
