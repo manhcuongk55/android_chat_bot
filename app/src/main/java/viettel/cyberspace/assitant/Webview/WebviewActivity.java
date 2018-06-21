@@ -43,7 +43,6 @@ public class WebviewActivity extends AppCompatActivity {
             @Override
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
-                Log.v("trungbd", url);
                 tvUrl.setText(view.getUrl());
                 tvContent.setText(view.getTitle());
 //                progressBarLoading.setVisibility(View.GONE);
@@ -52,7 +51,6 @@ public class WebviewActivity extends AppCompatActivity {
         });
         webView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
-                Log.v("trungbd", progress + "");
                 progressBarLoading.setVisibility(View.VISIBLE);
                 progressBarLoading.setProgress(progress);
             }

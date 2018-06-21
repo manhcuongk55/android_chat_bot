@@ -47,7 +47,7 @@ public class Synthesizer {
     private AudioTrack audioTrack;
 
     private void playSound(final byte[] sound, final Runnable callback) {
-        if (sound == null || sound.length == 0){
+        if (sound == null || sound.length == 0) {
             return;
         }
 
@@ -57,7 +57,7 @@ public class Synthesizer {
                 final int SAMPLE_RATE = 16000;
 
                 audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
-                    AudioFormat.ENCODING_PCM_16BIT, AudioTrack.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT), AudioTrack.MODE_STREAM);
+                        AudioFormat.ENCODING_PCM_16BIT, AudioTrack.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT), AudioTrack.MODE_STREAM);
 
                 if (audioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
                     audioTrack.play();
@@ -116,7 +116,7 @@ public class Synthesizer {
             } else {
                 ssml += ">";
             }
-            ssml +=  text + "</voice></speak>";
+            ssml += text + "</voice></speak>";
         }
         return SpeakSSML(ssml);
     }

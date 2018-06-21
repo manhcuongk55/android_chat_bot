@@ -13,10 +13,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.cloud.android.speech.R;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 
@@ -53,12 +56,18 @@ public class LoginActivity extends AppCompatActivity {
         }
         context = this;
 
+/*        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.v("trungbd", refreshedToken.toString());*/
+
+
         signin = findViewById(R.id.signin);
         account = findViewById(R.id.account);
 
         password = findViewById(R.id.password);
+
         account.setText("experts_1");
         password.setText("123456aA@");
+
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,12 +105,14 @@ public class LoginActivity extends AppCompatActivity {
                     onLoginSuccess(response.body());
                 } else {
                     onLoginFailed(response.message());
+                    Log.v("trungbd", statusCode + "");
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 onLoginFailed(t.toString());
+                Log.v("trungbd", t.toString());
             }
         });
     }

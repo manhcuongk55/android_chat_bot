@@ -169,13 +169,9 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
                 super.onScrolled(recyclerView, dx, dy);
                 if (!isLoading && layoutManager.getItemCount() < layoutManager.findLastVisibleItemPosition() + 2) {
                     isLoading = true;
-                    Log.v("trungbd", "onScrolled");
 
                     List<MessageHistory> messageHistories = getMessageHistory();
                     if (messageHistories != null && messageHistories.size() > 0) {
-                        for (int i = 0; i < messageHistories.size(); i++) {
-                            Log.v("onScrolled   ", messageHistories.get(i).getBody() + "     " + messageHistories.get(i).getTimeStamp());
-                        }
                         currentTimeStamp = messageHistories.get(messageHistories.size() - 1).getTimeStamp();
                         List<Message> messages = new ArrayList<>();
                         for (MessageHistory messageHistory : messageHistories) {
@@ -295,6 +291,7 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
                 .execute();
     }
 
+
     public boolean onBackpress() {
         if (messageET.isFocused()) {
             InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -340,7 +337,6 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
 
     @Override
     public void sendMaster(String mId, String message, int position) {
-        Log.v("trungbd", "gui chuyen gia1");
         rateMessageListener.sendMaster(mId, message, position);
     }
 
@@ -454,7 +450,6 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
         } else {
             if (message == ChatBotActivity.messageAnswering) {
                 messageList.add(0, ChatBotActivity.messageAnswering);
-                Log.v("trungbd", "add ChatBotActivity.messageAnswering");
             } else {
                 messageList.add(0, message);
             }

@@ -113,19 +113,19 @@ public class VoiceRecorder {
      * Stops recording audio.
      */
     public void stop() {
-        synchronized (mLock) {
-            dismiss();
-            if (mThread != null) {
-                mThread.interrupt();
-                mThread = null;
-            }
-            if (mAudioRecord != null) {
-                mAudioRecord.stop();
-                mAudioRecord.release();
-                mAudioRecord = null;
-            }
-            mBuffer = null;
+//        synchronized (mLock) {
+        dismiss();
+        if (mThread != null) {
+            mThread.interrupt();
+            mThread = null;
         }
+        if (mAudioRecord != null) {
+            mAudioRecord.stop();
+            mAudioRecord.release();
+            mAudioRecord = null;
+        }
+        mBuffer = null;
+//        }
     }
 
     /**
@@ -187,6 +187,8 @@ public class VoiceRecorder {
                     if (Thread.currentThread().isInterrupted()) {
                         break;
                     }
+                    if (mAudioRecord == null) break;
+                    if (mBuffer == null) break;
                     final int size = mAudioRecord.read(mBuffer, 0, mBuffer.length);
                     final long now = System.currentTimeMillis();
                     if (isHearingVoice(mBuffer, size)) {

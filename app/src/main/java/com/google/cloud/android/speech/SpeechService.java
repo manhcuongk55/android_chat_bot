@@ -224,7 +224,6 @@ public class SpeechService extends Service {
             language.append("-");
             language.append(country);
         }
-        // return language.toString();
         return "vi-VN";
     }
 
@@ -306,7 +305,7 @@ public class SpeechService extends Service {
                     RecognizeRequest.newBuilder()
                             .setConfig(RecognitionConfig.newBuilder()
                                     .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                                    .setLanguageCode("en-US")
+                                    .setLanguageCode("vi-VN")
                                     .setSampleRateHertz(16000)
                                     .build())
                             .setAudio(RecognitionAudio.newBuilder()

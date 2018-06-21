@@ -296,7 +296,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     protected class LeftTextViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public TextView leftTV, leftTimeTV, questionFromChuyenGia, answerFromChuyenGia;
+        public TextView leftTV, leftTimeTV, questionFromChuyenGia, answerFromChuyenGia, leftTVSource;
         public ExpandableLayout leftEL;
         public ImageView lefttMessageStatusIV, leftBubbleIconIV;
         public CardView leftBubbleIconCV;
@@ -312,6 +312,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(view);
 
             leftTV = view.findViewById(R.id.leftTV);
+            leftTVSource = view.findViewById(R.id.leftTVSource);
             leftTimeTV = view.findViewById(R.id.leftTimeTV);
             leftEL = view.findViewById(R.id.leftEL);
             leftBubbleIconIV = view.findViewById(R.id.leftBubbleIconIV);
@@ -1394,6 +1395,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             holder1.layoutContentGuichuyengia.setVisibility(View.GONE);
             holder1.layoutGuiChuyenGiaClick.setVisibility(View.GONE);
             holder1.layoutAnswerFromChuyenGia.setVisibility(View.GONE);
+            holder1.leftTVSource.setVisibility(View.GONE);
             holder1.leftTV.setBackground(context.getResources().getDrawable(R.drawable.left_tv_bg));
             if (message.isAnswer()) {
                 holder1.layoutAnswering.setVisibility(View.VISIBLE);
@@ -1412,20 +1414,23 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
                 holder1.layoutBottomTextview.setVisibility(View.VISIBLE);
                 holder1.layoutFeedBackContent.setVisibility(View.VISIBLE);
-//                holder1.leftTV.setText(message.getBody());
-                holder1.leftTV.setText(Html.fromHtml(message.getBody()), TextView.BufferType.SPANNABLE);
+                if (message.getBody() != null)
+                    holder1.leftTV.setText(Html.fromHtml(message.getBody()), TextView.BufferType.SPANNABLE);
+
                 message.setWebUrl(message.getWebUrl());
                 if (baseResponse != null) {
                     if (baseResponse.getMessage() != null) {
                         for (int i = 0; i < message.getBaseResponse().getMessage().size(); i++) {
                             if (message.getBaseResponse().getMessage().get(i).isIsfocus()) {
-                                holder1.leftTV.setText(message.getBaseResponse().getMessage().get(i).getText());
+                                if (message.getBaseResponse().getMessage().get(i).getText() != null)
+                                    holder1.leftTV.setText(Html.fromHtml(message.getBaseResponse().getMessage().get(i).getText()), TextView.BufferType.SPANNABLE);
                                 message.setWebUrl(message.getBaseResponse().getMessage().get(i).getUrl());
                                 if (message.getWebUrl() != null && !message.getWebUrl().equals("")) {
                                     Drawable background = context.getResources().getDrawable(R.drawable.left_tv_bg);
                                     switch (i) {
                                         case 0:
-                                            background = context.getResources().getDrawable(R.drawable.left_tv_bg_0);
+                                            if (message.getBaseResponse().getMessage().size() > 1)
+                                                background = context.getResources().getDrawable(R.drawable.left_tv_bg_0);
                                             break;
                                         case 1:
                                             background = context.getResources().getDrawable(R.drawable.left_tv_bg_1);
@@ -1502,7 +1507,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
             if (baseResponse != null) {
                 int answersCode = (int) baseResponse.getAnswerCode();
-                Log.v("trungbd", "" + answersCode);
                 if (answersCode == 2) {
                     holder1.layoutGuiChuyenGiaClick.setVisibility(View.VISIBLE);
                 }
@@ -1516,7 +1520,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 final List<Answer> answers = baseResponse.getMessage();
                 if (answers != null) {
-                    if (answers.size() > 0) {
+                    if (answers.size() > 1) {
                         for (int i = 0; i < answers.size(); i++) {
                             String url = answers.get(i).getUrl();
                             try {
@@ -1534,7 +1538,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     } else answers.get(i).setIsfocus(false);
                                 }
                                 notifyDataSetChanged();
-                                holder1.leftTV.setText(answers.get(position).getText());
+                                if (answers.get(position).getText() != null)
+                                    holder1.leftTV.setText(Html.fromHtml(answers.get(position).getText()), TextView.BufferType.SPANNABLE);
                                 int background = context.getResources().getIdentifier("left_tv_bg_" + position, "drawable", context.getPackageName());
                                 holder1.leftTV.setBackgroundResource(background);
 
@@ -1546,6 +1551,16 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         OverScrollDecoratorHelper.setUpOverScroll(holder1.moreAnswer, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
                         holder1.moreAnswer.setAdapter(listQuestionAdapter);
                         holder1.moreAnswer.setVisibility(View.VISIBLE);
+                    } else if (answers.size() == 1) {
+                        try {
+                            String domain = getDomainName(answers.get(0).getUrl());
+                            if (domain != null && !domain.equals("")) {
+                                holder1.leftTVSource.setText("Nguồn " + domain);
+                                holder1.leftTVSource.setVisibility(View.VISIBLE);
+                            }
+                        } catch (URISyntaxException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }

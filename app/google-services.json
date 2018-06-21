@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "855914831593",
+    "firebase_url": "https://virtual-assistant-gcm.firebaseio.com",
+    "project_id": "virtual-assistant-gcm",
+    "storage_bucket": "virtual-assistant-gcm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855914831593:android:b140ae8d3a9d0675",
+        "android_client_info": {
+          "package_name": "com.android.vtcc.virtualassistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "855914831593-nkndaho7l51sg56vt7kukc9d63hcm27m.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "855914831593-nkndaho7l51sg56vt7kukc9d63hcm27m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjdrqZAslVbi57fHfe8E8HjoDr-hLKy7w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

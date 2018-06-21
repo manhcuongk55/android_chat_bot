@@ -4,10 +4,12 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
@@ -42,12 +44,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activeandroid.ActiveAndroid;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.balysv.materialripple.MaterialRippleLayout;
 import com.google.cloud.android.speech.MessageDialogFragment;
 import com.google.cloud.android.speech.R;
 import com.google.cloud.android.speech.SpeechService;
 import com.google.cloud.android.speech.VoiceRecorder;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.microsoft.speech.tts.Synthesizer;
 import com.microsoft.speech.tts.Voice;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -141,7 +146,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         @Override
         public void onVoiceStart() {
             if (mSpeechService != null) {
-                Log.v("trungbd", "onVoiceStart");
                 mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
             }
         }
@@ -149,7 +153,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         @Override
         public void onVoice(byte[] data, int size) {
             if (mSpeechService != null) {
-                Log.v("trungbd", "onVoice");
                 mSpeechService.recognize(data, size);
             }
         }
@@ -157,7 +160,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         @Override
         public void onVoiceEnd() {
             if (mSpeechService != null) {
-                Log.v("trungbd", "onVoiceEnd");
                 mSpeechService.finishRecognizing();
                 stopVoiceRecorder();
                 runOnUiThread(new Runnable() {
@@ -188,12 +190,14 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     };
     NotificationFragment notificationFragment;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActiveAndroid.initialize(this);
         setContentView(R.layout.activity_main);
+
         questionExpertsList = new ArrayList<>();
         responseAnswerList = new ArrayList<>();
         myAnim = AnimationUtils.loadAnimation(this, R.anim.buttom_check);
@@ -426,7 +430,11 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         User user = StorageManager.getUser(this);
         if (user != null) {
             tvUserName.setText(StorageManager.getStringValue(getApplicationContext(), "account", ""));
-            tvUserRule.setText(user.getUser_type());
+            if (user.getUser_type().equals("Experts")) {
+                tvUserRule.setText("Chuyên gia");
+            } else {
+                tvUserRule.setText("Người dùng");
+            }
             NAME_USER_REQUEST = StorageManager.getStringValue(getApplicationContext(), "account", "");
             if (user.getUser_type().equals("Experts"))
                 getExpertsQuestion();
@@ -442,6 +450,16 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         questionExpertsList = StorageManager.getQuestionExperts(getContext());
         responseAnswerList = StorageManager.getResponseAnswers(getContext());
         initGetNotification();
+        intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            if (extras.getInt("notification", 0) == 1) {
+                FragmentManager fm = getSupportFragmentManager();
+                notificationFragment = new NotificationFragment(isExpert, ChatBotActivity.this);
+                notificationFragment.show(fm, "NotificationFragment");
+                tvNotification.setVisibility(View.GONE);
+            }
+        }
     }
 
     public static boolean isExpert = false;
@@ -453,15 +471,17 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             if (user.getUser_type().equals("Experts")) {
                 isExpert = true;
                 getExpertsQuestion();
+                FirebaseMessaging.getInstance().subscribeToTopic("experts");
             } else {
                 isExpert = false;
                 getExpertAnswers();
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("experts");
             }
         }
 
-        TimerTask timerTask = new MyTimerTask();
+/*        TimerTask timerTask = new MyTimerTask();
         timer = new Timer(true);
-        timer.scheduleAtFixedRate(timerTask, 0, 10 * 1000);
+        timer.scheduleAtFixedRate(timerTask, 0, 10 * 1000);*/
     }
 
     @Override
@@ -486,6 +506,28 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         }
     }
 
+    public void refresh() {
+        if (isExpert) {
+            getExpertsQuestion();
+        } else {
+            getExpertAnswers();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            if (extras.getInt("notification", 0) == 1) {
+                FragmentManager fm = getSupportFragmentManager();
+                notificationFragment = new NotificationFragment(isExpert, ChatBotActivity.this);
+                notificationFragment.show(fm, "NotificationFragment");
+                tvNotification.setVisibility(View.GONE);
+            }
+        }
+    }
+
     public void getExpertsQuestion() {
         User user = StorageManager.getUser(getContext());
         if (user == null) return;
@@ -506,7 +548,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                         }
                     }
 
-                    Log.v("trungbd", "New question   " + questionExpertsNew.toString());
                     if (questionExpertsNew.size() > 0) {
                         questionExpertsList.addAll(questionExpertsNew);
                         StorageManager.saveQuestionExperts(getContext(), questionExpertsList);
@@ -540,21 +581,21 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             message.setAnswer(false);
             message.setMid(responseAnswer.getAnswerId());
             chatView.addMessage(message);
-            playVoice(responseAnswer.getAnswer());
+//            playVoice(responseAnswer.getAnswer());
         }
         tvNotification.setVisibility(View.VISIBLE);
-        pushNotification("Bạn nhận được câu trả lời từ chuyên gia");
+//        pushNotification("Bạn nhận được câu trả lời từ chuyên gia");
     }
 
     public void notificationQuestion(List<QuestionExperts> questionExpertsList) {
         tvNotification.setVisibility(View.VISIBLE);
-        pushNotification("Bạn nhận được 1 câu hỏi từ người dùng!");
+//        pushNotification("Bạn nhận được 1 câu hỏi từ người dùng!");
     }
 
     public void pushNotification(String content) {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Intent intent = new Intent(getContext(), ChatBotActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
@@ -611,7 +652,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                         }
                     }
 
-                    Log.v("trungbd", "New answer   " + responseAnswersNew.toString());
                     if (responseAnswersNew.size() > 0) {
                         responseAnswerList.addAll(responseAnswersNew);
                         StorageManager.saveResponseAnswer(getContext(), responseAnswerList);
@@ -632,6 +672,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         });
     }
 
+    boolean deleteDB;
 
     public void logout() {
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
@@ -641,6 +682,10 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 StorageManager.saveUser(getApplicationContext(), null);
+//                deleteDatabase("chatbot");
+                new Delete().from(MessageHistory.class).execute();
+                deleteDB = true;
+//                deleteDB();
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 finish();
@@ -657,6 +702,17 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         alertDialog.show();
     }
 
+    public static List<MessageHistory> getAll() {
+        return new Select().from(MessageHistory.class).execute();
+    }
+
+    public void deleteDB() {
+        List<MessageHistory> mItems = getAll();
+        for (MessageHistory item : mItems) {
+            item.delete();
+        }
+        deleteDB = true;
+    }
 
     private void changeVolume(boolean volume) {
         AudioManager amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -671,8 +727,9 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        timer.cancel();
-        chatView.onDestroy();
+//        timer.cancel();
+        if (!deleteDB)
+            chatView.onDestroy();
         currentTimeStamp = Long.MAX_VALUE;
     }
 
@@ -843,13 +900,20 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                refresh();
+            }
+        }, new IntentFilter("NewsFromServer"));
         // Prepare Cloud Speech API
 //        bindService(new Intent(this, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
     }
 
     private void startVoiceRecorder() {
-        if (m_syn != null)
+        if (m_syn != null) {
             m_syn.stopSound();
+        }
         if (mVoiceRecorder != null) {
             mVoiceRecorder.stop();
         }
@@ -995,6 +1059,38 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     }
 
+    public void putFirebaseToken(final String mId, final String message, final int position) {
+
+        String firebaseToken = FirebaseInstanceId.getInstance().getToken();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("username", NAME_USER_REQUEST);
+        map.put("token", StorageManager.getUser(getApplicationContext()).getToken());
+        map.put("userId", StorageManager.getUser(getApplicationContext()).getUserId() + "");
+        map.put("firebaseToken", firebaseToken);
+
+        Call<viettel.cyberspace.assitant.model.Response> call2 = apiService.putFirebaseToken(map);
+        call2.enqueue(new Callback<viettel.cyberspace.assitant.model.Response>() {
+            @Override
+            public void onResponse(Call<viettel.cyberspace.assitant.model.Response> call2, retrofit2.Response<viettel.cyberspace.assitant.model.Response> response) {
+                int statusCode = response.code();
+                if (statusCode == 200) {
+                    Log.v("trungbd", "update token success");
+                    sendQuestionMaster(mId, message, position);
+                } else {
+                    Log.v("trungbd", "update token not success");
+                    Toast.makeText(getApplicationContext(), "Có lỗi xảy ra", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<viettel.cyberspace.assitant.model.Response> call, Throwable t) {
+                Log.v("trungbd", "update token not success");
+                Toast.makeText(getApplicationContext(), "Có lỗi xảy ra", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
     private void getAnswer(final String mid, final String name_user, final String question) {
         Log.i("duypq3", "getAnswer:mid=" + mid);
 
@@ -1052,6 +1148,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
 
     public void playVoice(String text) {
+
+        if (m_syn != null) m_syn.stopSound();
         if (getString(R.string.api_key).startsWith("Please")) {
             new AlertDialog.Builder(this)
                     .setTitle(getString(R.string.add_subscription_key_tip_title))
@@ -1059,10 +1157,10 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     .setCancelable(false)
                     .show();
         } else {
-            if (m_syn == null) {
-                // Create Text To Speech Synthesizer.
-                m_syn = new Synthesizer(getString(R.string.api_key));
-            }
+            Log.v("trungbd", "play voice  " + text);
+            if (isRecording) return;
+            m_syn = new Synthesizer(getString(R.string.api_key));
+
             m_syn.SetServiceStrategy(Synthesizer.ServiceStrategy.AlwaysService);
 
             Voice v = new Voice("vi-VN", "Microsoft Server Speech Text to Speech Voice (vi-VN, An)", Voice.Gender.Male, true);
@@ -1082,7 +1180,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     @Override
     public void sendMaster(String mId, String message, int position) {
         Log.v("trungbd", "gui chuyen gia2");
-        sendQuestionMaster(mId, message, position);
+        putFirebaseToken(mId, message, position);
 
     }
 

@@ -75,7 +75,7 @@
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_gravity="center"
-                            app:indicatorColor="#42ebf4"
+                            app:indicatorColor="#002333"
                             app:indicatorName="BallScaleMultipleIndicator" />
                     </com.balysv.materialripple.MaterialRippleLayout>
 
@@ -177,7 +177,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/et_bg"
-                    android:hint="Say something..."
+                    android:hint="Nhập câu hỏi..."
                     android:maxHeight="100dp"
                     android:minHeight="35dp"
                     android:paddingBottom="4dp"
