@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/left_tv_bg"
+    android:paddingBottom="10dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="10dp">
 
     <TextView
         android:id="@+id/leftTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:background="@drawable/left_tv_bg"
         android:gravity="center_vertical"
-        android:paddingBottom="10dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:paddingTop="10dp"
+
         android:text="Hello it's me how are you i'm fine thank you and you"
         android:textColor="@android:color/white"
         android:textSize="16sp" />
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/leftTVSource"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/leftTV"
+        android:text="Nguồn cacanhphuclong.com.vn"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
+        android:textStyle="italic" />
+</RelativeLayout>

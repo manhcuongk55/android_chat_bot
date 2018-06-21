@@ -64,5 +64,9 @@ public interface ApiInterface {
     @POST("/va/get-experts-answer")
     Call<ResponseGetExpertsAnswer> getExpertsAnswer(@Body HashMap<String, String> body);
 
+    @Headers("Content-Type: application/json")
+    @POST("/va/put-firebase-token")
+    Call<Response> putFirebaseToken(@Body HashMap<String, String> body);
+
 
 }

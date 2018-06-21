@@ -81,28 +81,6 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:orientation="vertical"
-        android:padding="5dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mobile"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="+84 962210490"
-            android:textSize="14sp" />
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -116,7 +94,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rule"
+            android:text="Tài khoản"
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
@@ -124,7 +102,7 @@
             android:id="@+id/tvUserRule"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Expert"
+            android:text="Chuyên gia"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -141,7 +119,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Logout"
+            android:text="Đăng xuất"
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 

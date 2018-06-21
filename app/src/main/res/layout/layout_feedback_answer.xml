@@ -8,8 +8,8 @@
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:background="@drawable/border_shape"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
 
         <LinearLayout
             android:id="@+id/layoutLike"
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="5dp"
-                android:text="Like"
+                android:text="Đúng rồi"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -52,7 +52,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/layoutLike"
             android:clickable="true"
             android:padding="3dp">

@@ -37,7 +37,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
-                        android:text="VIETTEL_ASSISTANT"
+                        android:text="TRỢ LÝ ẢO VIETTEL"
                         android:textColor="@android:color/white"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -68,7 +68,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:backgroundTint="@android:color/white"
-                            android:hint="User name"
+                            android:hint="Tên đăng nhập"
                             android:paddingLeft="40dp"
                             android:singleLine="true"
                             android:textColor="@android:color/white"
@@ -105,7 +105,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:backgroundTint="@android:color/white"
-                            android:hint="Password"
+                            android:hint="Mật khẩu"
                             android:inputType="textPassword"
                             android:paddingLeft="40dp"
                             android:singleLine="true"
@@ -129,6 +129,7 @@
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_centerVertical="true"
+                        android:checked="true"
                         android:gravity="center"
                         android:padding="5dp" />
 
@@ -137,7 +138,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="40dp"
-                        android:text="Keep me Signed in"
+                        android:text="Lưu tài khoản"
                         android:textColor="@android:color/white" />
 
                 </RelativeLayout>
@@ -150,7 +151,7 @@
                     android:layout_marginTop="10dp"
                     android:background="@drawable/border_shape"
                     android:gravity="center"
-                    android:text="sign in"
+                    android:text="Đăng Nhập"
                     android:textColor="#00A6EB" />
                 <!--
                                 <RelativeLayout

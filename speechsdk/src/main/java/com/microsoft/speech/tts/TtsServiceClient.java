@@ -60,11 +60,11 @@ class TtsServiceClient {
 
     protected void doWork(String ssml) {
         int code = -1;
-        synchronized(m_auth) {
+        synchronized (m_auth) {
             String accessToken = m_auth.GetAccessToken();
             try {
                 URL url = new URL(m_serviceUri);
-                HttpsURLConnection urlConnection = (HttpsURLConnection)url.openConnection();
+                HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
                 urlConnection.setDoInput(true);
                 urlConnection.setDoOutput(true);
                 urlConnection.setConnectTimeout(5000);

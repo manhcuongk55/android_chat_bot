@@ -1,7 +1,16 @@
 package viettel.cyberspace.assitant.utils;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
+
+import com.google.cloud.android.speech.R;
 
 import org.json.JSONException;
 
@@ -9,8 +18,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Currency;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import viettel.cyberspace.assitant.activity.ChatBotActivity;
+
+import static com.activeandroid.Cache.getContext;
 
 public class TextUtil {
     public static final String EMPTY_STRING = "";
@@ -106,5 +120,32 @@ public class TextUtil {
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+7"));
         return sdf.format(time);
     }
+
+    public static long[] vibrate = new long[]{0, 2000, 200, 2000, 0};
+
+    public static void pushNotification(String content, String title) {
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Intent intent = new Intent(getContext(), ChatBotActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Bundle bundle = new Bundle();
+        bundle.putInt("notification", 1);
+        intent.putExtras(bundle);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setAutoCancel(true)
+                .setSound(alarmSound)
+                .setVibrate(vibrate)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationManager.IMPORTANCE_HIGH);
+        NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        int m = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+        manager.notify(m, builder.build());
+    }
+
 
 }

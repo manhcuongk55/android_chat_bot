@@ -11,19 +11,20 @@ android {
     buildToolsVersion '27.0.0'
 
     defaultConfig {
-        applicationId "com.google.cloud.android.speech"
+        applicationId 'com.android.vtcc.virtualassistant'
         targetSdkVersion 27
         versionCode 1
         versionName '1.0'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.debug
     }
 
     signingConfigs {
-        release {
-            storeFile file(project.properties.storeFile)
-            storePassword project.properties.storePassword
-            keyAlias project.properties.keyAlias
-            keyPassword project.properties.keyPassword
+        config {
+            keyAlias 'virtualassistant'
+            keyPassword 'Lili2004!'
+            storeFile file('/home/brwsr/virtualassistant.jks')
+            storePassword 'Lili2004!'
         }
     }
 
@@ -46,7 +47,7 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
     }
 
@@ -122,6 +123,9 @@ dependencies {
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     compile 'de.hdodenhof:circleimageview:2.2.0'
     compile project(':speech')
+    compile 'com.google.firebase:firebase-messaging:11.4.2'
+    compile 'com.google.android.gms:play-services:11.4.2'
+
 }
 
 task copySecretKey(type: Copy) {
@@ -132,4 +136,5 @@ task copySecretKey(type: Copy) {
     rename secretKey.getName(), "credential.json"
 }
 preBuild.dependsOn(copySecretKey)
+apply plugin: 'com.google.gms.google-services'
 
