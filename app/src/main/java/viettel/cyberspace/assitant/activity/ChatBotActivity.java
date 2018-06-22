@@ -112,7 +112,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     public static
     int LIMIT_QUERY_HISTORY = 20;
     public static long currentTimeStamp = Long.MAX_VALUE;
-    LinearLayout layoutLogout;
+    LinearLayout layoutLogout, layoutClear;
 
     public int COUNT_DOWNT_CALL_ANSWER;
     public final int MAX_CALL_ANSWER = 20;
@@ -371,6 +371,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         tvUserName = header.findViewById(R.id.tvUserName);
         tvUserRule = header.findViewById(R.id.tvUserRule);
         layoutLogout = header.findViewById(R.id.layoutLogout);
+        layoutClear = header.findViewById(R.id.layoutCLear);
 
         chatView.setOnClickSendButtonListener(new ChatView.OnClickSendButtonListener() {
             @Override
@@ -444,6 +445,14 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             public void onClick(View view) {
                 drawer.closeDrawer(Gravity.RIGHT);
                 logout();
+            }
+        });
+
+        layoutClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteDB();
+                chatView.clearMessages();
             }
         });
 
@@ -875,25 +884,67 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         sendMessage(text, NAME_USER_REQUEST);
     }
 
-    public void receiveTextFromServer(String text, String url, BaseResponse baseResponse, String nameuser, String mid, String question) {
-        Message message = new Message();
-        message.setMessageType(Message.MessageType.LeftSimpleMessage);
-        message.setTime(getTime());
-        message.setBody(text);
-        message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
-        message.setMid(mid);
-        if (baseResponse != null) {
-            if (baseResponse.getMessage() != null && baseResponse.getMessage().size() > 0)
-                baseResponse.getMessage().get(0).setIsfocus(true);
-            message.setBaseResponse(baseResponse);
+    public void receiveTextFromServer(String text, String voice, String url, String html, BaseResponse baseResponse, String nameuser, String mid, String question, String type) {
+
+        if (type.equals("DEFAULT")) {
+
+            //case text nhan duoc binh thuong
+            Message message = new Message();
+            message.setMessageType(Message.MessageType.LeftSimpleMessage);
+            message.setTime(getTime());
+            if (text == null) text = "Error !";
+            message.setBody(text);
+            message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+            message.setMid(mid);
+            if (baseResponse != null) {
+                if (baseResponse.getMessage() != null && baseResponse.getMessage().size() > 0)
+                    baseResponse.getMessage().get(0).setIsfocus(true);
+                message.setBaseResponse(baseResponse);
+            }
+            message.setTimeStamp(System.currentTimeMillis());
+            message.setWebUrl(url);
+            message.setQuestion(question);
+            message.setAnswer(false);
+            chatView.addMessage(message);
+            playVoice(voice);
+            vibrate(50);
+
+            updateViewDelay(100);
+        } else {
+            // case nhan duoc la html
+
+            Message message = new Message();
+            message.setMessageType(Message.MessageType.LeftHtml);
+            message.setTime(getTime());
+            message.setBody(html);
+            message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
+            message.setMid(mid);
+            if (baseResponse != null) {
+                if (baseResponse.getMessage() != null && baseResponse.getMessage().size() > 0)
+                    baseResponse.getMessage().get(0).setIsfocus(true);
+                message.setBaseResponse(baseResponse);
+            }
+            message.setTimeStamp(System.currentTimeMillis());
+            message.setWebUrl(url);
+            message.setQuestion(question);
+            message.setAnswer(false);
+            chatView.addMessage(message);
+            playVoice(voice);
+            vibrate(50);
+
+            updateViewDelay(500);
         }
-        message.setTimeStamp(System.currentTimeMillis());
-        message.setWebUrl(url);
-        message.setQuestion(question);
-        message.setAnswer(false);
-        chatView.addMessage(message);
-        playVoice(text);
-        vibrate(50);
+    }
+
+    private void updateViewDelay(final int time) {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                chatView.notifyView();
+            }
+        }, time);
     }
 
 
@@ -988,7 +1039,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
             @Override
             public void onFailure(Call<ResponseMessage> call, Throwable t) {
                 Log.i("duypq3", "sendMessage:onFailure");
-                receiveTextFromServer(getString(R.string.error_send_message), "", null, name_user, null, "");
+                receiveTextFromServer(getString(R.string.error_send_message), getString(R.string.error_get_answer), "", "", null, name_user, null, "", "DEFAULT");
             }
         });
 
@@ -1114,7 +1165,13 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     Log.v("trungbd", chatView.getMessageList().toString());
                     chatView.removeMessage(messageAnswering);
                     Log.v("trungbd", chatView.getMessageList().toString());
-                    receiveTextFromServer(response.body().getMessage().get(0).getText(), response.body().getMessage().get(0).getUrl(), response.body(), name_user, mid, question);
+                    receiveTextFromServer(response.body().getMessage().get(0).getText()
+                            , response.body().getMessage().get(0).getVoice()
+                            , response.body().getMessage().get(0).getUrl()
+                            , response.body().getMessage().get(0).getHtml()
+                            , response.body(), name_user, mid, question
+                            , response.body().getMessage().get(0).getType())
+                    ;
                 } else {
                     //not success
                     chatView.removeMessage(messageAnswering);
@@ -1128,7 +1185,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 COUNT_DOWNT_CALL_ANSWER++;
                 if (COUNT_DOWNT_CALL_ANSWER == MAX_CALL_ANSWER) {
                     chatView.removeMessage(messageAnswering);
-                    receiveTextFromServer(getString(R.string.error_get_answer), "", null, name_user, mid, question);
+                    receiveTextFromServer(getString(R.string.error_get_answer), getString(R.string.error_get_answer), "", "", null, name_user, mid, question, "DEFAULT");
                     COUNT_DOWNT_CALL_ANSWER = 0;
                 } else {
                     final Handler handler = new Handler();
@@ -1205,7 +1262,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
         Message message = new Message();
         message.setMessageType(Message.MessageType.LeftHtml);
         message.setTime(getTime());
-        message.setBody(LoadData("thoitiet.html"));
+        message.setBody(LoadData("bitcoin.html"));
         message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/hodor"));
 //        message.setMid(mid);
 //        if (baseResponse != null) {

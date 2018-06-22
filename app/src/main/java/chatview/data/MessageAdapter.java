@@ -687,13 +687,22 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //                }
 //            });
 
+            int height, width;
+            width = webView.getWidth();
+            height = width;
+            webView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
             WebSettings settings = webView.getSettings();
-            //settings.setUseWideViewPort(true);
+            // settings.setUseWideViewPort(true);
             settings.setDomStorageEnabled(true);
             settings.setLoadWithOverviewMode(true);
             settings.setJavaScriptEnabled(true);
 
+            settings.setUseWideViewPort(false);
+            settings.setSupportZoom(false);
+
             webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+
 
             //settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
             // wv.setBackgroundColor(0);
@@ -1858,6 +1867,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else if (holder instanceof LeftHtmlViewHolder) {
             final LeftHtmlViewHolder holder1 = (LeftHtmlViewHolder) holder;
             holder1.senderNameTV.setText(message.getUserName());
+            Log.i("duypq3", "html=" + message.getBody());
             holder1.webView.loadDataWithBaseURL("", message.getBody(), "text/html", "UTF-8", "");
             // holder1.webView.loadUrl(message.getBody());
             // webView.loadUrl("file:///android_asset/thoitiet.html");

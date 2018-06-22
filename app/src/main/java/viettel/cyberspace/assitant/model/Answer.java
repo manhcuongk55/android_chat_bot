@@ -30,8 +30,8 @@ public class Answer {
     @SerializedName("url")
     public String url;
 
-    @SerializedName("type")
-    public int type;
+    @SerializedName("intent_type")
+    public String type;
 
     public String domain;
 
@@ -81,11 +81,11 @@ public class Answer {
         this.isfocus = isfocus;
     }
 
-    public int getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -99,7 +99,7 @@ public class Answer {
                 ", text='" + text + '\'' +
                 ", title='" + title + '\'' +
                 ", url='" + url + '\'' +
-                ", type=" + type +
+                ", type='" + type + '\'' +
                 ", domain='" + domain + '\'' +
                 ", isfocus=" + isfocus +
                 '}';

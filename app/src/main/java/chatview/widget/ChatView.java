@@ -48,6 +48,10 @@ public class ChatView extends RelativeLayout implements MessageAdapter.RateMessa
         messageAdapter.notifyDataSetChanged();
     }
 
+    public void notifyView() {
+        chatRV.smoothScrollToPosition(0);
+    }
+
 
     public void sendMasterSuccess(int position) {
         messageList.get(position).setSendMaster(true);
