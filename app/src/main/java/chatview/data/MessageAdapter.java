@@ -698,10 +698,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             settings.setLoadWithOverviewMode(true);
             settings.setJavaScriptEnabled(true);
 
-            settings.setUseWideViewPort(false);
+            settings.setUseWideViewPort(true);
             settings.setSupportZoom(false);
+            webView.setInitialScale(30);
 
-            webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+            // webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
 
 
             //settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);

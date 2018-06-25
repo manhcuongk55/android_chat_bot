@@ -152,8 +152,12 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
         @Override
         public void onVoice(byte[] data, int size) {
-            if (mSpeechService != null) {
-                mSpeechService.recognize(data, size);
+            try {
+                if (mSpeechService != null) {
+                    mSpeechService.recognize(data, size);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -389,10 +393,10 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 message.setUserIcon(Uri.parse("android.resource://com.shrikanthravi.chatviewlibrary/drawable/groot"));
                 chatView.addMessage(message);
                 //duypq test
-                if (body.equals("1")) {
+               /* if (body.equals("1")) {
                     getHtmlData();
                     return;
-                }
+                }*/
 
 
                 //duypq test
