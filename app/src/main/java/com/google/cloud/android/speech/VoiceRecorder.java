@@ -187,8 +187,16 @@ public class VoiceRecorder {
                     if (Thread.currentThread().isInterrupted()) {
                         break;
                     }
-                    if (mAudioRecord == null) break;
-                    if (mBuffer == null) break;
+                    if (mAudioRecord == null) {
+                        end();
+                        break;
+                    }
+
+                    if (mBuffer == null) {
+                        end();
+                        break;
+                    }
+
                     final int size = mAudioRecord.read(mBuffer, 0, mBuffer.length);
                     final long now = System.currentTimeMillis();
                     if (isHearingVoice(mBuffer, size)) {
