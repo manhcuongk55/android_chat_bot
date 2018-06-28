@@ -68,5 +68,9 @@ public interface ApiInterface {
     @POST("/va/put-firebase-token")
     Call<Response> putFirebaseToken(@Body HashMap<String, String> body);
 
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @POST("/api/jsonws/pushUserData")
+    Call<Response>  pushData(@Body HashMap<String, String> body);
+
 
 }

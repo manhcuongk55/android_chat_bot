@@ -30,7 +30,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-package com.microsoft.speech.tts;
+package com.viettel.speech.tts;
 
 import android.util.Log;
 
@@ -50,8 +50,8 @@ import javax.net.ssl.HttpsURLConnection;
      */
 class Authentication {
     private static final String LOG_TAG = "Authentication";
-    public static final String AccessTokenUri = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
-
+  //  public static final String AccessTokenUri = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
+  public static final String AccessTokenUri = "http://10.30.154.10/hmm-stream/syn";
     private String apiKey;
     private String accessToken;
     private Timer accessTokenRenewer;

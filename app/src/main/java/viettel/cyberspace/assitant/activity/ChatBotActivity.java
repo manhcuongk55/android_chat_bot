@@ -12,7 +12,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -28,8 +31,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -38,8 +39,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,12 +56,15 @@ import com.google.cloud.android.speech.SpeechService;
 import com.google.cloud.android.speech.VoiceRecorder;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.microsoft.speech.tts.Synthesizer;
-import com.microsoft.speech.tts.Voice;
-import com.wang.avi.AVLoadingIndicatorView;
+import com.viettel.speech.tts.Synthesizer;
+import com.viettel.speech.tts.Voice;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,6 +77,7 @@ import java.util.TimerTask;
 import chatview.data.Message;
 import chatview.data.MessageHistory;
 import chatview.widget.ChatView;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -85,6 +92,8 @@ import viettel.cyberspace.assitant.model.ResponseQuestionMaster;
 import viettel.cyberspace.assitant.model.User;
 import viettel.cyberspace.assitant.rest.ApiClient;
 import viettel.cyberspace.assitant.rest.ApiInterface;
+import viettel.cyberspace.assitant.rest.ApiVoiceClient;
+import viettel.cyberspace.assitant.rest.ApiVoiceInterface;
 import viettel.cyberspace.assitant.storage.StorageManager;
 
 import static chatview.widget.ChatView.getMessageHistory;
@@ -113,6 +122,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     int LIMIT_QUERY_HISTORY = 20;
     public static long currentTimeStamp = Long.MAX_VALUE;
     LinearLayout layoutLogout, layoutClear;
+    MediaPlayer mediaPlayer;
+    Switch mySwitch;
 
     public int COUNT_DOWNT_CALL_ANSWER;
     public final int MAX_CALL_ANSWER = 20;
@@ -128,6 +139,10 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     private SpeechService mSpeechService;
 
     ApiInterface apiService;
+    ApiVoiceInterface apiVoiceInterface;
+
+    AudioTrack audioTrack;//new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+    //    AudioFormat.ENCODING_PCM_16BIT, minBufferSize, AudioTrack.MODE_STREAM);
 
     private Synthesizer m_syn;
     Animation myAnim;
@@ -139,6 +154,8 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     List<QuestionExperts> questionExpertsList;
     List<ResponseAnswer> responseAnswerList;
+
+    public static boolean useViettelVoice = false;
 
 
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
@@ -208,8 +225,16 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
         messageAnswering.setMessageType(Message.MessageType.LeftSimpleMessage);
         messageAnswering.setAnswer(true);
-        apiService =
-                ApiClient.getClient().create(ApiInterface.class);
+        apiService = ApiClient.getClient().create(ApiInterface.class);
+        apiVoiceInterface = ApiVoiceClient.getClient().create(ApiVoiceInterface.class);
+
+
+        int minBufferSize = AudioTrack.getMinBufferSize(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
+
+     /*   audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 16000, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+                AudioFormat.ENCODING_PCM_16BIT, AudioTrack.getMinBufferSize(16000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT), AudioTrack.MODE_STREAM);
+*/
+
         chatView = findViewById(R.id.chatView);
         chatView.setRateMessageListener(this);
 /*        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -305,7 +330,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                             Manifest.permission.RECORD_AUDIO)) {
                         showPermissionMessageDialog();
                     } else {
-                        ActivityCompat.requestPermissions(ChatBotActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                        ActivityCompat.requestPermissions(ChatBotActivity.this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 REQUEST_RECORD_AUDIO_PERMISSION);
                     }
                 } else {
@@ -473,6 +498,19 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                 tvNotification.setVisibility(View.GONE);
             }
         }
+
+        mySwitch = header.findViewById(R.id.myswitch);
+        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    // do something when check is selected
+                } else {
+                    //do something when unchecked
+                }
+                useViettelVoice = isChecked;
+            }
+        });
     }
 
     public static boolean isExpert = false;
@@ -1210,6 +1248,11 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
     public void playVoice(String text) {
 
+        if (useViettelVoice) {
+            LoadVoiceViettel(text);
+            return;
+        }
+
         if (m_syn != null) m_syn.stopSound();
         if (getString(R.string.api_key).startsWith("Please")) {
             new AlertDialog.Builder(this)
@@ -1299,5 +1342,83 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
         }
         return tContent;
+    }
+
+
+    public void LoadVoiceViettel(String text) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("data", text);
+        map.put("voices", "doanngocle.htsvoice");
+        map.put("key", "K9W6tNTeUuwrkyYARkAmzJ94D9vUR2Qdo5YwVI7D");
+
+        Call<ResponseBody> call2 = apiVoiceInterface.getVoice(text, "doanngocle.htsvoice", "K9W6tNTeUuwrkyYARkAmzJ94D9vUR2Qdo5YwVI7D");
+        call2.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call2, retrofit2.Response<ResponseBody> response) {
+                int statusCode = response.code();
+                if (statusCode == 200) {
+                    //success
+                    String s = response.body().toString();
+                    Log.i("duypq3", "LoadVoiceViettel: success= " + s);
+                    try {
+                        InputStream in = response.body().byteStream();
+
+                        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                        String path = "/sdcard/" + "voice" + ".mp3";
+                        OutputStream output = new FileOutputStream(path);
+
+                        byte[] bytes = new byte[1024];
+                        int ret = in.read(bytes);
+                        while (ret > 0) {
+                            bout.write(bytes, 0, ret);
+                            ret = in.read(bytes);
+                        }
+                        byte[] sound = bout.toByteArray();
+
+
+                       /* final int SAMPLE_RATE = 16000;
+
+                        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+                                AudioFormat.ENCODING_PCM_16BIT,
+                                AudioTrack.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT),
+                                AudioTrack.MODE_STREAM);
+
+                        if (audioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
+                            audioTrack.play();
+                            audioTrack.write(sound, 0, sound.length);
+                            audioTrack.stop();
+                            audioTrack.release();
+                        }
+*/
+
+                        output.write(sound, 0, sound.length);
+
+                        mediaPlayer = new MediaPlayer();
+
+                        try {
+                            mediaPlayer.setDataSource(path);
+                            mediaPlayer.prepare();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        mediaPlayer.start();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    //not success
+                    Log.i("duypq3", "LoadVoiceViettel:not success");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("duypq3", "LoadVoiceViettel:onFailure=  ");
+
+            }
+        });
     }
 }

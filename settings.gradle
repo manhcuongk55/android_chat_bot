@@ -1,2 +1,3 @@
-include ':app', ':speech'
+include ':app', ':speech', ':speechviettel2'
 project(':speech').projectDir = new File('speechsdk')
+project(':speechviettel2').projectDir = new File('speechviettel')

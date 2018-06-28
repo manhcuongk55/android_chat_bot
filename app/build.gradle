@@ -125,7 +125,7 @@ dependencies {
     compile project(':speech')
     compile 'com.google.firebase:firebase-messaging:11.4.2'
     compile 'com.google.android.gms:play-services:11.4.2'
-
+    compile project(':speechviettel2')
 }
 
 task copySecretKey(type: Copy) {
