@@ -10,14 +10,61 @@
       "client_info": {
         "mobilesdk_app_id": "1:855914831593:android:b140ae8d3a9d0675",
         "android_client_info": {
-          "package_name": "com.android.vtcc.virtualassistant"
+          "package_name": "com.viettel.vtcc.virtualassistant"
         }
       },
       "oauth_client": [
         {
+          "client_id": "855914831593-gv0on1b7cm317h3nrmluvm3cdi88olqa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.viettel.vtcc.virtualassistant",
+            "certificate_hash": "b5ea2c45364e3d7f832baa836a9508df8d4def89"
+          }
+        },
+        {
           "client_id": "855914831593-nkndaho7l51sg56vt7kukc9d63hcm27m.apps.googleusercontent.com",
           "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjdrqZAslVbi57fHfe8E8HjoDr-hLKy7w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
         },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "855914831593-nkndaho7l51sg56vt7kukc9d63hcm27m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "855914831593-lmqtcsmegbfr6lhr0lgteinnl7egi70p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "vn.viettel.vtcc.va.internal"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855914831593:android:17ead9a3a928b9b3",
+        "android_client_info": {
+          "package_name": "com.viettel.vtcc.virtualassistant"
+        }
+      },
+      "oauth_client": [
         {
           "client_id": "855914831593-nkndaho7l51sg56vt7kukc9d63hcm27m.apps.googleusercontent.com",
           "client_type": 3

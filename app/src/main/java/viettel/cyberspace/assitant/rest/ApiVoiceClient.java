@@ -16,6 +16,7 @@ public class ApiVoiceClient {
     //public static final String BASE_URL = "http://10.30.154.10/";
     public static final String BASE_URL = "http://203.113.152.90/";
 
+    //http:// 203.113.152.90/hmm-stream/syn
     private static Retrofit retrofitVoice = null;
 
 

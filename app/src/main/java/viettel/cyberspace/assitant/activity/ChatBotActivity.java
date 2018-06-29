@@ -19,11 +19,13 @@ import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -59,6 +61,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.viettel.speech.tts.Synthesizer;
 import com.viettel.speech.tts.Voice;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
@@ -95,6 +98,7 @@ import viettel.cyberspace.assitant.rest.ApiInterface;
 import viettel.cyberspace.assitant.rest.ApiVoiceClient;
 import viettel.cyberspace.assitant.rest.ApiVoiceInterface;
 import viettel.cyberspace.assitant.storage.StorageManager;
+import viettel.cyberspace.assitant.utils.MyPlayAudio;
 
 import static chatview.widget.ChatView.getMessageHistory;
 import static com.activeandroid.Cache.getContext;
@@ -124,6 +128,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     LinearLayout layoutLogout, layoutClear;
     MediaPlayer mediaPlayer;
     Switch mySwitch;
+    MyPlayAudio playAudio;
 
     public int COUNT_DOWNT_CALL_ANSWER;
     public final int MAX_CALL_ANSWER = 20;
@@ -155,7 +160,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     List<QuestionExperts> questionExpertsList;
     List<ResponseAnswer> responseAnswerList;
 
-    public static boolean useViettelVoice = false;
+    public static boolean useViettelVoice = true;
 
 
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
@@ -1353,6 +1358,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
         Call<ResponseBody> call2 = apiVoiceInterface.getVoice(text, "doanngocle.htsvoice", "K9W6tNTeUuwrkyYARkAmzJ94D9vUR2Qdo5YwVI7D");
         call2.enqueue(new Callback<ResponseBody>() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onResponse(Call<ResponseBody> call2, retrofit2.Response<ResponseBody> response) {
                 int statusCode = response.code();
@@ -1361,19 +1367,30 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                     String s = response.body().toString();
                     Log.i("duypq3", "LoadVoiceViettel: success= " + s);
                     try {
-                        InputStream in = response.body().byteStream();
+                        BufferedInputStream in = new BufferedInputStream(response.body().byteStream());
+                        byte[] byte_buff = new byte[8000];
+                        int nread ;
+                        AudioTrack player;
+                        player = MyPlayAudio.getInstance().getPlayer();
+                        player.play();
 
-                        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                        String path = "/sdcard/" + "voice" + ".mp3";
-                        OutputStream output = new FileOutputStream(path);
+                        while ((nread=in.read(byte_buff))!=-1){
+                            player.write(byte_buff,0,nread);
+                        }
 
-                        byte[] bytes = new byte[1024];
+                     //   ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                       /* String path = "/sdcard/" + "voice" + ".mp3";
+                        OutputStream output = new FileOutputStream(path);*/
+
+                        /*byte[] bytes = new byte[1024];
                         int ret = in.read(bytes);
                         while (ret > 0) {
                             bout.write(bytes, 0, ret);
                             ret = in.read(bytes);
                         }
-                        byte[] sound = bout.toByteArray();
+                        byte[] sound = bout.toByteArray();*/
+
+
 
 
                        /* final int SAMPLE_RATE = 16000;
@@ -1390,6 +1407,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                             audioTrack.release();
                         }
 */
+/*
 
                         output.write(sound, 0, sound.length);
 
@@ -1403,6 +1421,7 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                         }
 
                         mediaPlayer.start();
+*/
 
                     } catch (Exception e) {
                         e.printStackTrace();

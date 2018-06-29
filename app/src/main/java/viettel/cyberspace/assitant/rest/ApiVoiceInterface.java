@@ -17,7 +17,8 @@ import retrofit2.http.Path;
 public interface ApiVoiceInterface {
     @FormUrlEncoded
     @Headers("Content-Type: application/x-www-form-urlencoded")
-    @POST("/tts-hmm/syn")
+    //@POST("/tts-hmm/syn")
+    @POST("/hmm-stream/syn")
     Call<ResponseBody> getVoice(@Field("data") String data, @Field("voices") String voices, @Field("key") String key);
-
+    //@POST("/hmm-stream/syn")
 }
