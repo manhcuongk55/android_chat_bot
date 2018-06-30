@@ -99,6 +99,7 @@ import viettel.cyberspace.assitant.rest.ApiVoiceClient;
 import viettel.cyberspace.assitant.rest.ApiVoiceInterface;
 import viettel.cyberspace.assitant.storage.StorageManager;
 import viettel.cyberspace.assitant.utils.MyPlayAudio;
+import viettel.cyberspace.assitant.utils.VoiceUtils;
 
 import static chatview.widget.ChatView.getMessageHistory;
 import static com.activeandroid.Cache.getContext;
@@ -1251,10 +1252,25 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
     }
 
 
-    public void playVoice(String text) {
+    public void playVoice(final String text) {
 
         if (useViettelVoice) {
-            LoadVoiceViettel(text);
+          //  LoadVoiceViettel(text);
+
+            Thread thread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try  {
+                        LoadVoiceViettelStream(text);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            thread.start();
+
             return;
         }
 
@@ -1378,50 +1394,6 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
                             player.write(byte_buff,0,nread);
                         }
 
-                     //   ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                       /* String path = "/sdcard/" + "voice" + ".mp3";
-                        OutputStream output = new FileOutputStream(path);*/
-
-                        /*byte[] bytes = new byte[1024];
-                        int ret = in.read(bytes);
-                        while (ret > 0) {
-                            bout.write(bytes, 0, ret);
-                            ret = in.read(bytes);
-                        }
-                        byte[] sound = bout.toByteArray();*/
-
-
-
-
-                       /* final int SAMPLE_RATE = 16000;
-
-                        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
-                                AudioFormat.ENCODING_PCM_16BIT,
-                                AudioTrack.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT),
-                                AudioTrack.MODE_STREAM);
-
-                        if (audioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
-                            audioTrack.play();
-                            audioTrack.write(sound, 0, sound.length);
-                            audioTrack.stop();
-                            audioTrack.release();
-                        }
-*/
-/*
-
-                        output.write(sound, 0, sound.length);
-
-                        mediaPlayer = new MediaPlayer();
-
-                        try {
-                            mediaPlayer.setDataSource(path);
-                            mediaPlayer.prepare();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        mediaPlayer.start();
-*/
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1439,5 +1411,11 @@ public class ChatBotActivity extends AppCompatActivity implements MessageDialogF
 
             }
         });
+    }
+
+    public void LoadVoiceViettelStream(String text) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            VoiceUtils.request(text);
+        }
     }
 }
